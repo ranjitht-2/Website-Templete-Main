@@ -277,7 +277,7 @@ export default function BimVisualizer({ addToast }) {
     <section className="bim-visualizer-section" id="bim3d">
       <div className="container">
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <div className="section-tag" style={{ justifyContent: 'center' }}>INTERACTIVE 3D BIM TECHNOLOGY</div>
+          <div className="section-tag centered" style={{ justifyContent: 'center' }}>INTERACTIVE 3D BIM TECHNOLOGY</div>
           <h2 className="section-title">REAL-TIME 3D DIGITAL TWIN VISUALIZER</h2>
           <p className="section-desc" style={{ margin: '12px auto 0 auto' }}>
             Drag to orbit around our procedural architectural BIM model in 3D. Toggle structural steel frames, concrete slabs, glass curtain walls, and interior lighting live.

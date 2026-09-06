@@ -137,16 +137,35 @@ export default function Navbar({ onOpenQuote, theme, onToggleTheme }) {
           >
             <a href="#home" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>HOME</a>
             <a href="#bim3d" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>3D DIGITAL TWIN</a>
-            <a href="#services" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>SERVICES</a>
-            <a href="#projects" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>PROJECTS</a>
-            <a href="#calculator" onClick={() => setMobileMenuOpen(false)} style={{ color: '#fff', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>ESTIMATOR</a>
+            <a href="#services" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-white, #fff)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>SERVICES</a>
+            <a href="#projects" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-white, #fff)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>PROJECTS</a>
+            <a href="#calculator" onClick={() => setMobileMenuOpen(false)} style={{ color: 'var(--text-white, #fff)', textDecoration: 'none', fontSize: '1rem', fontWeight: 600, padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>ESTIMATOR</a>
+            
+            <button 
+              className="theme-toggle-pill" 
+              onClick={() => {
+                onToggleTheme();
+              }}
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                padding: '10px 16px',
+                marginTop: '4px',
+                borderRadius: '8px',
+                cursor: 'pointer'
+              }}
+            >
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+              <span>{theme === 'light' ? 'SWITCH TO DARK MODE' : 'SWITCH TO LIGHT MODE'}</span>
+            </button>
+
             <button
               className="btn btn-primary"
               onClick={() => {
                 setMobileMenuOpen(false);
                 onOpenQuote();
               }}
-              style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}
+              style={{ width: '100%', justifyContent: 'center', marginTop: '6px' }}
             >
               GET A QUOTE →
             </button>
@@ -157,11 +176,86 @@ export default function Navbar({ onOpenQuote, theme, onToggleTheme }) {
       <style>{`
         @media (max-width: 1024px) {
           .nav-menu { display: none !important; }
-          .mobile-toggle-btn { display: block !important; }
+          .mobile-toggle-btn { display: flex !important; }
           .contact-pill { display: none !important; }
         }
         @media (max-width: 768px) {
+          .buildhub-top-bar { display: none !important; }
+          .site-header {
+            padding-top: max(1.25rem, env(safe-area-inset-top, 16px)) !important;
+            padding-bottom: 0.85rem !important;
+            padding-inline: 1.25rem !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .site-header .container {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+          .nav-inner {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 48px !important;
+            padding: 0 !important;
+          }
+          .brand-logo {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            text-decoration: none !important;
+            flex-shrink: 0 !important;
+          }
+          .logo-icon {
+            width: 36px !important;
+            height: 36px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+          }
+          .logo-icon svg {
+            width: 30px !important;
+            height: 30px !important;
+          }
+          .logo-text {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+          }
+          .logo-main {
+            font-size: 1.3rem !important;
+            line-height: 1.1 !important;
+            letter-spacing: 0.04em !important;
+          }
+          .logo-sub {
+            font-size: 0.6rem !important;
+            letter-spacing: 0.18em !important;
+          }
+          .nav-actions {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+          }
           .nav-actions .btn { display: none !important; }
+          .mobile-toggle-btn {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 42px !important;
+            height: 42px !important;
+            border-radius: 8px !important;
+            background: rgba(255, 255, 255, 0.07) !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            color: var(--text-white, #ffffff) !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+          }
         }
       `}</style>
     </>

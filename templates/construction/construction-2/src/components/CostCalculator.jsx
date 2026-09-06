@@ -105,8 +105,8 @@ export default function CostCalculator({ onOpenQuote }) {
   return (
     <section className="calculator-section perspective-container" id="calculator">
       <div className="container">
-        <div style={{ textAlign: 'center', marginBottom: '50px' }}>
-          <div className="section-tag" style={{ justifyContent: 'center' }}>INSTANT ESTIMATION</div>
+        <div className="calc-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <div className="section-tag centered" style={{ justifyContent: 'center' }}>INSTANT ESTIMATION</div>
           <h2 className="section-title">PROJECT COST CALCULATOR</h2>
           <p className="section-desc" style={{ margin: '12px auto 0 auto' }}>
             Estimate budget, material allocation, and completion timeline for your architectural or commercial project in real time with our precision estimation engine.

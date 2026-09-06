@@ -387,7 +387,7 @@ export default function DevicePreviewWrapper({ children }) {
               </div>
             )}
 
-            <div style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '36px', background: '#ffffff' }}>
+            <div className="phone-screen-wrapper" style={{ width: '100%', height: '100%', maxWidth: '100%', overflow: 'auto', overflowX: 'hidden', borderRadius: '36px', background: '#ffffff', boxSizing: 'border-box' }}>
               {children}
             </div>
           </div>

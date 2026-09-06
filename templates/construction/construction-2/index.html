@@ -142,16 +142,25 @@
             notch.innerHTML = '<div style="width: 8px; height: 8px; border-radius: 50%; background-color: #1e293b;"></div><div style="width: 6px; height: 6px; border-radius: 50%; background-color: #090d16;"></div>';
             frameContainer.appendChild(notch);
             
+            const phoneScreenWrapper = document.createElement('div');
+            phoneScreenWrapper.id = 'phone-screen-wrapper';
+            phoneScreenWrapper.className = 'phone-screen-wrapper';
+            phoneScreenWrapper.style.cssText = 'width: 100% !important; height: 100% !important; max-width: 100% !important; overflow: hidden !important; overflow-x: hidden !important; border-radius: inherit !important; display: flex !important; flex-direction: column !important; box-sizing: border-box !important; position: relative !important; background: #ffffff !important;';
+
             const iframe = document.createElement('iframe');
             iframe.id = 'preview-iframe';
             iframe.src = currentUrl.toString();
             iframe.style.width = '100%';
+            iframe.style.maxWidth = '100%';
             iframe.style.height = '100%';
             iframe.style.border = 'none';
-            iframe.style.borderRadius = '12px';
+            iframe.style.borderRadius = 'inherit';
             iframe.style.background = '#ffffff';
+            iframe.style.boxSizing = 'border-box';
+            iframe.style.overflowX = 'hidden';
             
-            frameContainer.appendChild(iframe);
+            phoneScreenWrapper.appendChild(iframe);
+            frameContainer.appendChild(phoneScreenWrapper);
             canvas.appendChild(frameContainer);
             body.appendChild(canvas);
             
@@ -191,6 +200,10 @@
                 frameContainer.style.backgroundColor = 'transparent';
                 frameContainer.style.border = 'none';
                 frameContainer.style.borderRadius = '12px';
+                frameContainer.style.overflow = 'hidden';
+                frameContainer.style.overflowX = 'hidden';
+                phoneScreenWrapper.style.maxWidth = '100%';
+                phoneScreenWrapper.style.overflowX = 'hidden';
               } else if (activeMode === 'tablet') {
                 btnTablet.style.background = '#eff6ff';
                 btnTablet.style.color = '#2563eb';
@@ -208,6 +221,10 @@
                 frameContainer.style.maxHeight = '100%';
                 frameContainer.style.border = '12px solid #0f172a';
                 frameContainer.style.borderRadius = '24px';
+                frameContainer.style.overflow = 'hidden';
+                frameContainer.style.overflowX = 'hidden';
+                phoneScreenWrapper.style.maxWidth = '100%';
+                phoneScreenWrapper.style.overflowX = 'hidden';
               } else if (activeMode === 'mobile') {
                 btnMobile.style.background = '#eff6ff';
                 btnMobile.style.color = '#2563eb';
@@ -225,6 +242,11 @@
                 frameContainer.style.maxHeight = '100%';
                 frameContainer.style.border = '12px solid #0f172a';
                 frameContainer.style.borderRadius = '36px';
+                frameContainer.style.overflow = 'hidden';
+                frameContainer.style.overflowX = 'hidden';
+                frameContainer.style.boxSizing = 'border-box';
+                phoneScreenWrapper.style.maxWidth = '100%';
+                phoneScreenWrapper.style.overflowX = 'hidden';
               }
             }
             
