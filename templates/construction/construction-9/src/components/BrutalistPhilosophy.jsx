@@ -48,7 +48,7 @@ export default function BrutalistPhilosophy() {
         </div>
 
         {/* 4 Pillars Grid */}
-        <div style={{
+        <div className="philosophy-pillars-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '28px'

@@ -52,7 +52,7 @@ export default function RfqSection() {
           </p>
         </div>
 
-        <div style={{
+        <div className="rfq-card" style={{
           maxWidth: '860px',
           margin: '0 auto',
           background: 'var(--bg-surface)',
@@ -74,7 +74,7 @@ export default function RfqSection() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          <form onSubmit={handleSubmit} className="rfq-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
             <div>
               <label style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: '0.82rem', marginBottom: '8px', color: 'var(--text-dim)' }}>
                 PRIMARY CONTACT NAME *

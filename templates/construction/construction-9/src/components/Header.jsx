@@ -21,7 +21,7 @@ export default function Header({
   }, []);
 
   return (
-    <header style={{
+    <header className="site-header" style={{
       position: 'fixed',
       top: 0,
       left: 0,
@@ -32,7 +32,7 @@ export default function Header({
       borderBottom: scrolled ? '1px solid var(--border-subtle)' : '1px solid transparent',
       transition: 'all 0.3s ease'
     }}>
-      <div className="container" style={{
+      <div className="container header-inner-container" style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -40,7 +40,7 @@ export default function Header({
       }}>
         {/* Brand Logo */}
         <a href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '14px', textDecoration: 'none' }}>
-          <div style={{
+          <div className="header-brand-icon" style={{
             width: '42px',
             height: '42px',
             background: 'var(--steel-gradient)',
@@ -57,7 +57,7 @@ export default function Header({
             C8
           </div>
           <div>
-            <div style={{
+            <div className="header-brand-name" style={{
               fontFamily: 'var(--font-display)',
               fontSize: '1.3rem',
               fontWeight: 900,
@@ -68,7 +68,7 @@ export default function Header({
             }}>
               CHRONOS
             </div>
-            <div style={{
+            <div className="header-brand-sub" style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '0.65rem',
               letterSpacing: '0.22em',
@@ -146,21 +146,22 @@ export default function Header({
               borderColor: stormActive ? 'var(--accent-cyan)' : 'var(--border-strong)',
               color: stormActive ? 'var(--accent-cyan)' : 'var(--text-muted)',
               fontFamily: 'var(--font-mono)',
-              fontSize: '0.7rem',
+              fontSize: '0.72rem',
               fontWeight: 800,
-              display: 'flex',
+              display: 'inline-flex',
               alignItems: 'center',
               gap: '4px',
               cursor: 'pointer'
             }}
             title="Toggle Atmospheric Storm"
           >
-            ⛈ {stormActive ? 'STORM' : 'OFF'}
+            ⛈ <span className="storm-btn-text">{stormActive ? 'STORM' : 'OFF'}</span>
           </button>
 
           {/* Theme Toggle Button */}
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
+            className="theme-toggle-btn"
             style={{
               padding: '6px 10px',
               background: 'var(--bg-surface-elevated)',
@@ -227,10 +228,7 @@ export default function Header({
       <style>{`
         @media (max-width: 1024px) {
           .desktop-nav { display: none !important; }
-          .chronos-mobile-toggle { display: block !important; }
-        }
-        @media (max-width: 600px) {
-          .storm-toggle-btn { display: none !important; }
+          .chronos-mobile-toggle { display: flex !important; align-items: center; justify-content: center; }
         }
       `}</style>
     </header>

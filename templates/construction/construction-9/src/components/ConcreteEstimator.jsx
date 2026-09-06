@@ -44,22 +44,10 @@ export default function ConcreteEstimator() {
         </div>
 
         {/* 2-Column Interactive Estimator Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '36px',
-          alignItems: 'stretch'
-        }} className="estimator-grid">
+        <div className="estimator-grid">
 
           {/* Left Column: Form Controls */}
-          <div style={{
-            background: 'var(--bg-surface)',
-            border: '2px solid var(--border-strong)',
-            padding: '36px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px'
-          }}>
+          <div className="estimator-input-card">
             <div style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '0.82rem',
@@ -170,15 +158,7 @@ export default function ConcreteEstimator() {
           </div>
 
           {/* Right Column: Output Readout Screen */}
-          <div style={{
-            background: 'var(--bg-surface-elevated)',
-            border: '2px solid var(--border-strong)',
-            padding: '36px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            position: 'relative'
-          }}>
+          <div className="estimator-output-card">
             <div>
               <div style={{
                 display: 'flex',
@@ -197,45 +177,45 @@ export default function ConcreteEstimator() {
               </div>
 
               {result ? (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+                <div className="estimator-metrics-grid">
                   <div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>TOTAL GROSS FLOOR AREA</div>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '4px' }}>
+                    <div className="estimator-metric-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '4px' }}>
                       {result.totalGrossAreaSqm.toLocaleString()} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>m²</span>
                     </div>
                   </div>
 
                   <div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>CONCRETE VOLUME (CUBIC)</div>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: 'var(--accent-orange)', marginTop: '4px' }}>
+                    <div className="estimator-metric-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: 'var(--accent-orange)', marginTop: '4px' }}>
                       {result.concreteVolumeCubicMeters.toLocaleString()} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>m³</span>
                     </div>
                   </div>
 
                   <div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>HIGH-TENSILE STEEL REBAR</div>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '4px' }}>
+                    <div className="estimator-metric-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: 'var(--text-main)', marginTop: '4px' }}>
                       {result.structuralSteelMetricTons.toLocaleString()} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Tons</span>
                     </div>
                   </div>
 
                   <div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>CO₂ SEQUESTRATION OFFSET</div>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: '#10b981', marginTop: '4px' }}>
+                    <div className="estimator-metric-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.7rem', fontWeight: 900, color: '#10b981', marginTop: '4px' }}>
                       -{result.carbonMineralizationOffsetTons.toLocaleString()} <span style={{ fontSize: '0.9rem', color: '#10b981' }}>Tons</span>
                     </div>
                   </div>
 
                   <div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>COMPRESSIVE STRENGTH</div>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-cyan)', marginTop: '4px' }}>
+                    <div className="estimator-metric-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--accent-cyan)', marginTop: '4px' }}>
                       {result.compressiveStrengthMpa} MPa
                     </div>
                   </div>
 
                   <div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>ESTIMATED CURE TIME</div>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
+                    <div className="estimator-metric-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
                       {result.estimatedCureDays} Days
                     </div>
                   </div>
@@ -246,22 +226,12 @@ export default function ConcreteEstimator() {
             </div>
 
             {/* Estimated Budget Banner */}
-            <div style={{
-              marginTop: '32px',
-              padding: '20px',
-              background: 'var(--bg-main)',
-              border: '1px solid var(--border-strong)',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '12px'
-            }}>
+            <div className="estimator-budget-banner">
               <div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)' }}>
                   ESTIMATED STRUCTURAL CORE BUDGET
                 </div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 900, color: 'var(--accent-orange)' }}>
+                <div className="estimator-budget-amount" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.8rem', fontWeight: 900, color: 'var(--accent-orange)' }}>
                   ${result ? result.estimatedStructuralBudgetUsd.toLocaleString() : '---'} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>USD</span>
                 </div>
               </div>

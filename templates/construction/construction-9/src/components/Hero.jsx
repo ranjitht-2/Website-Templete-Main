@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Hero() {
   return (
-    <section id="hero" style={{
+    <section id="hero" className="hero-section" style={{
       position: 'relative',
       minHeight: '100vh',
       display: 'flex',
@@ -43,16 +43,11 @@ export default function Hero() {
       }} />
 
       <div className="container" style={{ position: 'relative', zIndex: 5, width: '100%' }}>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1.2fr 0.8fr',
-          gap: '48px',
-          alignItems: 'center'
-        }} className="hero-grid">
+        <div className="hero-grid">
 
           {/* Left Column: Monolithic Typography & CTAs */}
-          <div>
-            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' }}>
+          <div className="hero-left-col">
+            <div className="hero-badges-wrap" style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap' }}>
               <span className="brutalist-badge">
                 <span style={{ width: '6px', height: '6px', background: 'var(--accent-orange)' }} />
                 CHRONOS // MONOLITHIC SPEC 8.0
@@ -62,8 +57,7 @@ export default function Hero() {
               </span>
             </div>
 
-            <h1 style={{
-              fontSize: 'clamp(2.8rem, 5.5vw, 5rem)',
+            <h1 className="hero-title" style={{
               lineHeight: 0.98,
               letterSpacing: '-0.03em',
               textTransform: 'uppercase',
@@ -83,7 +77,7 @@ export default function Hero() {
               </span>
             </h1>
 
-            <p style={{
+            <p className="hero-desc" style={{
               fontSize: '1.15rem',
               color: 'var(--text-muted)',
               lineHeight: 1.65,
@@ -93,7 +87,7 @@ export default function Hero() {
               Engineering unyielding architectural monoliths, board-formed fair-faced concrete mega-structures, and seismic cantilever landmarks across Northern Europe and East Asia.
             </p>
 
-            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div className="hero-cta-btns" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
               <a href="#projects" className="btn-primary">
                 EXPLORE LANDMARKS
                 <span style={{ fontSize: '1.1rem' }}>→</span>
@@ -104,7 +98,7 @@ export default function Hero() {
             </div>
 
             {/* Micro Specs Bar */}
-            <div style={{
+            <div className="hero-specs-bar" style={{
               marginTop: '56px',
               paddingTop: '28px',
               borderTop: '1px solid var(--border-subtle)',
@@ -113,28 +107,28 @@ export default function Hero() {
               gap: '24px'
             }}>
               <div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.1em' }}>
+                <div className="hero-spec-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.1em' }}>
                   PEAK COMPRESSION
                 </div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
+                <div className="hero-spec-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
                   95.0 <span style={{ fontSize: '0.9rem', color: 'var(--accent-orange)' }}>MPa</span>
                 </div>
               </div>
 
               <div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.1em' }}>
+                <div className="hero-spec-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.1em' }}>
                   STRUCTURAL LIFE
                 </div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
+                <div className="hero-spec-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
                   150+ <span style={{ fontSize: '0.9rem', color: 'var(--accent-orange)' }}>YRS</span>
                 </div>
               </div>
 
               <div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.1em' }}>
+                <div className="hero-spec-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-dim)', letterSpacing: '0.1em' }}>
                   CARBON MINERALIZATION
                 </div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
+                <div className="hero-spec-val" style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '4px' }}>
                   -42% <span style={{ fontSize: '0.9rem', color: 'var(--accent-cyan)' }}>CO₂</span>
                 </div>
               </div>
@@ -142,7 +136,7 @@ export default function Hero() {
           </div>
 
           {/* Right Column: Brushed Steel Monolith Feature Card */}
-          <div style={{
+          <div className="hero-feature-card" style={{
             position: 'relative',
             background: 'var(--bg-surface)',
             border: '2px solid var(--border-strong)',
@@ -156,7 +150,7 @@ export default function Hero() {
             <div style={{ position: 'absolute', bottom: '-6px', right: '-6px', width: '12px', height: '12px', background: 'var(--accent-orange)' }} />
 
             {/* Featured Image */}
-            <div style={{
+            <div className="hero-feature-img-wrap" style={{
               position: 'relative',
               width: '100%',
               height: '320px',

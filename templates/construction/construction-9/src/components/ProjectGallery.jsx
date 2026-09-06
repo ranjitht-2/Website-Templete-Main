@@ -25,7 +25,7 @@ export default function ProjectGallery({ onSelectProject }) {
     <section id="projects" className="section-padding" style={{ background: 'var(--bg-surface-elevated)', position: 'relative' }}>
       <div className="container">
         {/* Header & Filter Controls */}
-        <div style={{
+        <div className="projects-header-wrap" style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'flex-end',
@@ -46,11 +46,12 @@ export default function ProjectGallery({ onSelectProject }) {
           </div>
 
           {/* Category Filters */}
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="project-category-filters" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             {categories.map(cat => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
+                className="project-category-btn"
                 style={{
                   padding: '10px 18px',
                   background: activeCategory === cat ? 'var(--accent-orange)' : 'var(--bg-surface)',
@@ -72,15 +73,12 @@ export default function ProjectGallery({ onSelectProject }) {
         </div>
 
         {/* Project Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))',
-          gap: '32px'
-        }}>
+        <div className="projects-grid">
           {filteredProjects.map((proj) => (
             <div
               key={proj.id}
               onClick={() => onSelectProject(proj)}
+              className="project-card"
               style={{
                 background: 'var(--bg-surface)',
                 border: '1px solid var(--border-strong)',
@@ -102,7 +100,7 @@ export default function ProjectGallery({ onSelectProject }) {
               }}
             >
               {/* Image Container */}
-              <div style={{
+              <div className="project-card-img-wrap" style={{
                 position: 'relative',
                 width: '100%',
                 height: '280px',
@@ -152,7 +150,7 @@ export default function ProjectGallery({ onSelectProject }) {
               </div>
 
               {/* Card Body */}
-              <div style={{
+              <div className="project-card-body" style={{
                 padding: '28px',
                 display: 'flex',
                 flexDirection: 'column',
@@ -170,7 +168,7 @@ export default function ProjectGallery({ onSelectProject }) {
                     {proj.location}
                   </div>
 
-                  <h3 style={{
+                  <h3 className="project-card-title" style={{
                     fontFamily: 'var(--font-heading)',
                     fontSize: '1.4rem',
                     fontWeight: 800,
@@ -180,7 +178,7 @@ export default function ProjectGallery({ onSelectProject }) {
                     {proj.title}
                   </h3>
 
-                  <p style={{
+                  <p className="project-card-summary" style={{
                     fontSize: '0.92rem',
                     color: 'var(--text-muted)',
                     lineHeight: 1.6,
@@ -190,7 +188,7 @@ export default function ProjectGallery({ onSelectProject }) {
                   </p>
                 </div>
 
-                <div style={{
+                <div className="project-card-footer" style={{
                   paddingTop: '16px',
                   borderTop: '1px solid var(--border-subtle)',
                   fontFamily: 'var(--font-mono)',

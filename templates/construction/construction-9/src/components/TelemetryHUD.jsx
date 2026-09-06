@@ -40,7 +40,7 @@ export default function TelemetryHUD() {
         </div>
 
         {/* HUD Grid */}
-        <div style={{
+        <div className="telemetry-hud-grid" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '24px',
@@ -150,7 +150,7 @@ export default function TelemetryHUD() {
             </span>
           </div>
 
-          <div style={{
+          <div className="telemetry-sensors-grid" style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '16px'
