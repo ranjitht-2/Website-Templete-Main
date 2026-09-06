@@ -62,9 +62,9 @@ export default function EstimatorSection({ onOpenQuoteModal }) {
             </div>
 
             <div className="form-row">
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <label>2. STRUCTURAL AREA (SQ FT)</label>
-                <span style={{ color: 'var(--accent-cyan)', fontWeight: 700 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap', gap: '4px' }}>
+                <label style={{ marginBottom: 0 }}>2. STRUCTURAL AREA (SQ FT)</label>
+                <span style={{ color: 'var(--accent-cyan)', fontWeight: 700, fontSize: '0.85rem' }}>
                   {areaSqFt.toLocaleString()} SQ FT
                 </span>
               </div>
