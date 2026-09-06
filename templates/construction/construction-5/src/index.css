@@ -68,8 +68,9 @@ a {
    ========================================================================== */
 .hero-section {
   position: relative;
-  height: 100vh;
-  min-height: 720px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: auto;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -84,9 +85,31 @@ a {
   pointer-events: none;
 }
 
+.hero-center-container {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 8px 0;
+  box-sizing: border-box;
+  z-index: 5;
+}
+
 .hero-image-wrapper {
-  position: absolute;
-  inset: 0;
+  position: relative;
+  width: 100%;
+  max-width: 1240px;
+  aspect-ratio: 16 / 9;
+  min-height: 480px;
+  max-height: 720px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-sizing: border-box;
+  margin: 0 auto;
   z-index: 1;
 }
 
@@ -1496,6 +1519,71 @@ body.light-mode .f-brand strong {
 
 /* Responsive */
 @media (max-width: 1024px) {
+  .hero-image-wrapper {
+    aspect-ratio: 16 / 10;
+    min-height: 400px;
+    max-height: none;
+    border-radius: 16px;
+  }
+
+  /* About Section Responsive Tablet */
+  .center-vertical-divider {
+    display: none !important;
+  }
+  .about-split-section {
+    padding: 60px 0 80px 0 !important;
+    width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  .about-grid-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 28px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .about-left-col {
+    justify-content: flex-start !important;
+    padding-right: 0 !important;
+    padding-top: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .about-title-line-wrap {
+    width: 100% !important;
+    gap: 16px !important;
+  }
+  .copper-horiz-line {
+    flex: 1 !important;
+    max-width: 140px !important;
+  }
+  .about-right-col {
+    padding-left: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .about-lead-desc {
+    font-size: 1.05rem !important;
+    line-height: 1.7 !important;
+    margin-bottom: 28px !important;
+    max-width: 100% !important;
+    word-break: break-word !important;
+  }
+  .about-stats-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 18px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .a-stat-item span {
+    font-size: 0.7rem !important;
+    line-height: 1.35 !important;
+    word-break: break-word !important;
+    display: block !important;
+  }
+
   .villa-feature-hero { grid-template-columns: 1fr; }
   .villas-dual-grid { grid-template-columns: 1fr; }
   .specimen-grid-4 { grid-template-columns: 1fr 1fr; }
@@ -1505,11 +1593,83 @@ body.light-mode .f-brand strong {
 }
 
 @media (max-width: 768px) {
+  .hero-image-wrapper {
+    aspect-ratio: 4 / 3;
+    min-height: 280px;
+    max-height: none;
+    border-radius: 14px;
+  }
+  .hero-bottom-overlay {
+    padding-bottom: 24px !important;
+  }
+  .company-dev-title {
+    font-size: 1.4rem !important;
+  }
+  .company-dev-sub {
+    font-size: 0.8rem !important;
+  }
+  .copper-vertical-line {
+    height: 36px !important;
+  }
+
+  /* About Section Responsive Mobile */
+  .about-split-section {
+    padding: 44px 0 60px 0 !important;
+  }
+  .about-grid-container {
+    gap: 20px !important;
+  }
+  .about-title-label {
+    font-size: 0.85rem !important;
+    letter-spacing: 0.12em !important;
+  }
+  .copper-horiz-line {
+    max-width: 80px !important;
+  }
+  .about-lead-desc {
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+    margin-bottom: 22px !important;
+  }
+  .about-stats-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 10px !important;
+    padding-top: 18px !important;
+  }
+  .a-stat-item strong {
+    font-size: 1.25rem !important;
+  }
+  .a-stat-item span {
+    font-size: 0.62rem !important;
+    letter-spacing: 0.03em !important;
+    line-height: 1.25 !important;
+  }
+  .animation-center-tag {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin-top: 32px !important;
+  }
+
   .container { padding: 0 16px; }
   .specimen-grid-4 { grid-template-columns: 1fr; }
   .feature-specs-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   .blueprint-controls-col, .blueprint-preview-col { padding: 20px 16px; }
   .atelier-minimal-form { padding: 20px 16px; }
   .editorial-title { font-size: 1.8rem; }
+}
+
+@media (max-width: 480px) {
+  .about-stats-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+  }
+  .a-stat-item strong {
+    font-size: 1.15rem !important;
+  }
+  .a-stat-item span {
+    font-size: 0.58rem !important;
+  }
 }
 

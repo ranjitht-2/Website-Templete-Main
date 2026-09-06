@@ -17,10 +17,20 @@ export default function HeroSection({ isDarkMode, toggleTheme }) {
 
     const handleResize = () => {
       if (!canvas) return;
-      width = canvas.width = canvas.offsetWidth || window.innerWidth * 0.62;
-      height = canvas.height = canvas.offsetHeight || 300;
+      if (canvas.offsetWidth > 0 && canvas.offsetHeight > 0) {
+        width = canvas.width = canvas.offsetWidth;
+        height = canvas.height = canvas.offsetHeight;
+      }
     };
     window.addEventListener('resize', handleResize);
+
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(() => {
+        handleResize();
+      });
+      resizeObserver.observe(canvas);
+    }
 
     let ripples = [];
     let time = 0;
@@ -226,6 +236,9 @@ export default function HeroSection({ isDarkMode, toggleTheme }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       cancelAnimationFrame(animationFrameId);
@@ -261,8 +274,8 @@ export default function HeroSection({ isDarkMode, toggleTheme }) {
       <Navbar isDarkMode={isDarkMode} toggleTheme={toggleTheme} />
 
       {/* Central Architectural Card & Pool Physics (Mobile-contained, Desktop full) */}
-      <div className="hero-center-container relative flex-1 my-4 w-full flex items-center justify-center">
-        <div className="hero-image-wrapper relative w-full h-full min-h-[280px] sm:min-h-[420px] md:min-h-[500px] rounded-2xl overflow-hidden shadow-2xl border border-neutral-800/80">
+      <div className="hero-center-container relative flex-1 my-3 sm:my-4 w-full flex items-center justify-center">
+        <div className="hero-image-wrapper relative w-full rounded-2xl overflow-hidden shadow-2xl border border-neutral-800/80">
           <img
             src="./assets/images/hero-villa.jpg"
             alt="New House Luxury Villa"
