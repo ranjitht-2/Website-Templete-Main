@@ -1,3 +1,8 @@
+import miraPortrait from '../assets/images/mira_portrait.jpg';
+import researchNodes from '../assets/images/research_nodes.jpg';
+import attentionLandscape from '../assets/images/attention_landscape.jpg';
+import socialSignals from '../assets/images/social_signals.jpg';
+
 // Fictional Professional Profile Data for Dr. Mira Ellison
 // All institutions, publications, projects, awards, and data are strictly fictional demonstration content.
 
@@ -12,7 +17,7 @@ export const profileData = {
   taglineShort: "Understanding the patterns behind human decisions.",
   introduction: "A fictional behavioral researcher focused on how people think, make decisions, adapt to change, and interact with complex environments.",
   pullQuote: "Behavior is rarely random. Patterns emerge when we learn how to look.",
-  portraitUrl: "/images/mira_portrait.jpg",
+  portraitUrl: miraPortrait,
   biography: [
     "Dr. Mira Ellison is a fictional behavioral researcher specializing in decision-making dynamics, cognitive adaptation, and human interaction within complex systems. Her research explores the psychological mechanisms that influence how individuals evaluate risk, prioritize attention, and adjust their strategies when facing environmental uncertainty.",
     "Over eleven years of fictional inquiry, she has led interdisciplinary research initiatives at prominent fictional institutes across Northern Europe. Her methodological approach integrates qualitative observational synthesis, structured behavioral simulations, and contextual inquiry, bridging theoretical cognitive psychology with human-centered application.",
@@ -80,7 +85,7 @@ export const projects = [
     description: "A fictional research project exploring how people adapt their choices when familiar environments change.",
     methods: ["Surveys", "Behavioral simulations", "Structured interviews"],
     summary: "This study simulated 450 choice scenarios across varied environmental conditions to examine decision latency, strategy shifting, and post-choice confidence when rules shift mid-task.",
-    visual: "/images/research_nodes.jpg",
+    visual: researchNodes,
     details: {
       hypothesis: "Individuals maintain obsolete decision heuristics for an average of 3.4 choice cycles after environment rules alter.",
       findings: "Adaptive speed increases by 42% when environmental feedback is immediate and visually distinct, rather than delayed.",
@@ -96,7 +101,7 @@ export const projects = [
     description: "A fictional study examining how environmental complexity influences attention patterns.",
     methods: ["Visual gaze mapping", "Cognitive load assessment", "Contextual noise control"],
     summary: "Analyzed visual focus duration and task switching frequency across high-density vs minimalist workspace configurations.",
-    visual: "/images/attention_landscape.jpg",
+    visual: attentionLandscape,
     details: {
       hypothesis: "Visual noise in peripheral fields reduces continuous focus intervals by up to 35%.",
       findings: "Participants in low-clutter visual environments demonstrated 28% lower self-reported mental exhaustion during multi-step tasks.",
@@ -112,7 +117,7 @@ export const projects = [
     description: "A fictional research project exploring subtle social cues in collaborative environments.",
     methods: ["Observational video coding", "Inter-rater reliability metrics", "Interaction synchronization analysis"],
     summary: "Mapped non-verbal micro-gestures during group decision-making sessions to identify early behavioral predictors of team consensus.",
-    visual: "/images/social_signals.jpg",
+    visual: socialSignals,
     details: {
       hypothesis: "Micro-nodding and turn-taking synchrony serve as stronger indicators of true agreement than spoken consensus statements.",
       findings: "High-performing collaborative groups exhibit distinct non-verbal turn-taking cadences prior to reaching major agreement milestones.",
@@ -128,7 +133,7 @@ export const projects = [
     description: "A fictional project studying how people structure decisions under uncertainty.",
     methods: ["Heuristic tree mapping", "Longitudinal choice logs", "Retrospective protocol analysis"],
     summary: "Charted the cognitive branching pathways individuals generate when evaluating high-ambiguity choices with incomplete information.",
-    visual: "/images/research_nodes.jpg",
+    visual: researchNodes,
     details: {
       hypothesis: "People default to binary elimination trees when presented with more than 5 simultaneous options under time pressure.",
       findings: "Structuring options into hierarchical categories reduces decision regret and speeds evaluation without reducing outcome satisfaction.",
@@ -144,7 +149,7 @@ export const projects = [
     description: "A fictional behavioral research project exploring digital interaction patterns.",
     methods: ["In-situ behavioral logging", "Trigger mapping", "Workflow interruption analysis"],
     summary: "Investigated notification response cadences, micro-break habits, and tab-switching loops among remote knowledge workers.",
-    visual: "/images/attention_landscape.jpg",
+    visual: attentionLandscape,
     details: {
       hypothesis: "Unplanned digital interruptions break deep focus loops for an average recovery window of 18 minutes.",
       findings: "Batch-notification delivery reduced reactive switching events by 54% while maintaining subjective connectivity metrics.",

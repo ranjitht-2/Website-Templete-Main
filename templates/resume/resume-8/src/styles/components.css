@@ -719,6 +719,108 @@
   color: var(--text-muted);
 }
 
+/* Lookbook Detail Drawer */
+.lookbook-detail-drawer {
+  margin-top: 3rem;
+  padding: 2.5rem;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+.lookbook-drawer-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.lookbook-drawer-title {
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  margin: 0.5rem 0 1rem 0;
+  line-height: 1.15;
+}
+
+.lookbook-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.lookbook-spec-item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Collection Modal Classes */
+.collection-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 2.5rem;
+}
+
+.collection-modal-notes {
+  padding: 1.5rem;
+  background-color: var(--bg-warm);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 2.5rem;
+}
+
+.collection-modal-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.collection-modal-gallery-item {
+  position: relative;
+  padding-bottom: 130%;
+  overflow: hidden;
+}
+
+.collection-modal-gallery-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* CV Modal Classes */
+.cv-expertise-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.cv-edu-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.cv-edu-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.cv-rec-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.cv-rec-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
 /* ====================================================
    DESIGN PROCESS SECTION
    ==================================================== */
@@ -1446,6 +1548,15 @@
     grid-template-columns: 1fr;
     gap: 3rem;
   }
+  .layout-split-story {
+    grid-template-columns: 1fr;
+  }
+  .split-story-right {
+    min-height: 380px;
+  }
+  .split-story-left {
+    padding: 3rem 2rem;
+  }
   .process-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1459,6 +1570,9 @@
     grid-template-columns: 1fr;
     gap: 1rem;
   }
+  .career-details {
+    padding-left: 1.5rem;
+  }
   .footer-container {
     grid-template-columns: 1fr;
     gap: 3rem;
@@ -1466,26 +1580,368 @@
 }
 
 @media (max-width: 768px) {
+  /* Navbar */
+  .navbar-container {
+    padding: 1rem 1.25rem;
+  }
   .nav-center-menu, .nav-right-action {
     display: none;
   }
   .mobile-menu-toggle {
     display: block;
   }
-  .process-grid {
-    grid-template-columns: 1fr;
+  .mobile-overlay-menu {
+    padding: 2.5rem 1.25rem;
   }
-  .expertise-grid {
-    grid-template-columns: 1fr;
+  .mobile-nav-link {
+    font-size: clamp(1.8rem, 6vw, 2.4rem);
   }
-  .manifesto-values-grid {
+
+  /* Editorial Sections */
+  .editorial-section {
+    padding: 4rem 1.25rem;
+  }
+  .editorial-section-full {
+    padding: 4rem 0;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    min-height: auto;
+    padding: 2rem 1.25rem 4rem 1.25rem;
+  }
+  .hero-grid {
+    gap: 2.5rem;
+  }
+  .hero-main-title {
+    font-size: clamp(2.4rem, 10.5vw, 4.5rem);
+    word-break: break-word;
+  }
+  .hero-tagline {
+    font-size: clamp(1.15rem, 4vw, 1.45rem);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .hero-intro-text {
+    font-size: 0.98rem;
+    margin-bottom: 1.8rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.85rem;
+    margin-bottom: 2.5rem;
+  }
+  .btn-editorial-primary, .btn-editorial-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.9rem 1.5rem;
+  }
+  .hero-metadata-grid {
     grid-template-columns: 1fr;
+    gap: 1.2rem;
+    padding-top: 1.5rem;
+  }
+  .hero-overlapping-text {
+    display: none;
+  }
+
+  /* Philosophy */
+  .philosophy-layout {
+    gap: 2.5rem;
+    margin-top: 2rem;
+  }
+  .philosophy-statement {
+    font-size: clamp(1.6rem, 5.5vw, 2.4rem);
+    margin-bottom: 1.5rem;
+  }
+  .philosophy-bio {
+    font-size: 0.98rem;
+    margin-bottom: 2rem;
+  }
+  .macro-fabric-wrapper {
+    padding-bottom: 100%;
+  }
+  .fabric-badge {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.65rem;
+  }
+
+  /* Collections */
+  .collections-header {
+    margin-bottom: 2.5rem;
+  }
+  .collections-title {
+    font-size: clamp(2rem, 7vw, 3rem);
+  }
+  .collection-block {
+    margin-bottom: 4rem;
+    padding-bottom: 3rem;
+  }
+  .collection-number-bg {
+    font-size: clamp(4rem, 15vw, 7rem);
+    top: -1rem;
+    right: 0;
+  }
+  .collection-name {
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+  }
+  .meta-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .meta-key {
+    min-width: unset;
+  }
+  .layout-horizontal-spread,
+  .layout-vertical-sequence,
+  .layout-typography-floating {
+    gap: 2rem;
+  }
+  .split-story-right {
+    min-height: 280px;
+  }
+  .split-story-left {
+    padding: 2rem 1.25rem;
+  }
+  .floating-big-title {
+    font-size: clamp(2rem, 7vw, 3.2rem);
   }
   .details-gallery-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .details-grid-item.hero-item {
+    padding-bottom: 80%;
+  }
+
+  /* Lookbook */
+  .lookbook-section {
+    padding: 4rem 0;
+  }
+  .lookbook-container {
+    padding: 0 1.25rem;
+  }
+  .lookbook-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .lookbook-drag-track {
+    gap: 1.25rem;
+    padding-bottom: 1.25rem;
+  }
+  .lookbook-card {
+    min-width: 260px;
+    max-width: 290px;
+  }
+  .lookbook-card-body {
+    padding: 1.25rem;
+  }
+  .lookbook-detail-drawer {
+    grid-template-columns: 1fr;
+    gap: 1.8rem;
+    padding: 1.5rem 1.25rem;
+    margin-top: 2rem;
+  }
+  .lookbook-drawer-title {
+    font-size: 1.5rem;
+  }
+  .lookbook-specs-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  /* Process */
+  .process-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+  .process-card {
+    padding: 2rem 1.25rem;
+  }
+  .process-step-num {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Career */
+  .career-timeline {
+    gap: 2.5rem;
+    margin-top: 2.5rem;
+  }
+  .career-timeline::before {
+    display: none;
+  }
+  .career-item {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .career-period {
+    font-size: 1.35rem;
+  }
+  .career-details {
+    padding-left: 0;
+  }
+  .career-role {
+    font-size: 1.55rem;
+  }
+  .career-studio-line {
+    flex-wrap: wrap;
+    gap: 0.3rem 0.5rem;
+  }
+
+  /* Projects */
+  .projects-poster-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .project-poster-card {
+    padding: 2rem 1.25rem;
+    min-height: auto;
+  }
+  .poster-year {
+    font-size: 2.4rem;
+  }
+  .poster-title {
+    font-size: 1.75rem;
+  }
+
+  /* Expertise & Education & Recognition */
+  .expertise-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+  }
+  .expertise-category-card {
+    padding: 2rem 1.25rem;
+  }
+  .expertise-cat-title {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
   }
   .edu-item, .recognition-item {
     grid-template-columns: 1fr;
     gap: 0.5rem;
+    padding-bottom: 1.8rem;
+  }
+  .edu-degree, .rec-award {
+    font-size: 1.5rem;
+  }
+
+  /* Manifesto */
+  .manifesto-section {
+    padding: 4.5rem 1.25rem;
+  }
+  .manifesto-big-quote {
+    font-size: clamp(1.8rem, 6vw, 3rem);
+    margin-bottom: 3rem;
+  }
+  .manifesto-values-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  /* Contact */
+  .contact-section {
+    padding: 4.5rem 1.25rem;
+  }
+  .contact-layout {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .contact-heading {
+    font-size: clamp(2.4rem, 8.5vw, 3.8rem);
+    margin-bottom: 1.25rem;
+  }
+  .contact-subtext {
+    margin-bottom: 2rem;
+  }
+  .editorial-form {
+    gap: 1.8rem;
+  }
+
+  /* Footer */
+  .editorial-footer {
+    padding: 4rem 1.25rem 2.5rem 1.25rem;
+  }
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+  .footer-bottom-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  /* Modals */
+  .modal-overlay {
+    padding: 1rem;
+  }
+  .modal-content-box {
+    padding: 2.5rem 1.25rem;
+    max-height: 94vh;
+  }
+  .modal-close-btn {
+    top: 1rem;
+    right: 1rem;
+  }
+  .collection-modal-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .collection-modal-gallery {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+  .collection-modal-notes {
+    padding: 1.2rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .cv-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .cv-name {
+    font-size: 2.2rem;
+  }
+  .cv-expertise-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .cv-edu-row, .cv-rec-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-label {
+    gap: 0.6rem;
+    font-size: 0.68rem;
+  }
+  .section-label::before {
+    width: 16px;
+  }
+  .fine-divider {
+    margin: 2rem 0;
+  }
+  .hero-metadata-grid {
+    grid-template-columns: 1fr;
+  }
+  .collection-number-bg {
+    display: none;
   }
 }

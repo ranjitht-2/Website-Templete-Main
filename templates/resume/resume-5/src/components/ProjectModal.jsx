@@ -431,6 +431,33 @@ export default function ProjectModal({ project, onClose }) {
             height: 260px;
           }
         }
+
+        @media (max-width: 640px) {
+          .modal-top-bar {
+            padding: 12px 16px;
+          }
+          .modal-scroll-content {
+            padding: 18px 14px;
+          }
+          .modal-hero-image-wrap {
+            height: 200px;
+            margin-bottom: 20px;
+          }
+          .modal-hero-overlay {
+            padding: 16px;
+          }
+          .modal-project-title {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+          }
+          .meta-pill {
+            padding: 4px 8px;
+            font-size: 0.65rem;
+          }
+          .blueprint-diagram-box {
+            padding: 14px;
+          }
+        }
       `}</style>
     </div>
   );

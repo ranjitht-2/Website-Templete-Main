@@ -306,21 +306,54 @@ export default function Hero({ onOpenCV, onExploreProjects }) {
         }
 
         @media (max-width: 640px) {
+          .hero-section {
+            padding-top: 36px;
+            padding-bottom: 60px;
+          }
           .hero-title {
-            font-size: 3.2rem;
+            font-size: clamp(2.4rem, 9vw, 3.8rem);
+            margin-bottom: 18px;
           }
           .hero-subtitle {
-            font-size: 1.3rem;
+            font-size: 1.15rem;
+          }
+          .hero-statement {
+            font-size: 0.95rem;
+            margin-bottom: 28px;
           }
           .hero-metadata-grid {
             grid-template-columns: 1fr;
+            gap: 12px;
+            padding-top: 24px;
           }
           .hero-actions {
             flex-direction: column;
             width: 100%;
+            gap: 12px;
+            margin-bottom: 32px;
           }
           .hero-actions button {
             width: 100%;
+          }
+          .portrait-wrapper {
+            padding: 14px;
+          }
+          .portrait-tag {
+            font-size: 0.58rem;
+            padding: 4px 8px;
+          }
+          .tag-top-left { top: 6px; left: 6px; }
+          .tag-top-right { top: 6px; right: 6px; }
+          .tag-bottom-left { bottom: 36px; left: 6px; }
+          .tag-bottom-right { bottom: 36px; right: 6px; }
+        }
+
+        @media (max-width: 480px) {
+          .tag-top-right, .tag-bottom-left {
+            display: none;
+          }
+          .portrait-caption {
+            font-size: 0.65rem;
           }
         }
       `}</style>

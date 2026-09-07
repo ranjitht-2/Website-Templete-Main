@@ -52,9 +52,9 @@ export default function IngredientExplorer() {
               <X size={20} />
             </button>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: '2rem', alignItems: 'center' }}>
-              <div style={{ border: 'var(--border-fine)', overflow: 'hidden' }}>
-                <img src={activeIngredient.image} alt={activeIngredient.name} style={{ width: '100%', aspectRatio: '1/1', objectFit: 'cover' }} />
+            <div className="ingredient-modal-layout">
+              <div className="ingredient-modal-img-wrap">
+                <img src={activeIngredient.image} alt={activeIngredient.name} className="ingredient-modal-img" />
               </div>
 
               <div>

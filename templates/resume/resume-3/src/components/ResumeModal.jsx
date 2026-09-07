@@ -10,8 +10,14 @@ export default function ResumeModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[90] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fadeIn">
-      <div className="bg-white text-slate-900 rounded-xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative border border-slate-300 font-sans">
+    <div 
+      className="fixed inset-0 z-[90] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fadeIn cursor-pointer"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white text-slate-900 rounded-xl max-w-4xl w-full max-h-[92vh] overflow-y-auto shadow-2xl relative border border-slate-300 font-sans cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Top Control Bar (Hidden on print) */}
         <div className="sticky top-0 bg-slate-900 text-white px-6 py-4 flex items-center justify-between z-20 border-b border-slate-800 font-mono-tech print:hidden">

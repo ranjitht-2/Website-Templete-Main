@@ -202,6 +202,21 @@ export default function Education() {
             grid-template-columns: 1fr;
           }
         }
+
+        @media (max-width: 640px) {
+          .edu-degree {
+            font-size: 1.3rem;
+          }
+          .edu-institution-row {
+            flex-wrap: wrap;
+            gap: 4px 8px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+          }
+          .edu-thesis-box {
+            padding: 12px 14px;
+          }
+        }
       `}</style>
     </section>
   );

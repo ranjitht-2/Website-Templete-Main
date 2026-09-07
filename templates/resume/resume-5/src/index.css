@@ -123,6 +123,49 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -0.04em;
 }
 
+/* Centralized Section Header System */
+.section-header-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 28px;
+  margin-bottom: 50px;
+  width: 100%;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  color: var(--accent-charcoal);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.header-line {
+  flex: 1;
+  height: 1px;
+  background-color: var(--border-medium);
+  margin-bottom: 12px;
+}
+
 /* Grid & Structure */
 .container {
   width: 100%;
@@ -343,6 +386,54 @@ h1, h2, h3, h4, h5, h6 {
   .modal-backdrop {
     padding: 10px;
   }
+  .section-header-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 32px;
+    width: 100%;
+  }
+  .header-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+  .header-titles {
+    width: 100%;
+  }
+  .header-line {
+    display: none;
+  }
+  .section-number {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-green);
+    letter-spacing: 0.08em;
+    background-color: var(--bg-gray);
+    padding: 3px 8px;
+    border: 1px solid var(--border-light);
+    display: inline-block;
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .section-label::before {
+    width: 12px;
+  }
+  .section-title {
+    font-size: clamp(1.4rem, 5.5vw, 1.85rem) !important;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 640px) {
@@ -350,10 +441,10 @@ h1, h2, h3, h4, h5, h6 {
     padding: 0 16px;
   }
   .arch-section {
-    padding: 50px 0;
+    padding: 46px 0;
   }
   .arch-card {
-    padding: 20px;
+    padding: 18px 16px;
   }
   .mono-text {
     font-size: 0.72rem;
@@ -361,6 +452,9 @@ h1, h2, h3, h4, h5, h6 {
   .btn-primary, .btn-outline {
     width: 100%;
     padding: 14px 20px;
+  }
+  .display-title {
+    letter-spacing: -0.01em;
   }
 }
 
@@ -377,3 +471,4 @@ h1, h2, h3, h4, h5, h6 {
     display: block !important;
   }
 }
+

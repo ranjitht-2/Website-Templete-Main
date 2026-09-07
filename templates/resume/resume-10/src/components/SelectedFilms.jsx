@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { selectedFilms } from '../data/directorData';
 import { Play, FileText, ChevronRight, X, Clapperboard, Award, Info, Film, Eye } from 'lucide-react';
+import film5 from '../assets/images/film5.jpg';
+import film5Shot2 from '../assets/images/film5_shot2.jpg';
+import film5Shot3 from '../assets/images/film5_shot3.jpg';
+import film3 from '../assets/images/film3.jpg';
 
 const SelectedFilms = () => {
   const [activeFilmModal, setActiveFilmModal] = useState(null);
   const [storyboardFrame, setStoryboardFrame] = useState(0);
 
   const storyboardFrames = [
-    { frame: 'SHOT 01', desc: 'Wide static hallway shot with cold shadow symmetry', focalLength: '35mm', image: '/assets/film5.jpg' },
-    { frame: 'SHOT 02', desc: 'Slow dolly push towards door 4B under flickering lantern', focalLength: '50mm', image: '/assets/film5_shot2.jpg' },
-    { frame: 'SHOT 03', desc: 'Over-the-shoulder medium close-up of Victor holding key', focalLength: '85mm', image: '/assets/film5_shot3.jpg' },
-    { frame: 'SHOT 04', desc: 'Low angle framing of light spilling under mahogany door', focalLength: '24mm', image: '/assets/film3.jpg' }
+    { frame: 'SHOT 01', desc: 'Wide static hallway shot with cold shadow symmetry', focalLength: '35mm', image: film5 },
+    { frame: 'SHOT 02', desc: 'Slow dolly push towards door 4B under flickering lantern', focalLength: '50mm', image: film5Shot2 },
+    { frame: 'SHOT 03', desc: 'Over-the-shoulder medium close-up of Victor holding key', focalLength: '85mm', image: film5Shot3 },
+    { frame: 'SHOT 04', desc: 'Low angle framing of light spilling under mahogany door', focalLength: '24mm', image: film3 }
   ];
 
   return (

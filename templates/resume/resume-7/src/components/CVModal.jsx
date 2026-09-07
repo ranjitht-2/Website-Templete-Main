@@ -16,34 +16,34 @@ export default function CVModal({ isOpen, onClose }) {
           <X size={20} />
         </button>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: 'var(--border-fine)', paddingBottom: '1rem' }}>
+        <div className="cv-modal-top-bar">
           <div>
             <span className="section-label">CURRICULUM VITAE PREVIEW</span>
-            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '2rem', color: 'var(--color-charcoal)' }}>
+            <h2 className="cv-modal-title">
               Executive Culinary Resume
             </h2>
           </div>
           
-          <button className="btn-primary" onClick={handlePrint} style={{ padding: '0.6rem 1.25rem', fontSize: '0.75rem' }}>
+          <button className="btn-primary cv-print-btn" onClick={handlePrint}>
             <Printer size={15} /> Print / Save as PDF
           </button>
         </div>
 
         {/* Printable CV Content Container */}
-        <div style={{ padding: '2rem', backgroundColor: '#FFFFFF', border: 'var(--border-fine)', fontFamily: 'var(--font-sans)', color: '#2B2927' }}>
+        <div className="cv-sheet-container">
           
           {/* Header */}
-          <div style={{ borderBottom: '2px solid #6B1D2F', paddingBottom: '1.5rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div className="cv-sheet-header">
             <div>
-              <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '3rem', margin: 0, color: '#2B2927', lineHeight: 1 }}>
+              <h1 className="cv-sheet-name">
                 {CHEF_PROFILE.name.toUpperCase()}
               </h1>
-              <div style={{ fontSize: '0.9rem', fontWeight: 600, letterSpacing: '0.15em', textTransform: 'uppercase', color: '#6B1D2F', marginTop: '0.5rem' }}>
+              <div className="cv-sheet-subtitle">
                 {CHEF_PROFILE.title} &bull; {CHEF_PROFILE.specialization}
               </div>
             </div>
 
-            <div style={{ textAlign: 'right', fontSize: '0.8rem', color: '#524F4B', lineHeight: '1.5' }}>
+            <div className="cv-sheet-contact">
               <div><MapPin size={12} style={{ display: 'inline', marginRight: '4px' }} /> {CHEF_PROFILE.location}</div>
               <div><Mail size={12} style={{ display: 'inline', marginRight: '4px' }} /> {CHEF_PROFILE.email}</div>
               <div>{CHEF_PROFILE.experienceYears} Years Fine Dining Leadership</div>
@@ -51,35 +51,35 @@ export default function CVModal({ isOpen, onClose }) {
           </div>
 
           {/* Profile Summary */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#6B1D2F', marginBottom: '0.5rem' }}>
+          <div className="cv-sheet-section">
+            <h3 className="cv-sheet-section-title">
               PROFESSIONAL PROFILE
             </h3>
-            <p style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#524F4B' }}>
+            <p className="cv-sheet-desc">
               "{CHEF_PROFILE.tagline}" {CHEF_PROFILE.intro}
             </p>
           </div>
 
           {/* Experience */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#6B1D2F', marginBottom: '1rem', borderBottom: '1px solid rgba(43,41,39,0.1)', paddingBottom: '0.35rem' }}>
+          <div className="cv-sheet-section">
+            <h3 className="cv-sheet-section-title cv-sheet-section-title-bordered">
               CAREER TIMELINE & KITCHEN LEADERSHIP
             </h3>
             
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div className="cv-timeline-list">
               {CAREER_TIMELINE.map((item, idx) => (
-                <div key={idx} style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '1.5rem' }}>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#6B1D2F' }}>
+                <div key={idx} className="cv-timeline-row">
+                  <div className="cv-timeline-period">
                     {item.period}
                   </div>
-                  <div>
-                    <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.35rem', color: '#2B2927', margin: 0 }}>
-                      {item.role} &mdash; <span style={{ color: '#4A5D4E', fontFamily: 'var(--font-sans)', fontSize: '1rem', fontWeight: 600 }}>{item.organization}</span>
+                  <div className="cv-timeline-info">
+                    <h4 className="cv-timeline-role">
+                      {item.role} &mdash; <span className="cv-timeline-org">{item.organization}</span>
                     </h4>
-                    <div style={{ fontSize: '0.75rem', color: '#7A7670', fontStyle: 'italic', marginBottom: '0.4rem' }}>
+                    <div className="cv-timeline-loc">
                       {item.location} ({item.note})
                     </div>
-                    <p style={{ fontSize: '0.9rem', color: '#524F4B', lineHeight: '1.5', margin: 0 }}>
+                    <p className="cv-timeline-text">
                       {item.responsibilities}
                     </p>
                   </div>
@@ -89,17 +89,17 @@ export default function CVModal({ isOpen, onClose }) {
           </div>
 
           {/* Expertise & Skills */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h3 style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#6B1D2F', marginBottom: '1rem', borderBottom: '1px solid rgba(43,41,39,0.1)', paddingBottom: '0.35rem' }}>
+          <div className="cv-sheet-section">
+            <h3 className="cv-sheet-section-title cv-sheet-section-title-bordered">
               SPECIALIZED CULINARY COMPETENCIES
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="cv-skills-grid">
               {EXPERTISE_CATEGORIES.map((cat, idx) => (
-                <div key={idx} style={{ padding: '0.85rem', backgroundColor: '#FAF8F5', border: '1px solid rgba(43,41,39,0.08)' }}>
-                  <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#2B2927', marginBottom: '0.35rem' }}>
+                <div key={idx} className="cv-skill-card">
+                  <div className="cv-skill-title">
                     {cat.title} ({cat.percentage}%)
                   </div>
-                  <div style={{ fontSize: '0.8rem', color: '#524F4B' }}>
+                  <div className="cv-skill-items">
                     {cat.items.join(' • ')}
                   </div>
                 </div>
@@ -108,9 +108,9 @@ export default function CVModal({ isOpen, onClose }) {
           </div>
 
           {/* Education & Recognition */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
+          <div className="cv-duo-grid">
             <div>
-              <h3 style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#6B1D2F', marginBottom: '0.75rem' }}>
+              <h3 className="cv-sheet-section-title">
                 EDUCATION & ACADEMICS
               </h3>
               {EDUCATION.map((edu, idx) => (
@@ -122,7 +122,7 @@ export default function CVModal({ isOpen, onClose }) {
             </div>
 
             <div>
-              <h3 style={{ fontSize: '0.8rem', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#6B1D2F', marginBottom: '0.75rem' }}>
+              <h3 className="cv-sheet-section-title">
                 HONORS & RECOGNITION
               </h3>
               {RECOGNITION.map((rec, idx) => (
@@ -134,7 +134,7 @@ export default function CVModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '1px solid rgba(43,41,39,0.1)', fontSize: '0.7rem', color: '#7A7670', textTransform: 'uppercase', letterSpacing: '0.1em', textAlign: 'center' }}>
+          <div className="cv-disclaimer">
             Official Executive Curriculum Vitae &bull; Fictional Demonstration Record &bull; Lucien Moreau
           </div>
 

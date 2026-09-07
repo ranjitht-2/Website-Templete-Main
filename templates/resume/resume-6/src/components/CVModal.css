@@ -1,0 +1,283 @@
+/* ================================================================
+   ELENA MARLOWE — CV MODAL STYLING
+   ================================================================ */
+.em-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(28, 28, 28, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: emModalFadeIn 0.3s ease;
+}
+
+@keyframes emModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.em-modal-container {
+  background-color: var(--em-ivory);
+  border: 1px solid var(--em-gray-border);
+  max-width: 900px;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 2.5rem;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25);
+}
+
+.em-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--em-gray-border);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.em-modal-title {
+  font-family: var(--em-font-serif);
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: 600;
+  color: var(--em-charcoal);
+  line-height: 1.1;
+  margin-top: 0.25rem;
+}
+
+.em-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.em-modal-print-btn {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.75rem;
+}
+
+.em-modal-close-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--em-gray-border);
+  background: var(--em-white);
+  color: var(--em-charcoal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--em-transition-fast);
+}
+
+.em-modal-close-btn:hover {
+  background: var(--em-burgundy);
+  border-color: var(--em-burgundy);
+  color: var(--em-white);
+  transform: scale(1.05);
+}
+
+/* Printable Document */
+.em-cv-sheet {
+  background: #FFFFFF;
+  border: 1px solid var(--em-gray-border-light);
+  padding: 2.5rem;
+  color: #1C1C1C;
+  font-family: var(--em-font-sans);
+}
+
+.em-cv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.em-cv-name {
+  font-family: var(--em-font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  color: #1C1C1C;
+}
+
+.em-cv-role {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--em-burgundy);
+  margin-top: 0.5rem;
+}
+
+.em-cv-contact-block {
+  text-align: right;
+  font-size: 0.8rem;
+  color: #524F4B;
+  line-height: 1.6;
+}
+
+.em-cv-contact-block span {
+  font-weight: 600;
+  color: #1C1C1C;
+}
+
+.em-cv-section {
+  margin-bottom: 2rem;
+}
+
+.em-cv-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--em-burgundy);
+  margin-bottom: 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--em-gray-border);
+}
+
+.em-cv-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #4A4A4A;
+}
+
+.em-cv-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.em-cv-exp-item {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 1.5rem;
+}
+
+.em-cv-exp-period {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--em-burgundy);
+  letter-spacing: 0.05em;
+}
+
+.em-cv-exp-role {
+  font-family: var(--em-font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1C1C1C;
+  line-height: 1.2;
+}
+
+.em-cv-exp-company {
+  font-family: var(--em-font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--em-gold);
+}
+
+.em-cv-exp-desc {
+  font-size: 0.88rem;
+  color: #524F4B;
+  margin: 0.35rem 0 0.5rem 0;
+  line-height: 1.5;
+}
+
+.em-cv-exp-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.em-cv-exp-bullets li {
+  font-size: 0.82rem;
+  color: #524F4B;
+  position: relative;
+  padding-left: 1.2rem;
+}
+
+.em-cv-exp-bullets li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--em-burgundy);
+}
+
+.em-cv-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+.em-cv-skill-card {
+  padding: 0.85rem 1rem;
+  background-color: var(--em-ivory);
+  border: 1px solid var(--em-gray-border-light);
+  font-size: 0.85rem;
+}
+
+.em-cv-skill-tags {
+  font-size: 0.78rem;
+  color: #7A7A7A;
+  margin-top: 0.25rem;
+}
+
+.em-cv-grid-duo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.em-cv-duo-item {
+  margin-bottom: 0.85rem;
+  font-size: 0.88rem;
+}
+
+.em-cv-subtext {
+  font-size: 0.8rem;
+  color: #7A7A7A;
+}
+
+.em-cv-footer {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--em-gray-border);
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #7A7A7A;
+}
+
+@media (max-width: 640px) {
+  .em-modal-container {
+    padding: 1.5rem 1rem;
+  }
+  .em-cv-sheet {
+    padding: 1.5rem 1rem;
+  }
+  .em-cv-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .em-cv-contact-block {
+    text-align: left;
+  }
+  .em-cv-exp-item {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+  .em-cv-skills-grid, .em-cv-grid-duo {
+    grid-template-columns: 1fr;
+  }
+}

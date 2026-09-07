@@ -173,6 +173,15 @@ export default function ExpertiseGrid() {
           .skills-modular-list {
             grid-template-columns: 1fr;
           }
+          .cat-header {
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-bottom: 14px;
+            margin-bottom: 16px;
+          }
+          .cat-name {
+            font-size: 1.05rem;
+          }
         }
       `}</style>
     </section>

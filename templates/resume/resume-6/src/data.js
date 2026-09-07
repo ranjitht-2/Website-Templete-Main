@@ -1,3 +1,10 @@
+import elenaPortrait from './assets/images/elena_portrait.jpg';
+import projectAurelia from './assets/images/project_aurelia.jpg';
+import projectNortharc from './assets/images/project_northarc.jpg';
+import projectFormfield from './assets/images/project_formfield.jpg';
+import projectLumen from './assets/images/project_lumen.jpg';
+import projectOrbit from './assets/images/project_orbit.jpg';
+
 // ================================
 // ELENA MARLOWE — FICTIONAL DATA
 // All content is fictional for demonstration purposes
@@ -11,6 +18,7 @@ export const profile = {
   email: "hello@elenamarlowe.example",
   available: "Selected Collaborations",
   focus: "Brand / Digital / Culture",
+  portrait: elenaPortrait,
   intro: "I am a fictional multidisciplinary creative director with over a decade of experience shaping visual identities, digital experiences, and meaningful brand narratives.",
   stats: [
     { value: "12+", label: "Years Experience" },
@@ -90,8 +98,12 @@ export const projects = [
     category: "Brand Identity & Digital Experience",
     year: "2024",
     description: "A complete visual identity and digital experience for a fictional contemporary arts institution — building a language as sophisticated as the work it represents.",
-    image: "images/project_aurelia.jpg",
+    image: projectAurelia,
     tags: ["Brand Identity", "Digital", "Cultural"],
+    challenge: "Aurelia needed to modernize its traditional prestige aesthetic into an accessible, dynamic digital-first brand that welcomes younger, diverse audiences without alienating institutional patrons.",
+    solution: "We engineered a flexible generative typographic identity paired with an immersive editorial web experience that transforms exhibition archives into interactive spatial journeys.",
+    deliverables: ["Comprehensive Visual Identity", "Responsive Design System", "Interactive Exhibition Portal", "Environmental Signage Guidelines"],
+    impact: "+180% digital attendance, international recognition at the European Design Forum, and 45% increase in seasonal member subscriptions."
   },
   {
     id: "02",
@@ -99,8 +111,12 @@ export const projects = [
     category: "Editorial Strategy & Art Direction",
     year: "2023",
     description: "Editorial direction for an independent intellectual journal — creating a publication identity that balances intellectual depth with visual elegance.",
-    image: "images/project_northarc.jpg",
+    image: projectNortharc,
     tags: ["Editorial", "Art Direction", "Publishing"],
+    challenge: "To establish a tactile, collector-grade print and digital publication that cuts through digital fatigue with deliberate pacing and uncompromising typographic craft.",
+    solution: "Designed custom serif grids, dual-paper textures, and bespoke micro-interactions for the digital edition that mirror the physical weight and rhythm of reading in print.",
+    deliverables: ["Biannual Print Format Grid", "Digital Reader Experience", "Subscriber Collateral", "Art Direction for 24 Essays"],
+    impact: "Sold out first three editions across 12 countries within 72 hours of launch; nominated for Publication Design of the Year."
   },
   {
     id: "03",
@@ -108,8 +124,12 @@ export const projects = [
     category: "Lifestyle Brand Identity",
     year: "2023",
     description: "A nature-rooted lifestyle brand identity built on principles of quiet luxury, material honesty, and visual restraint.",
-    image: "images/project_formfield.jpg",
+    image: projectFormfield,
     tags: ["Brand Identity", "Lifestyle", "Packaging"],
+    challenge: "Differentiating a sustainable botanical lifestyle brand in an oversaturated market of generic minimalist aesthetics.",
+    solution: "Rooted the identity in architectural restraint, embossing, tactile warm neutrals, and poetic copy that emphasizes slow craftsmanship and origin transparency.",
+    deliverables: ["Brand Strategy & Voice", "Sustainable Packaging Suite", "E-Commerce Flagship Interface", "Retail Spatial Guidance"],
+    impact: "Secured premier retail distribution across London, Paris, and Amsterdam; brand affinity scores outpaced category benchmark by 2.4x."
   },
   {
     id: "04",
@@ -117,8 +137,12 @@ export const projects = [
     category: "Cultural Experience Campaign",
     year: "2022",
     description: "An expansive campaign for a fictional urban cultural district — transforming architecture into narrative through light, motion, and visual storytelling.",
-    image: "images/project_lumen.jpg",
+    image: projectLumen,
     tags: ["Campaign", "Cultural", "Experience"],
+    challenge: "Unifying 40+ cultural venues under a cohesive annual festival umbrella while honoring the distinct voice of each participating creative entity.",
+    solution: "Created an adaptive chromatic light system that shifts colors based on circadian rhythms and visitor density across physical installations and digital wayfinding.",
+    deliverables: ["District Identity System", "Motion Design Language", "Wayfinding Mobile App", "Large-Format Media Installations"],
+    impact: "Attracted over 350,000 visitors over 14 days, establishing the highest cultural tourism week in the district's history."
   },
   {
     id: "05",
@@ -126,8 +150,12 @@ export const projects = [
     category: "Creative Identity System",
     year: "2022",
     description: "A bold, systematic visual identity for a fictional creative studio — a design language as dynamic and rigorous as the organization it represents.",
-    image: "images/project_orbit.jpg",
+    image: projectOrbit,
     tags: ["Identity System", "Brand", "Motion"],
+    challenge: "Crafting an identity for a high-growth spatial design practice that signals both technical engineering precision and artistic audacity.",
+    solution: "Developed an orbit-inspired modular kinetic mark with custom monospace accents and an interactive showcase portfolio.",
+    deliverables: ["Dynamic Monogram & Wordmark", "Motion Identity Toolkits", "Pitch Deck & Proposal Ecosystem", "Interactive Web Platform"],
+    impact: "Helped firm win 3 consecutive multi-million euro spatial commission bids within 6 months of rebrand launch."
   },
 ];
 

@@ -196,6 +196,26 @@ export default function Footer() {
             gap: 40px;
           }
         }
+
+        @media (max-width: 640px) {
+          .arch-footer {
+            padding-top: 50px;
+            padding-bottom: 30px;
+          }
+          .footer-top-grid {
+            gap: 30px;
+            margin-bottom: 36px;
+          }
+          .footer-center {
+            grid-template-columns: 1fr;
+            gap: 24px;
+          }
+          .footer-bottom-bar {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+          }
+        }
       `}</style>
     </footer>
   );

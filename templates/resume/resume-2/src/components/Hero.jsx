@@ -1,7 +1,7 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./Hero.css";
 
-export default function Hero() {
+export default function Hero({ onOpenCV }) {
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { setTimeout(() => setLoaded(true), 100); }, []);
 
@@ -36,10 +36,14 @@ export default function Hero() {
           </p>
 
           <div className="hero__actions">
-            <a href="#" className="btn btn--primary hero__btn-cv" download>
+            <button
+              type="button"
+              className="btn btn--primary hero__btn-cv"
+              onClick={onOpenCV}
+            >
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Download Curriculum Vitae
-            </a>
+            </button>
             <a href="#about" className="btn btn--outline hero__btn-profile"
               onClick={(e) => { e.preventDefault(); document.getElementById("about").scrollIntoView({ behavior: "smooth" }); }}>
               View Professional Profile

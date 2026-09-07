@@ -1,0 +1,83 @@
+/* ================================================================
+   ELENA MARLOWE — PROJECT CASE STUDY MODAL
+   ================================================================ */
+.em-project-modal-container {
+  max-width: 860px;
+}
+
+.em-project-modal-sub {
+  font-size: 0.8rem;
+  color: var(--em-gray-mid);
+  margin-top: 0.35rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.em-project-modal-visual-frame {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 420px;
+  overflow: hidden;
+  border: 1px solid var(--em-gray-border);
+  margin-bottom: 2rem;
+  background-color: var(--em-ivory-warm);
+}
+
+.em-project-modal-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.em-project-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.em-project-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.em-project-modal-card {
+  padding: 1.5rem;
+  background: var(--em-white);
+  border: 1px solid var(--em-gray-border-light);
+}
+
+.em-project-modal-deliverables {
+  padding: 1.25rem 0;
+  border-top: 1px solid var(--em-gray-border);
+  border-bottom: 1px solid var(--em-gray-border);
+}
+
+.em-project-modal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.em-project-modal-tag {
+  padding: 0.4rem 0.85rem;
+  background-color: var(--em-ivory-warm);
+  border: 1px solid var(--em-gray-border);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--em-charcoal);
+  border-radius: 2px;
+}
+
+.em-project-modal-impact {
+  padding: 1.25rem 1.5rem;
+  background-color: var(--em-gold-pale);
+  border-left: 3px solid var(--em-gold);
+}
+
+@media (max-width: 640px) {
+  .em-project-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}

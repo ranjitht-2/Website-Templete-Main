@@ -11,7 +11,7 @@ const navLinks = [
   { label: 'Contact', href: '#contact' },
 ];
 
-export default function Navbar() {
+export default function Navbar({ onOpenCV }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -58,7 +58,9 @@ export default function Navbar() {
 
           {/* Right Controls */}
           <div className="em-navbar__right">
-            <a href="#" className="btn-nav-outline">Download CV</a>
+            <button type="button" className="btn-nav-outline" onClick={onOpenCV}>
+              Download CV
+            </button>
             <button
               className={`em-navbar__burger ${menuOpen ? 'em-navbar__burger--open' : ''}`}
               onClick={() => setMenuOpen(!menuOpen)}
@@ -95,7 +97,14 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="em-mobile-menu__footer">
-            <a href="#" className="btn-primary">Download CV</a>
+            <button
+              type="button"
+              className="btn-primary"
+              style={{ width: '100%', justifyContent: 'center' }}
+              onClick={() => { setMenuOpen(false); onOpenCV(); }}
+            >
+              Download CV
+            </button>
             <p className="body-sm" style={{ marginTop: '1.5rem', color: 'var(--em-gray-mid)' }}>
               hello@elenamarlowe.example<br />
               Amsterdam, Netherlands

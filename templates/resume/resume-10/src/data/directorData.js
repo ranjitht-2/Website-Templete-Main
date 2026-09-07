@@ -1,3 +1,13 @@
+import directorPortrait from '../assets/images/director_portrait.jpg';
+import film1 from '../assets/images/film1.jpg';
+import film2 from '../assets/images/film2.jpg';
+import film3 from '../assets/images/film3.jpg';
+import film4 from '../assets/images/film4.jpg';
+import film5 from '../assets/images/film5.jpg';
+import film5Shot2 from '../assets/images/film5_shot2.jpg';
+import film5Shot3 from '../assets/images/film5_shot3.jpg';
+import philosophy from '../assets/images/philosophy.jpg';
+
 export const directorProfile = {
   name: "ELIAS ROWAN",
   shortName: "ER",
@@ -5,6 +15,7 @@ export const directorProfile = {
   specialization: "Narrative Film, Visual Direction & Cinematic Storytelling",
   experienceYears: "13+ Years",
   location: "Toronto, Canada",
+  portrait: directorPortrait,
   tagline: "Every frame begins with a question.",
   shortBio: "A fictional film director focused on original narrative storytelling, visual composition, and emotionally driven cinematic experiences.",
   extendedBio: "Elias Rowan crafts deeply human narrative cinema characterized by patient visual composition, architectural spatial awareness, and rich emotional resonance. Over 13 years of independent and studio direction, Rowan has explored how silence, memory, and physical landscape reflect inner psychological states.",
@@ -20,7 +31,7 @@ export const creativePhilosophy = {
   sectionLabel: "ACT I / THE IDEA",
   title: "Before the Camera Starts Rolling",
   quote: "A story becomes cinematic when what is left unsaid matters as much as what is spoken.",
-  abstractImage: "/assets/philosophy.jpg",
+  abstractImage: philosophy,
   topics: [
     "Visual storytelling",
     "Character perspective",
@@ -61,10 +72,10 @@ export const selectedFilms = [
     role: "Writer & Director",
     runtime: "114 MINS",
     studio: "Northline Pictures",
-    poster: "/assets/film1.jpg",
+    poster: film1,
     stills: [
-      "/assets/film1.jpg",
-      "/assets/philosophy.jpg"
+      film1,
+      philosophy
     ],
     synopsis: "A fictional story about a remote coastal town and three people confronting the choices they avoided for years as a severe tempest approaches.",
     layoutType: "full-poster",
@@ -93,10 +104,10 @@ It doesn't end when the water recedes.`
     role: "Director",
     runtime: "98 MINS",
     studio: "Framehouse Studio",
-    poster: "/assets/film2.jpg",
+    poster: film2,
     stills: [
-      "/assets/film2.jpg",
-      "/assets/film4.jpg"
+      film2,
+      film4
     ],
     synopsis: "A fictional story following a young photographer traveling through changing northern landscapes, seeking rare solar phenomena while coming to terms with estranged family roots.",
     layoutType: "film-strip",
@@ -124,10 +135,10 @@ Light only stays still if you capture it before it shifts.`
     role: "Writer & Director",
     runtime: "106 MINS",
     studio: "Silverline Narrative Collective",
-    poster: "/assets/film3.jpg",
+    poster: film3,
     stills: [
-      "/assets/film3.jpg",
-      "/assets/philosophy.jpg"
+      film3,
+      philosophy
     ],
     synopsis: "A fictional story about memory, family secrets, and an unexplained disappearance in a quiet lakeside community where calm waters conceal deep tensions.",
     layoutType: "split-screen",
@@ -156,10 +167,10 @@ Some memories don't sink. They just float until someone notices.`
     role: "Director",
     runtime: "22 MINS",
     studio: "Open Frame Studio",
-    poster: "/assets/film4.jpg",
+    poster: film4,
     stills: [
-      "/assets/film4.jpg",
-      "/assets/film2.jpg"
+      film4,
+      film2
     ],
     synopsis: "A fictional short film exploring one quiet afternoon on a sunlit porch that quietly changes a family's future forever.",
     layoutType: "minimal-floating",
@@ -188,10 +199,10 @@ We'll remember this porch.`
     role: "Director",
     runtime: "88 MINS",
     studio: "Framehouse Studio",
-    poster: "/assets/film5.jpg",
+    poster: film5,
     stills: [
-      "/assets/film5.jpg",
-      "/assets/film1.jpg"
+      film5,
+      film1
     ],
     synopsis: "A fictional narrative set inside an old apartment building where every resident remembers the exact same evening event completely differently.",
     layoutType: "interactive-storyboard",
@@ -219,7 +230,7 @@ export const filmStripFrames = [
     title: "Coastal Horizon",
     year: "2026",
     film: "The Quiet Between Storms",
-    image: "/assets/film1.jpg",
+    image: film1,
     caption: "Establishing extreme wide shot of basalt coastline at dawn."
   },
   {
@@ -228,7 +239,7 @@ export const filmStripFrames = [
     title: "Prism Refraction",
     year: "2025",
     film: "Visual Study No. 3",
-    image: "/assets/philosophy.jpg",
+    image: philosophy,
     caption: "Abstract lens study on geometric light dispersion."
   },
   {
@@ -237,7 +248,7 @@ export const filmStripFrames = [
     title: "Northern Highway",
     year: "2024",
     film: "Northbound Light",
-    image: "/assets/film2.jpg",
+    image: film2,
     caption: "Anamorphic wide tracking shot following solitary traveler."
   },
   {
@@ -246,7 +257,7 @@ export const filmStripFrames = [
     title: "Lake Fog Silence",
     year: "2023",
     film: "The Distance of Water",
-    image: "/assets/film3.jpg",
+    image: film3,
     caption: "Mirror reflection composition with low-slung mist."
   },
   {
@@ -255,7 +266,7 @@ export const filmStripFrames = [
     title: "Golden Hour Porch",
     year: "2021",
     film: "Seven Minutes of Summer",
-    image: "/assets/film4.jpg",
+    image: film4,
     caption: "Natural sunlight backlighting intimate moment."
   },
   {
@@ -264,7 +275,7 @@ export const filmStripFrames = [
     title: "Chiaroscuro Corridor",
     year: "2019",
     film: "The Last Room",
-    image: "/assets/film5.jpg",
+    image: film5,
     caption: "High contrast hallway shot exploring perspective depth."
   }
 ];
@@ -280,7 +291,7 @@ export const directingProcess = {
       subtitle: "Story Exploration & Core Intent",
       description: "Uncovering the emotional core of the narrative. Every project starts by framing the single essential question the characters must confront.",
       details: ["Script breakdown & character psychology", "Core thematic statement definition", "Soundscape mood mapping"],
-      image: "/assets/philosophy.jpg"
+      image: philosophy
     },
     {
       number: "PHASE 02",
@@ -288,7 +299,7 @@ export const directingProcess = {
       subtitle: "Atmosphere & Spatial Language",
       description: "Designing the physical universe. Location scouting, color palette curation, and establishing spatial rules that reflect character states.",
       details: ["Architectural location alignment", "Custom visual lookbooks & color bibles", "Production design collaboration"],
-      image: "/assets/film3.jpg"
+      image: film3
     },
     {
       number: "PHASE 03",
@@ -296,7 +307,7 @@ export const directingProcess = {
       subtitle: "Composition & Storyboarding",
       description: "Translating script beats into visual optics. Determining lens choices, camera movement cadence, and shot geometry.",
       details: ["Full cinematic shot listing", "Optical focal length selection", "Precision scene storyboarding"],
-      image: "/assets/film5.jpg"
+      image: film5
     },
     {
       number: "PHASE 04",
@@ -304,7 +315,7 @@ export const directingProcess = {
       subtitle: "Performance & Directorial Guidance",
       description: "Cultivating an environment of trust where actors can uncover unscripted truth, supported by precise technical execution.",
       details: ["Actor collaboration & scene rehearsal", "Set discipline & lighting synchronization", "Blocking & movement choreography"],
-      image: "/assets/film4.jpg"
+      image: film4
     },
     {
       number: "PHASE 05",
@@ -312,7 +323,7 @@ export const directingProcess = {
       subtitle: "Rhythm, Sound & Final Cut",
       description: "Refining time and emotion in the cutting room. Balancing rhythm, silence, sound design, and color grading to complete the story.",
       details: ["Pacing & structural rhythm edit", "Spatial sound design & score mix", "Fine color grading & film texture"],
-      image: "/assets/film1.jpg"
+      image: film1
     }
   ]
 };

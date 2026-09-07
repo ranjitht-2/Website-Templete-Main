@@ -394,6 +394,39 @@ export default function CVModal({ onClose }) {
           color: #777777;
         }
 
+        @media (max-width: 768px) {
+          .cv-modal-card {
+            max-height: 95vh;
+          }
+          .cv-top-bar {
+            padding: 12px 14px;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 10px;
+          }
+          .cv-top-actions {
+            justify-content: space-between;
+            width: 100%;
+          }
+          .cv-document-body {
+            padding: 24px 16px;
+          }
+          .cv-doc-header {
+            flex-direction: column;
+            gap: 16px;
+          }
+          .cv-name {
+            font-size: 1.8rem;
+          }
+          .cv-projects-grid {
+            grid-template-columns: 1fr;
+          }
+          .exp-line-header {
+            flex-direction: column;
+            gap: 2px;
+          }
+        }
+
         /* PRINT STYLES */
         @media print {
           .no-print, .no-print-backdrop {
