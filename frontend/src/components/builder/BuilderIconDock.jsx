@@ -14,7 +14,7 @@ import {
   MessageSquareHeart
 } from 'lucide-react';
 
-export const DOCK_ITEMS = [
+const DOCK_ITEMS = [
   { id: 'page', label: 'Page', icon: FileText },
   { id: 'header', label: 'Header', icon: PanelTop },
   { id: 'footer', label: 'Footer', icon: PanelBottom },
