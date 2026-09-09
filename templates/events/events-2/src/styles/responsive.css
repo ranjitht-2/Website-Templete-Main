@@ -1,8 +1,14 @@
-/* Responsive Media Queries */
-html, body, #root, .app-root {
+/* Responsive Media Queries for CYBERNEXUS 2026 */
+
+html, body, #root, .app-root, .app-main-wrapper {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 .container {
@@ -71,18 +77,23 @@ html, body, #root, .app-root {
 
 @media (max-width: 768px) {
   .section-padding {
-    padding: 50px 0;
+    padding: 48px 0;
   }
 
   .hero-section {
-    padding-top: 100px;
-    padding-bottom: 40px;
+    padding-top: 90px;
+    padding-bottom: 36px;
   }
 
   .hero-meta-bar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 10px;
+  }
+
+  .hero-meta-item {
+    width: 100%;
+    justify-content: center;
   }
 
   .speaker-grid,
@@ -117,24 +128,42 @@ html, body, #root, .app-root {
 
   .lightbox-prev { left: 10px; }
   .lightbox-next { right: 10px; }
+
+  .hero-card-showcase {
+    margin-top: 20px;
+  }
+
+  .hero-main-card {
+    padding: 20px;
+  }
 }
 
 @media (max-width: 480px) {
   .hero-title {
-    font-size: 2.2rem;
+    font-size: 2.1rem;
+    line-height: 1.15;
   }
 
   .section-title {
-    font-size: 1.8rem;
+    font-size: 1.75rem;
   }
 
   .hero-cta-group {
     flex-direction: column;
+    align-items: stretch;
     width: 100%;
+  }
+
+  .hero-cta-group .specular-button,
+  .hero-cta-group button {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
   }
 
   .btn {
     width: 100%;
+    justify-content: center;
   }
 
   .day-tabs {
@@ -144,5 +173,21 @@ html, body, #root, .app-root {
 
   .day-tab-btn {
     width: 100%;
+  }
+
+  .countdown-box {
+    padding: 18px 14px;
+  }
+
+  .countdown-num {
+    font-size: 1.8rem;
+  }
+
+  .stat-card {
+    padding: 24px 16px;
+  }
+
+  .why-card {
+    padding: 24px 18px;
   }
 }

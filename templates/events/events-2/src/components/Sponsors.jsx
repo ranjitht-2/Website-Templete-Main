@@ -41,7 +41,7 @@ export const Sponsors = () => {
               <div
                 style={{
                   display: 'grid',
-                  gridTemplateColumns: `repeat(${tierObj.sponsors.length > 3 ? 4 : tierObj.sponsors.length}, 1fr)`,
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(min(200px, 100%), 1fr))',
                   gap: '20px'
                 }}
               >

@@ -28,7 +28,7 @@ export const Contact = () => {
             <div className="section-subtitle">TOURNAMENT ORGANIZERS & HELP DESK DIRECTORY</div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', maxWidth: '1100px', margin: '0 auto' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(300px, 100%), 1fr))', gap: '30px', maxWidth: '1100px', margin: '0 auto' }}>
             {/* Contact Info Cards */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div className="sports-card" style={{ padding: '28px' }}>

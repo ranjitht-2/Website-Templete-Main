@@ -14,7 +14,7 @@ export const Venues = () => {
             <div className="section-subtitle">STATE-OF-THE-ART BASKETBALL STADIUMS & PRACTICE COURTS</div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(350px, 100%), 1fr))', gap: '30px' }}>
             {tournamentData.venues.map((v) => (
               <VenueCard key={v.id} venue={v} />
             ))}
