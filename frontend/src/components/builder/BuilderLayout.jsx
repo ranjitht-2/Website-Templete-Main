@@ -17,11 +17,13 @@ export default function BuilderLayout() {
   const templateParam = searchParams.get('template') || searchParams.get('project') || '';
   const categoryParam = searchParams.get('category') || '';
   const pageParam = searchParams.get('page') || 'index.html';
+  const drawerParam = searchParams.get('drawer') || searchParams.get('panel') || 'colors';
 
   const [allTemplates, setAllTemplates] = useState([]);
   const [activeTemplate, setActiveTemplate] = useState(null);
   const [builderState, setBuilderState] = useState({
     ...INITIAL_BUILDER_STATE,
+    activeDrawer: drawerParam,
     pageName: pageParam,
     activeTab: pageParam,
     tabs: [pageParam]
@@ -145,30 +147,85 @@ export default function BuilderLayout() {
       }
       liveStyle.textContent = generateLiveCSS(builderState);
 
-      // 3. Section Visibility sync
+      // 3. Section Visibility and Live Vertical Reordering sync
       applySectionVisibilityInDOM(builderState.sections);
+
+      // 4. Custom Head Scripts/Styles
+      if (builderState.pageCustomCode?.head) {
+        let customHead = doc.getElementById('technosprint-builder-custom-head');
+        if (!customHead) {
+          customHead = doc.createElement('div');
+          customHead.id = 'technosprint-builder-custom-head';
+          doc.head.appendChild(customHead);
+        }
+        customHead.innerHTML = builderState.pageCustomCode.head;
+      }
     } catch (e) {
       console.warn('Iframe style injection notice:', e.message);
     }
   };
 
-  // Section visibility and ordering inside the template DOM
+  // Section visibility and vertical ordering inside the template DOM
   const applySectionVisibilityInDOM = (sectionsList) => {
     if (!iframeRef.current) return;
     try {
       const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
       if (!doc) return;
 
-      const domSections = doc.querySelectorAll('main > section, body > section, main > div[class*="section"], div[id*="section"]');
-      if (domSections && domSections.length > 0) {
+      const domSections = Array.from(
+        doc.querySelectorAll('main > section, body > section, main > div[class*="section"], section[id]')
+      );
+      if (!domSections || domSections.length === 0) return;
+
+      const sectionMap = new Map();
+      domSections.forEach((el, idx) => {
+        if (el.id) {
+          sectionMap.set(`#${el.id}`, el);
+          sectionMap.set(el.id, el);
+        }
+        sectionMap.set(`sec-${idx}`, el);
+      });
+
+      const parent = domSections[0].parentElement;
+      if (parent) {
         sectionsList.forEach((sec, idx) => {
-          if (domSections[idx]) {
-            domSections[idx].style.display = sec.enabled ? '' : 'none';
+          const el = sectionMap.get(sec.anchor) || sectionMap.get(sec.id) || domSections[idx];
+          if (el) {
+            parent.appendChild(el);
+            el.style.display = sec.enabled ? '' : 'none';
           }
         });
       }
     } catch (e) {
       // Ignore cross-origin errors
+    }
+  };
+
+  // On Iframe Load: Discover template sections and inject live styles
+  const handleIframeLoad = () => {
+    injectLiveStyles();
+    try {
+      const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document;
+      if (!doc) return;
+      const discovered = doc.querySelectorAll('main > section, body > section, section[id]');
+      if (discovered && discovered.length > 0) {
+        const found = Array.from(discovered).map((el, i) => {
+          const heading = el.querySelector('h1, h2, h3, h4')?.textContent?.trim();
+          const anchor = el.id ? `#${el.id}` : `#section-${i + 1}`;
+          const existing = builderState.sections?.find((s) => s.anchor === anchor || s.id === `sec-${i}`);
+          return {
+            id: `sec-${i}`,
+            anchor: anchor,
+            name: heading || el.getAttribute('data-section-name') || existing?.name || `Section ${i + 1}`,
+            enabled: existing ? existing.enabled : true
+          };
+        });
+        if (found.length > 0) {
+          setBuilderState((prev) => ({ ...prev, sections: found }));
+        }
+      }
+    } catch (e) {
+      // Ignore cross-origin
     }
   };
 
@@ -256,7 +313,7 @@ ${generateLiveCSS(builderState)}
   const demoUrl = activeTemplate?.demoUrl || `/templates/${(activeTemplate?.category?.slug || 'admin').toLowerCase()}/${activeTemplate?.slug}/index.html`;
 
   return (
-    <div className={`flex flex-col h-screen w-screen overflow-hidden ${builderState.themeMode === 'dark' ? 'bg-slate-950 text-white' : 'bg-slate-100 text-slate-900'}`}>
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-slate-100/90 text-slate-900 p-2.5 sm:p-3 gap-2.5 sm:gap-3">
       
       {/* Toast Notification Alert */}
       {toastMessage && (
@@ -287,7 +344,7 @@ ${generateLiveCSS(builderState)}
       />
 
       {/* 2. Main Workspace Body (Left Dock + Settings Drawer + Central Canvas) */}
-      <div className="flex-1 flex overflow-hidden relative">
+      <div className="flex-1 flex overflow-hidden relative gap-2.5 sm:gap-3 min-h-0">
         
         {/* Leftmost Tool Rail */}
         <BuilderIconDock
@@ -312,7 +369,7 @@ ${generateLiveCSS(builderState)}
 
         {/* Central Live Canvas Area */}
         <main
-          className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 overflow-auto relative"
+          className="flex-1 flex flex-col items-center justify-center p-3 sm:p-5 overflow-auto relative rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm bg-slate-50/80 min-w-0"
           style={{
             backgroundColor: '#f8fafc',
             backgroundImage: 'radial-gradient(#cbd5e1 1.2px, transparent 1.2px)',
@@ -330,22 +387,28 @@ ${generateLiveCSS(builderState)}
               justifyContent: 'center',
               transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
             }}>
-              <iframe
-                ref={iframeRef}
-                key={`${activeTemplate?.id}-${activeTemplate?.slug}`}
-                src={demoUrl}
-                title={activeTemplate?.name || 'Desktop Preview'}
-                onLoad={injectLiveStyles}
+              <div
+                className="w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden border border-slate-200 shadow-lg bg-white relative"
                 style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  borderRadius: '12px',
-                  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04)',
-                  background: '#ffffff',
-                  transition: 'all 0.3s ease'
+                  boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04)'
                 }}
-              />
+              >
+                <iframe
+                  ref={iframeRef}
+                  key={`${activeTemplate?.id}-${activeTemplate?.slug}`}
+                  src={demoUrl}
+                  title={activeTemplate?.name || 'Desktop Preview'}
+                  onLoad={handleIframeLoad}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    borderRadius: '20px',
+                    background: '#ffffff',
+                    transition: 'all 0.3s ease'
+                  }}
+                />
+              </div>
             </div>
           )}
 
@@ -384,7 +447,7 @@ ${generateLiveCSS(builderState)}
                 key={`${activeTemplate?.id}-${activeTemplate?.slug}`}
                 src={demoUrl}
                 title={activeTemplate?.name || 'Tablet Preview'}
-                onLoad={injectLiveStyles}
+                onLoad={handleIframeLoad}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -444,7 +507,7 @@ ${generateLiveCSS(builderState)}
                 key={`${activeTemplate?.id}-${activeTemplate?.slug}`}
                 src={demoUrl}
                 title={activeTemplate?.name || 'Mobile Preview'}
-                onLoad={injectLiveStyles}
+                onLoad={handleIframeLoad}
                 style={{
                   width: '100%',
                   height: '100%',

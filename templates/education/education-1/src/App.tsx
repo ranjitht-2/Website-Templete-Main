@@ -10,6 +10,7 @@ import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { HomePage } from './pages/HomePage';
 import { CoursesPage } from './pages/CoursesPage';
 import { LearningPathsPage } from './pages/LearningPathsPage';
+import { UniversitiesPage } from './pages/UniversitiesPage';
 import { MentorshipPage } from './pages/MentorshipPage';
 import { ResourcesPage } from './pages/ResourcesPage';
 import { AboutUsPage } from './pages/AboutUsPage';
@@ -102,6 +103,13 @@ export default function App() {
         )}
         {currentPage === 'paths' && (
           <LearningPathsPage onNavigate={handleNavigate} />
+        )}
+        {currentPage === 'universities' && (
+          <UniversitiesPage
+            onNavigate={handleNavigate}
+            onSelectCourse={handleSelectCourse}
+            onOpenAuth={handleOpenAuth}
+          />
         )}
         {currentPage === 'mentorship' && (
           <MentorshipPage onNavigate={handleNavigate} />

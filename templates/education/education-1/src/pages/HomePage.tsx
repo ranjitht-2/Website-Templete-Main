@@ -45,7 +45,7 @@ export const HomePage: React.FC<HomePageProps> = ({
       />
 
       {/* 2. University Academic Partners Logo Loop */}
-      <UniversityPartnersSection />
+      <UniversityPartnersSection onNavigate={onNavigate} />
 
       {/* 3. Key Platform Statistics with CountUp Animation */}
       <StatsSection />
