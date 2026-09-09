@@ -32,7 +32,7 @@ export default function BuilderIconDock({
   onOpenMediaModal
 }) {
   return (
-    <aside className="w-16 bg-white text-slate-600 flex flex-col justify-between items-center py-3 border-r border-slate-200/90 shrink-0 z-20 select-none shadow-2xs">
+    <aside className="w-16 bg-white text-slate-600 flex flex-col justify-between items-center py-3 border border-slate-200 rounded-2xl shrink-0 z-20 select-none shadow-sm overflow-hidden">
       {/* Top Main Navigation Tool Icons */}
       <div className="flex flex-col items-center gap-1.5 w-full px-1.5">
         {DOCK_ITEMS.map((item) => {
@@ -51,7 +51,7 @@ export default function BuilderIconDock({
               className={`relative w-12 h-12 rounded-xl flex flex-col items-center justify-center gap-1 text-[10px] font-semibold transition-all duration-200 cursor-pointer group ${
                 isActive
                   ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30 font-bold'
-                  : 'text-slate-500 hover:text-blue-600 hover:bg-blue-50/70'
+                  : 'text-slate-500 hover:text-blue-600 hover:bg-slate-100'
               }`}
               style={isActive ? { background: 'linear-gradient(135deg, #0088ff 0%, #0044cc 100%)' } : {}}
             >
@@ -67,7 +67,7 @@ export default function BuilderIconDock({
       </div>
 
       {/* Bottom Utility Items */}
-      <div className="flex flex-col items-center gap-1.5 w-full px-1.5 pt-3 border-t border-slate-100">
+      <div className="flex flex-col items-center gap-1.5 w-full px-1.5 pt-3 border-t border-slate-200">
         <button
           onClick={onToggleThemeMode}
           className="w-10 h-10 rounded-xl flex items-center justify-center text-slate-400 hover:text-amber-500 hover:bg-slate-100 transition-colors cursor-pointer"

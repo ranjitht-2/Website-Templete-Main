@@ -120,6 +120,14 @@ export const EduFooter: React.FC<EduFooterProps> = ({ onNavigate, onOpenAuth }) 
               </li>
               <li>
                 <button
+                  onClick={() => onNavigate('universities')}
+                  className="text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer py-1 block text-left"
+                >
+                  University Partners
+                </button>
+              </li>
+              <li>
+                <button
                   onClick={() => onNavigate('mentorship')}
                   className="text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer py-1 block text-left"
                 >

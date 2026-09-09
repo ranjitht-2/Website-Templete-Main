@@ -36,20 +36,11 @@ export const EduNavbar: React.FC<EduNavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
 
-  const baseNavLinks: { id: PageId; label: string; action?: () => void }[] = [
+  const baseNavLinks: { id: PageId; label: string }[] = [
     { id: 'home', label: 'Home' },
     { id: 'courses', label: 'Courses' },
     { id: 'paths', label: 'Programs' },
-    {
-      id: 'home',
-      label: 'Universities',
-      action: () => {
-        onNavigate('home');
-        setTimeout(() => {
-          document.getElementById('universities-section')?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      },
-    },
+    { id: 'universities', label: 'Universities' },
     { id: 'mentorship', label: 'Instructors' },
     { id: 'resources', label: 'Resources' },
     { id: 'about', label: 'About' },
@@ -64,11 +55,7 @@ export const EduNavbar: React.FC<EduNavbarProps> = ({
     : baseNavLinks;
 
   const handleNavClick = (link: (typeof navLinks)[0]) => {
-    if (link.action) {
-      link.action();
-    } else {
-      onNavigate(link.id);
-    }
+    onNavigate(link.id);
     setMobileMenuOpen(false);
     setUserDropdownOpen(false);
   };
@@ -103,7 +90,7 @@ export const EduNavbar: React.FC<EduNavbarProps> = ({
         {/* Center: Modern Floating Pill Navigation Bar */}
         <nav className="hidden xl:flex items-center gap-1 bg-slate-100/80 p-1.5 rounded-full border border-slate-200/80 shadow-inner">
           {navLinks.map((link) => {
-            const isActive = currentPage === link.id && !link.action;
+            const isActive = currentPage === link.id;
             return (
               <button
                 key={link.label}
@@ -282,7 +269,7 @@ export const EduNavbar: React.FC<EduNavbarProps> = ({
 
           <div className="space-y-1">
             {navLinks.map((link) => {
-              const isActive = currentPage === link.id && !link.action;
+              const isActive = currentPage === link.id;
               return (
                 <button
                   key={link.label}

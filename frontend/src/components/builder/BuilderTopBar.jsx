@@ -47,7 +47,7 @@ export default function BuilderTopBar({
   const demoUrl = template?.demoUrl || `/templates/${(template?.category?.slug || 'admin').toLowerCase()}/${template?.slug}/index.html`;
 
   return (
-    <header className="h-16 bg-white border-b border-slate-200/80 px-5 flex items-center justify-between select-none z-30 shadow-xs relative">
+    <header className="h-14 sm:h-15 w-full bg-white border border-slate-200 rounded-2xl px-4 sm:px-5 flex items-center justify-between select-none z-30 shadow-sm shrink-0 relative text-slate-800">
       {/* Left: Brand Logo / Back, Template Selector & Page Tabs */}
       <div className="flex items-center gap-3">
         {/* Back / Exit button */}

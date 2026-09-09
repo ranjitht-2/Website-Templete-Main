@@ -6,18 +6,18 @@ import {
   HelpCircle,
   Copy,
   Layers,
-  Globe,
   GripVertical,
   Eye,
   EyeOff,
   Image as ImageIcon,
-  Check,
-  Layout,
   ArrowUp,
   ArrowDown,
   Sparkles
 } from 'lucide-react';
 import { COLOR_PRESETS, GOOGLE_FONTS } from '../../services/builderStore';
+import ColorOptionsPanel from './ColorOptionsPanel';
+import PageOptionsPanel from './PageOptionsPanel';
+import PageBaseTemplateSelector from './PageBaseTemplateSelector';
 
 export default function BuilderSettingsDrawer({
   activeDrawer,
@@ -29,8 +29,7 @@ export default function BuilderSettingsDrawer({
 }) {
   const [colorPresetTab, setColorPresetTab] = useState('all'); // 'all' | 'light' | 'dark'
   const [openSubmenus, setOpenSubmenus] = useState({
-    pageBase: false,
-    metaTags: false,
+    pageBase: true,
     pageCustomCode: false,
     arrangeSections: true,
     headerTemplate: true,
@@ -80,10 +79,31 @@ export default function BuilderSettingsDrawer({
 
   if (!activeDrawer) return null;
 
+  if (activeDrawer === 'page') {
+    return (
+      <PageOptionsPanel
+        builderState={builderState}
+        onUpdateState={onUpdateState}
+        onClose={onClose}
+        onReorderSectionsInDOM={onReorderSectionsInDOM}
+      />
+    );
+  }
+
+  if (activeDrawer === 'colors') {
+    return (
+      <ColorOptionsPanel
+        builderState={builderState}
+        onUpdateState={onUpdateState}
+        onClose={onClose}
+      />
+    );
+  }
+
   return (
-    <div className="w-80 sm:w-[370px] bg-white border-r border-slate-200/90 flex flex-col h-full shrink-0 z-10 shadow-xl overflow-hidden animate-in slide-in-from-left-4 duration-200 select-none">
+    <div className="w-80 sm:w-[370px] bg-white border border-slate-200 rounded-2xl flex flex-col h-full shrink-0 z-10 shadow-sm overflow-hidden animate-in slide-in-from-left-4 duration-200 select-none">
       {/* Drawer Header */}
-      <div className="h-16 px-5 border-b border-slate-200/80 flex items-center justify-between bg-white shrink-0">
+      <div className="h-15 px-5 border-b border-slate-200 flex items-center justify-between bg-white shrink-0">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs shadow-2xs">
             {activeDrawer[0].toUpperCase()}
@@ -163,44 +183,15 @@ export default function BuilderSettingsDrawer({
             </div>
 
             {/* Page Base Template Submenu */}
-            <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-2xs">
-              <button
-                type="button"
-                onClick={() => toggleSubmenu('pageBase')}
-                className="w-full px-4 py-3 bg-slate-50/80 hover:bg-slate-100/80 flex items-center justify-between text-xs font-bold text-slate-800 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <Layout size={14} className="text-blue-600" />
-                  <span>Page Base Layout Frame</span>
-                </div>
-                {openSubmenus.pageBase ? <ChevronDown size={14} className="text-blue-600" /> : <ChevronRight size={14} />}
-              </button>
-              {openSubmenus.pageBase && (
-                <div className="p-3 bg-white flex flex-col gap-2 border-t border-slate-100">
-                  {[
-                    { id: 'blank', label: 'Full Width Blank Canvas', desc: 'Standard edge-to-edge layout' },
-                    { id: 'boxed', label: 'Centered Boxed Container', desc: 'Contained 1200px responsive wrapper' },
-                    { id: 'sidebar', label: 'Sidebar-Docked Layout', desc: 'Fixed left navigation rail' }
-                  ].map((tpl) => (
-                    <button
-                      key={tpl.id}
-                      onClick={() => onUpdateState({ pageBaseTemplate: tpl.id })}
-                      className={`w-full text-left p-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border ${
-                        builderState.pageBaseTemplate === tpl.id
-                          ? 'bg-blue-50 text-blue-700 border-blue-200 font-bold shadow-2xs'
-                          : 'text-slate-600 border-transparent hover:bg-slate-50'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span>{tpl.label}</span>
-                        {builderState.pageBaseTemplate === tpl.id && <Check size={14} className="text-blue-600" />}
-                      </div>
-                      <p className="text-[10px] text-slate-400 font-normal m-0 mt-0.5">{tpl.desc}</p>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <PageBaseTemplateSelector
+              builderState={builderState}
+              onUpdateState={onUpdateState}
+              isExpanded={openSubmenus.pageBase}
+              onToggleExpand={() => toggleSubmenu('pageBase')}
+              onCustomizeLayout={() => {
+                setOpenSubmenus((prev) => ({ ...prev, arrangeSections: true }));
+              }}
+            />
 
             {/* Arrange Sections Submenu */}
             <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-2xs">
@@ -263,45 +254,6 @@ export default function BuilderSettingsDrawer({
                       </div>
                     </div>
                   ))}
-                </div>
-              )}
-            </div>
-
-            {/* Meta Tags Submenu */}
-            <div className="border border-slate-200/90 rounded-2xl overflow-hidden bg-white shadow-2xs">
-              <button
-                type="button"
-                onClick={() => toggleSubmenu('metaTags')}
-                className="w-full px-4 py-3 bg-slate-50/80 hover:bg-slate-100/80 flex items-center justify-between text-xs font-bold text-slate-800 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <Globe size={14} className="text-blue-600" />
-                  <span>Meta Tags & SEO Header</span>
-                </div>
-                {openSubmenus.metaTags ? <ChevronDown size={14} className="text-blue-600" /> : <ChevronRight size={14} />}
-              </button>
-              {openSubmenus.metaTags && (
-                <div className="p-3.5 bg-white flex flex-col gap-3 border-t border-slate-100 text-xs">
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">SEO Title Tag</label>
-                    <input
-                      type="text"
-                      placeholder="My Luxury Villa | Official Site"
-                      value={builderState.metaTags?.title || ''}
-                      onChange={(e) => onUpdateState({ metaTags: { ...builderState.metaTags, title: e.target.value } })}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[11px] font-bold text-slate-600 block mb-1">Meta Description</label>
-                    <textarea
-                      rows={2}
-                      placeholder="Discover our premium architectural spaces..."
-                      value={builderState.metaTags?.description || ''}
-                      onChange={(e) => onUpdateState({ metaTags: { ...builderState.metaTags, description: e.target.value } })}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 bg-slate-50 focus:bg-white focus:outline-none focus:border-blue-500"
-                    />
-                  </div>
                 </div>
               )}
             </div>

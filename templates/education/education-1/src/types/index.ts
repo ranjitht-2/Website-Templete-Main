@@ -2,6 +2,7 @@ export type PageId =
   | 'home'
   | 'courses'
   | 'paths'
+  | 'universities'
   | 'mentorship'
   | 'resources'
   | 'about'
@@ -107,4 +108,20 @@ export interface StudentProfile {
   completedHours: number;
   currentStreakDays: number;
   badge: string;
+}
+
+export interface UniversityPartner {
+  id: string;
+  name: string;
+  badge: string;
+  location: string;
+  ranking: string;
+  description: string;
+  domain: string;
+  accreditedCoursesCount: number;
+  degreeCredits: string;
+  featuredPrograms: string[];
+  logoColor: string;
+  established: string;
+  popularCourseId?: string;
 }

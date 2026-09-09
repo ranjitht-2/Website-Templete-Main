@@ -58,6 +58,63 @@ export const COLOR_PRESETS = [
     }
   },
   {
+    id: 'sunset-coral',
+    name: 'Sunset Coral',
+    type: 'light',
+    colors: {
+      background: '#fffdfa',
+      default: '#292524',
+      heading: '#7c2d12',
+      accent: '#ea580c',
+      surface: '#fff7ed',
+      contrast: '#ffffff',
+      nav: '#44403c',
+      navHover: '#ea580c',
+      mobileBg: '#ffffff',
+      dropBg: '#ffffff',
+      dropNav: '#44403c',
+      dropHover: '#ea580c'
+    }
+  },
+  {
+    id: 'nordic-frost',
+    name: 'Nordic Frost',
+    type: 'light',
+    colors: {
+      background: '#f8fafc',
+      default: '#334155',
+      heading: '#0f172a',
+      accent: '#0284c7',
+      surface: '#f0f9ff',
+      contrast: '#ffffff',
+      nav: '#475569',
+      navHover: '#0284c7',
+      mobileBg: '#ffffff',
+      dropBg: '#f8fafc',
+      dropNav: '#334155',
+      dropHover: '#0284c7'
+    }
+  },
+  {
+    id: 'amber-luxe',
+    name: 'Amber Luxe',
+    type: 'light',
+    colors: {
+      background: '#fefefe',
+      default: '#27272a',
+      heading: '#713f12',
+      accent: '#d97706',
+      surface: '#fefce8',
+      contrast: '#ffffff',
+      nav: '#3f3f46',
+      navHover: '#d97706',
+      mobileBg: '#ffffff',
+      dropBg: '#ffffff',
+      dropNav: '#3f3f46',
+      dropHover: '#d97706'
+    }
+  },
+  {
     id: 'cyber-dark',
     name: 'Cyberpunk Dark',
     type: 'dark',
@@ -113,6 +170,95 @@ export const COLOR_PRESETS = [
       dropNav: '#f4f4f5',
       dropHover: '#eab308'
     }
+  },
+  {
+    id: 'deep-midnight',
+    name: 'Deep Midnight',
+    type: 'dark',
+    colors: {
+      background: '#030712',
+      default: '#cbd5e1',
+      heading: '#f1f5f9',
+      accent: '#6366f1',
+      surface: '#111827',
+      contrast: '#ffffff',
+      nav: '#94a3b8',
+      navHover: '#818cf8',
+      mobileBg: '#030712',
+      dropBg: '#111827',
+      dropNav: '#cbd5e1',
+      dropHover: '#818cf8'
+    }
+  },
+  {
+    id: 'aurora-forest',
+    name: 'Aurora Forest',
+    type: 'dark',
+    colors: {
+      background: '#06130e',
+      default: '#d1fae5',
+      heading: '#6ee7b7',
+      accent: '#10b981',
+      surface: '#0d281e',
+      contrast: '#022c22',
+      nav: '#a7f3d0',
+      navHover: '#34d399',
+      mobileBg: '#06130e',
+      dropBg: '#0d281e',
+      dropNav: '#d1fae5',
+      dropHover: '#34d399'
+    }
+  },
+  {
+    id: 'neon-synthwave',
+    name: 'Neon Synthwave',
+    type: 'dark',
+    colors: {
+      background: '#120b1e',
+      default: '#f3e8ff',
+      heading: '#f472b6',
+      accent: '#ec4899',
+      surface: '#24123a',
+      contrast: '#ffffff',
+      nav: '#d8b4fe',
+      navHover: '#f472b6',
+      mobileBg: '#120b1e',
+      dropBg: '#24123a',
+      dropNav: '#f3e8ff',
+      dropHover: '#f472b6'
+    }
+  }
+];
+
+// Default Custom Scoped Presets for sections
+export const DEFAULT_CUSTOM_SCOPED_PRESETS = [
+  {
+    id: 'scoped-light-bg',
+    className: '.light-background',
+    name: 'Light Background',
+    description: 'Crisp high-key background for clean content & feature cards',
+    colors: ['#ffffff', '#0f172a', '#2563eb', '#f8fafc', '#ffffff', '#334155']
+  },
+  {
+    id: 'scoped-dark-hero',
+    className: '.dark-hero',
+    name: 'Dark Hero Section',
+    description: 'Immersive dark backdrop for prominent hero banners & statistics',
+    colors: ['#090d16', '#ffffff', '#38bdf8', '#0f172a', '#020617', '#94a3b8']
+  },
+  {
+    id: 'scoped-accent-surface',
+    className: '.accent-surface',
+    name: 'Accent Spotlight',
+    description: 'Tinted brand highlight section for testimonials & featured perks',
+    colors: ['#eff6ff', '#1e3a8a', '#2563eb', '#dbeafe', '#ffffff', '#1d4ed8']
+  },
+  {
+    id: 'scoped-contrast-card',
+    className: '.contrast-card',
+    name: 'Contrast Pitch Card',
+    description: 'High-contrast card style for pricing tiers and call-to-actions',
+    colors: ['#18181b', '#ffffff', '#f43f5e', '#27272a', '#000000', '#f43f5e']
   }
 ];
 
@@ -132,6 +278,14 @@ export const GOOGLE_FONTS = [
   'Fira Code'
 ];
 
+// Re-export Page Base Template schemas and helpers
+export {
+  PAGE_BASE_TEMPLATES,
+  getBaseTemplateById,
+  getDefaultBaseTemplate,
+  applyBaseTemplateToState
+} from './pageBaseTemplates';
+
 export const INITIAL_BUILDER_STATE = {
   activeTab: 'index.html',
   tabs: ['index.html', 'about.html', 'services.html', 'contact.html'],
@@ -143,7 +297,7 @@ export const INITIAL_BUILDER_STATE = {
   pageName: 'index.html',
   pageTitle: 'Home',
   showPageTitle: true,
-  pageBaseTemplate: 'blank', // 'blank' | 'boxed' | 'sidebar'
+  pageBaseTemplate: 'standard', // 'standard' | 'right-sidebar' | 'left-sidebar' | 'full-left-sidebar'
   metaTags: {
     title: '',
     description: '',
@@ -155,12 +309,12 @@ export const INITIAL_BUILDER_STATE = {
     body: ''
   },
   sections: [
-    { id: 'sec-0', name: 'Hero / Banner Section', enabled: true },
-    { id: 'sec-1', name: 'Overview / Features', enabled: true },
-    { id: 'sec-2', name: 'Analytics & Insights', enabled: true },
-    { id: 'sec-3', name: 'Services & Products', enabled: true },
-    { id: 'sec-4', name: 'Client Testimonials', enabled: true },
-    { id: 'sec-5', name: 'Call to Action / Contact', enabled: true }
+    { id: 'sec-0', anchor: '#hero', name: 'Hero / Banner Section', enabled: true },
+    { id: 'sec-1', anchor: '#intro', name: 'Introduction & Overview', enabled: true },
+    { id: 'sec-2', anchor: '#featured-speakers', name: 'Featured Speakers / Highlights', enabled: true },
+    { id: 'sec-3', anchor: '#schedule', name: 'Schedule & Agenda Matrix', enabled: true },
+    { id: 'sec-4', anchor: '#testimonials', name: 'Attendees & Testimonials', enabled: true },
+    { id: 'sec-5', anchor: '#contact', name: 'Registration / Contact Form', enabled: true }
   ],
 
   // Header Options
@@ -191,45 +345,84 @@ export const INITIAL_BUILDER_STATE = {
 
 // Generates complete live CSS to inject into the live canvas/iframe
 export function generateLiveCSS(builderState) {
-  const { colors, fonts, showPageTitle, pageBaseTemplate, headerTemplate, scrollTopButton } = builderState;
+  const { colors, fonts, showPageTitle, pageBaseTemplate, headerTemplate, pageCustomCode } = builderState;
 
   // Base Layout Container overrides
   let layoutCSS = '';
-  if (pageBaseTemplate === 'boxed') {
+  const layout = (pageBaseTemplate || 'standard').toLowerCase();
+
+  if (layout === 'right-sidebar' || layout === 'split' || layout === 'split-showcase') {
     layoutCSS = `
-      body {
-        background-color: #f1f5f9 !important;
-        padding-top: 20px !important;
-        padding-bottom: 40px !important;
-      }
-      body > main, body > div.main-wrapper, body > section {
-        max-width: 1200px !important;
+      body > main, body > div.main-wrapper, body > section, div#root > main {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 280px !important;
+        gap: 2rem !important;
+        max-width: 1320px !important;
         margin-left: auto !important;
         margin-right: auto !important;
-        background-color: var(--background-color) !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
-        border-radius: 16px !important;
-        overflow: hidden !important;
+        padding: 1.5rem !important;
+        box-sizing: border-box !important;
+      }
+      aside, .sidebar, .widget-rail, .widget-area {
+        grid-column: 2 !important;
+        position: sticky !important;
+        top: 20px !important;
+        height: fit-content !important;
       }
     `;
-  } else if (pageBaseTemplate === 'sidebar') {
+  } else if (layout === 'left-sidebar' || layout === 'boxed' || layout === 'boxed-centered') {
+    layoutCSS = `
+      body > main, body > div.main-wrapper, body > section, div#root > main {
+        display: grid !important;
+        grid-template-columns: 280px minmax(0, 1fr) !important;
+        gap: 2rem !important;
+        max-width: 1320px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding: 1.5rem !important;
+        box-sizing: border-box !important;
+      }
+      aside, .sidebar, .widget-rail, .widget-area {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        position: sticky !important;
+        top: 20px !important;
+        height: fit-content !important;
+      }
+    `;
+  } else if (layout === 'full-left-sidebar' || layout === 'sidebar-dashboard' || layout === 'sidebar') {
     layoutCSS = `
       body {
         display: flex !important;
         flex-direction: row !important;
         min-height: 100vh !important;
+        overflow-x: hidden !important;
       }
-      header, .navbar-vertical, aside.sidebar {
+      header, .navbar-vertical, aside.sidebar, nav.site-header, .widget-column {
         width: 260px !important;
         flex-shrink: 0 !important;
         position: sticky !important;
         top: 0 !important;
         height: 100vh !important;
         overflow-y: auto !important;
+        border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+        background: #ffffff !important;
       }
-      main, .content-wrapper, section {
+      main, .content-wrapper, section, div#root > main {
         flex: 1 !important;
         min-width: 0 !important;
+      }
+    `;
+  } else {
+    // standard (Page Title top / Sections bottom)
+    layoutCSS = `
+      body {
+        display: block !important;
+        width: 100% !important;
+      }
+      main, .content-wrapper, section, div#root > main {
+        display: block !important;
+        width: 100% !important;
       }
     `;
   }
