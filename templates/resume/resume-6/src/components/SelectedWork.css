@@ -186,6 +186,26 @@
   }
 }
 
-@media (max-width: 600px) {
-  .em-portfolio .em-work__subtitle { text-align: left; }
+@media (max-width: 640px) {
+  .em-portfolio .em-work__header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .em-portfolio .em-work__title {
+    font-size: clamp(1.85rem, 6.5vw, 2.75rem);
+  }
+  .em-portfolio .em-work__subtitle {
+    text-align: left;
+    max-width: 100%;
+  }
+  .em-portfolio .em-card--full .em-project-card__image-wrap,
+  .em-portfolio .em-card--half .em-project-card__image-wrap,
+  .em-portfolio .em-card--two-thirds .em-project-card__image-wrap,
+  .em-portfolio .em-card--one-third .em-project-card__image-wrap {
+    aspect-ratio: 16/10;
+  }
+  .em-portfolio .em-work__grid {
+    gap: 2.5rem;
+  }
 }

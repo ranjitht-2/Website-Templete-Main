@@ -160,8 +160,17 @@ export default function Recognition() {
         @media (max-width: 900px) {
           .award-row {
             grid-template-columns: 1fr;
-            gap: 16px;
-            padding: 24px;
+            gap: 14px;
+            padding: 20px 16px;
+          }
+          .award-year-text {
+            font-size: 1.75rem;
+          }
+          .award-title-text {
+            font-size: 1.2rem;
+          }
+          .award-org-meta {
+            flex-wrap: wrap;
           }
         }
       `}</style>

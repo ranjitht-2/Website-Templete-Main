@@ -51,7 +51,7 @@
 
   /* Layout */
   --em-max-width: 1400px;
-  --em-container-padding: clamp(1.5rem, 5vw, 6rem);
+  --em-container-padding: clamp(1.15rem, 4vw, 5rem);
 
   /* Transitions */
   --em-transition-fast: 0.2s ease;
@@ -170,6 +170,12 @@
 
 .em-portfolio .section-padding {
   padding: var(--em-space-xl) 0;
+}
+
+@media (max-width: 768px) {
+  .em-portfolio .section-padding {
+    padding: clamp(3rem, 6vh, 4rem) 0;
+  }
 }
 
 /* ── Scroll Animations ── */

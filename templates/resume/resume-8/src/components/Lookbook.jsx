@@ -80,21 +80,10 @@ export default function Lookbook() {
 
         {/* Selected Look Detailed Drawer */}
         {selectedLook && (
-          <div 
-            style={{ 
-              marginTop: '3rem', 
-              padding: '2.5rem', 
-              backgroundColor: 'var(--bg-primary)', 
-              border: '1px solid var(--border-subtle)',
-              display: 'grid',
-              gridTemplateColumns: '1fr 2fr',
-              gap: '3rem',
-              alignItems: 'center'
-            }}
-          >
-            <div>
+          <div className="lookbook-detail-drawer">
+            <div className="lookbook-drawer-header">
               <span className="section-label">SELECTED SPECIFICATION</span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.2rem', margin: '0.5rem 0 1rem 0' }}>
+              <h3 className="lookbook-drawer-title">
                 LOOK {selectedLook.number}: {selectedLook.title}
               </h3>
               <span className="look-collection-tag" style={{ fontSize: '0.9rem' }}>
@@ -102,20 +91,20 @@ export default function Lookbook() {
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem' }}>
-              <div>
+            <div className="lookbook-specs-grid">
+              <div className="lookbook-spec-item">
                 <span className="meta-label">SILHOUETTE</span>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', fontWeight: '500', marginTop: '0.2rem' }}>
                   {selectedLook.silhouette}
                 </p>
               </div>
-              <div>
+              <div className="lookbook-spec-item">
                 <span className="meta-label">MATERIALS</span>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-main)', fontWeight: '500', marginTop: '0.2rem' }}>
                   {selectedLook.material}
                 </p>
               </div>
-              <div>
+              <div className="lookbook-spec-item">
                 <span className="meta-label">DESIGN CONCEPT</span>
                 <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>
                   {selectedLook.concept}

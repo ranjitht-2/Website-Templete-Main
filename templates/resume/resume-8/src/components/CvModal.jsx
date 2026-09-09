@@ -72,9 +72,9 @@ export default function CvModal({ isOpen, onClose }) {
 
           <section className="cv-section">
             <h2 className="cv-section-title">CREATIVE PRACTICE & EXPERTISE</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+            <div className="cv-expertise-grid">
               {expertiseData.map((cat, idx) => (
-                <div key={idx}>
+                <div key={idx} className="cv-expertise-item">
                   <h4 style={{ fontSize: '0.8rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: 'var(--text-main)', marginBottom: '0.5rem' }}>
                     {cat.category}
                   </h4>
@@ -88,9 +88,9 @@ export default function CvModal({ isOpen, onClose }) {
 
           <section className="cv-section">
             <h2 className="cv-section-title">EDUCATION</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+            <div className="cv-edu-stack">
               {educationData.map((edu, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div key={idx} className="cv-edu-row">
                   <div>
                     <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem' }}>{edu.degree}</h3>
                     <span style={{ fontSize: '0.85rem', color: 'var(--accent-burgundy)' }}>{edu.institution}</span>
@@ -103,9 +103,9 @@ export default function CvModal({ isOpen, onClose }) {
 
           <section className="cv-section">
             <h2 className="cv-section-title">RECOGNITION</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+            <div className="cv-rec-stack">
               {recognitionData.map((rec, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+                <div key={idx} className="cv-rec-row">
                   <span><strong>{rec.award}</strong> — {rec.organization}</span>
                   <span style={{ color: 'var(--text-light)' }}>{rec.year}</span>
                 </div>

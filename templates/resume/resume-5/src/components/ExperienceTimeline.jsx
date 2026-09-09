@@ -266,8 +266,21 @@ export default function ExperienceTimeline() {
         }
 
         @media (max-width: 768px) {
+          .timeline-nav-buttons {
+            display: none;
+          }
           .timeline-node-card {
-            flex: 0 0 300px;
+            flex: 0 0 min(300px, 80vw);
+            padding: 20px 16px;
+            margin-top: 24px;
+          }
+          .node-role {
+            font-size: 1.2rem;
+          }
+          .node-company-row {
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            gap: 4px 6px;
           }
         }
       `}</style>

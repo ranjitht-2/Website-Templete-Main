@@ -105,7 +105,7 @@ const HeroSection = ({ onOpenCV }) => {
               {/* Image Container with Crisp Aspect Ratio */}
               <div className="aspect-[3/4] w-full overflow-hidden">
                 <img
-                  src="/assets/director_portrait.jpg"
+                  src={directorProfile.portrait}
                   alt="Director Elias Rowan Portrait"
                   className="w-full h-full object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-102"
                 />

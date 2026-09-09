@@ -3,7 +3,7 @@ import { projects } from '../data.js';
 import { useScrollAnimation } from '../hooks/useScrollAnimation.js';
 import './SelectedWork.css';
 
-export default function SelectedWork() {
+export default function SelectedWork({ onSelectProject }) {
   const { ref: headRef, isVisible: headVisible } = useScrollAnimation(0.1);
 
   return (
@@ -21,7 +21,12 @@ export default function SelectedWork() {
         </div>
         <div className="em-work__grid">
           {projects.map((project, i) => (
-            <ProjectCard key={project.id} project={project} index={i} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={i}
+              onSelect={() => onSelectProject && onSelectProject(project)}
+            />
           ))}
         </div>
       </div>
@@ -29,7 +34,7 @@ export default function SelectedWork() {
   );
 }
 
-function ProjectCard({ project, index }) {
+function ProjectCard({ project, index, onSelect }) {
   const { ref, isVisible } = useScrollAnimation(0.1);
   const [hovered, setHovered] = useState(false);
 
@@ -40,9 +45,10 @@ function ProjectCard({ project, index }) {
     <article
       ref={ref}
       className={`em-project-card ${layoutClass} fade-up ${isVisible ? 'visible' : ''}`}
-      style={{ transitionDelay: `${(index % 2) * 0.15}s` }}
+      style={{ transitionDelay: `${(index % 2) * 0.15}s`, cursor: 'pointer' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onClick={onSelect}
     >
       <div className="em-project-card__image-wrap img-hover-scale">
         <img
@@ -52,12 +58,12 @@ function ProjectCard({ project, index }) {
           loading="lazy"
         />
         <div className={`em-project-card__overlay ${hovered ? 'em-project-card__overlay--visible' : ''}`}>
-          <span className="em-project-card__cta">
+          <button type="button" className="em-project-card__cta" onClick={(e) => { e.stopPropagation(); onSelect(); }} style={{ background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer' }}>
             View Case Study
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-          </span>
+          </button>
         </div>
       </div>
       <div className="em-project-card__meta">
@@ -77,3 +83,4 @@ function ProjectCard({ project, index }) {
     </article>
   );
 }
+

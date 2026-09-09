@@ -23,7 +23,7 @@ export default function CollectionModal({ collection, onClose }) {
           {collection.season} ({collection.year}) — {collection.type}
         </span>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '3rem', marginBottom: '2.5rem' }}>
+        <div className="collection-modal-grid">
           <div>
             <span className="meta-label">CREATIVE CONCEPT</span>
             <p style={{ fontSize: '1rem', color: 'var(--text-main)', marginTop: '0.4rem', lineHeight: '1.7' }}>
@@ -39,7 +39,7 @@ export default function CollectionModal({ collection, onClose }) {
           </div>
         </div>
 
-        <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-warm)', border: '1px solid var(--border-subtle)', marginBottom: '2.5rem' }}>
+        <div className="collection-modal-notes">
           <span className="meta-label">ATELIER DESIGN NOTES</span>
           <p style={{ fontStyle: 'italic', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
             "{collection.notes}"
@@ -47,16 +47,16 @@ export default function CollectionModal({ collection, onClose }) {
         </div>
 
         <span className="meta-label" style={{ marginBottom: '1rem', display: 'block' }}>GALLERY LOOKS ({collection.lookCount} TOTAL LOOKS)</span>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+        <div className="collection-modal-gallery">
           {collection.gallery.map((img, idx) => (
-            <div key={idx} style={{ position: 'relative', paddingBottom: '130%', overflow: 'hidden' }}>
-              <img src={img} alt={`${collection.name} look ${idx+1}`} style={{ position: 'absolute', width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div key={idx} className="collection-modal-gallery-item">
+              <img src={img} alt={`${collection.name} look ${idx+1}`} className="collection-modal-gallery-img" />
             </div>
           ))}
         </div>
 
         <div style={{ marginTop: '2.5rem', textAlign: 'right' }}>
-          <button onClick={onClose} className="btn-editorial-primary">
+          <button onClick={onClose} className="btn-editorial-primary" style={{ width: '100%', justifyContent: 'center' }}>
             <span>Close Specification</span>
           </button>
         </div>

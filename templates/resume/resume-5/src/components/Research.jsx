@@ -276,6 +276,33 @@ export default function Research() {
             flex-wrap: wrap;
           }
         }
+
+        @media (max-width: 640px) {
+          .poster-card {
+            padding: 24px 18px;
+          }
+          .poster-title {
+            font-size: 1.6rem;
+          }
+          .exhibitions-block {
+            padding: 24px 16px;
+          }
+          .exhibitions-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+          }
+          .exhibitions-title {
+            font-size: 1.05rem;
+          }
+          .exh-left {
+            flex-wrap: wrap;
+            gap: 8px;
+          }
+          .exh-name {
+            font-size: 1.05rem;
+          }
+        }
       `}</style>
     </section>
   );

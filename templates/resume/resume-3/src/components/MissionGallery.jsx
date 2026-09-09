@@ -39,11 +39,14 @@ export default function MissionGallery() {
               }`}
             >
               {/* Card Visual Container */}
-              <div className="relative aspect-[16/9] w-full bg-slate-950 overflow-hidden border-b border-slate-200">
+              <div 
+                onClick={() => setSelectedMission(mission)}
+                className="relative aspect-[16/9] w-full bg-slate-950 overflow-hidden border-b border-slate-200 cursor-pointer"
+              >
                 <MissionSchematicSVG type={mission.schematicType} />
                 
                 {/* HUD Overlay Badges */}
-                <div className="absolute top-3 left-3 flex items-center space-x-2">
+                <div className="absolute top-3 left-3 flex items-center space-x-2 pointer-events-none">
                   <span className="px-2.5 py-1 bg-slate-900/90 text-sky-400 font-mono-tech text-xs font-bold rounded border border-slate-700">
                     {mission.code}
                   </span>
@@ -52,16 +55,23 @@ export default function MissionGallery() {
                   </span>
                 </div>
 
-                <div className="absolute top-3 right-3 px-2 py-1 bg-emerald-500/20 text-emerald-300 font-mono-tech text-[10px] uppercase tracking-wider rounded border border-emerald-400/30">
+                <div className="absolute top-3 right-3 px-2 py-1 bg-emerald-500/20 text-emerald-300 font-mono-tech text-[10px] uppercase tracking-wider rounded border border-emerald-400/30 pointer-events-none">
                   {mission.status}
                 </div>
 
-                {/* Hover overlay hint */}
-                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                  <span className="inline-flex items-center space-x-2 bg-sky-600 text-white font-mono-tech text-xs font-bold uppercase tracking-wider px-4 py-2 rounded shadow-lg">
+                {/* Hover overlay hint with View Specifications button */}
+                <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center p-4">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedMission(mission);
+                    }}
+                    className="inline-flex items-center space-x-2 bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-mono-tech text-xs font-bold uppercase tracking-wider px-5 py-2.5 rounded shadow-xl transition-all cursor-pointer"
+                  >
                     <Eye className="w-4 h-4" />
                     <span>View Specifications</span>
-                  </span>
+                  </button>
                 </div>
               </div>
 
@@ -71,7 +81,10 @@ export default function MissionGallery() {
                   <span className="text-[11px] font-mono-tech text-sky-700 uppercase tracking-wider block font-semibold">
                     {mission.type}
                   </span>
-                  <h3 className="text-xl font-heading font-bold text-slate-900 tracking-tight mt-1 group-hover:text-sky-700 transition-colors">
+                  <h3 
+                    onClick={() => setSelectedMission(mission)}
+                    className="text-xl font-heading font-bold text-slate-900 tracking-tight mt-1 hover:text-sky-700 transition-colors cursor-pointer"
+                  >
                     {mission.name}
                   </h3>
                   <p className="text-slate-600 text-sm mt-2 line-clamp-3 leading-relaxed">
@@ -87,8 +100,9 @@ export default function MissionGallery() {
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => setSelectedMission(mission)}
-                    className="inline-flex items-center space-x-1.5 text-sky-700 hover:text-sky-900 font-bold uppercase tracking-wider text-xs group-hover:translate-x-1 transition-transform"
+                    className="inline-flex items-center space-x-1.5 text-sky-700 hover:text-sky-900 font-bold uppercase tracking-wider text-xs group-hover:translate-x-1 transition-transform cursor-pointer"
                   >
                     <span>Inspect</span>
                     <ChevronRight className="w-4 h-4" />

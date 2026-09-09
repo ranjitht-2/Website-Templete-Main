@@ -386,6 +386,31 @@ export default function Contact() {
             grid-template-columns: 1fr;
           }
         }
+
+        @media (max-width: 640px) {
+          .contact-section {
+            padding-top: 60px;
+            padding-bottom: 70px;
+          }
+          .contact-heading {
+            font-size: clamp(2.2rem, 7vw, 3.5rem);
+            line-height: 1.05;
+          }
+          .contact-subhead {
+            font-size: 1rem;
+          }
+          .contact-info-panel, .contact-form-panel {
+            padding: 24px 18px;
+          }
+          .info-value-link {
+            font-size: 1.05rem;
+            word-break: break-all;
+          }
+          .info-blocks-list {
+            gap: 24px;
+            margin-bottom: 28px;
+          }
+        }
       `}</style>
     </section>
   );

@@ -110,37 +110,6 @@ export default function Philosophy() {
           border-bottom: 1px solid var(--border-light);
         }
 
-        .section-header-bar {
-          display: flex;
-          align-items: flex-end;
-          gap: 32px;
-          margin-bottom: 60px;
-        }
-
-        .header-left {
-          display: flex;
-          align-items: center;
-          gap: 24px;
-        }
-
-        .header-titles {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .section-title {
-          font-size: 2.4rem;
-          color: var(--accent-charcoal);
-        }
-
-        .header-line {
-          flex: 1;
-          height: 1px;
-          background-color: var(--border-medium);
-          margin-bottom: 12px;
-        }
-
         /* QUOTE BANNER */
         .quote-banner {
           background-color: var(--bg-warm);
@@ -323,6 +292,37 @@ export default function Philosophy() {
           }
           .quote-banner {
             padding: 32px;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .quote-banner {
+            padding: 24px 18px;
+            margin-bottom: 36px;
+          }
+          .quote-mark {
+            font-size: 3rem;
+            top: 4px;
+            left: 8px;
+          }
+          .hero-quote-text {
+            font-size: clamp(1.2rem, 4.5vw, 1.6rem);
+          }
+          .essay-headline {
+            font-size: 1.25rem;
+          }
+          .essay-paragraph {
+            font-size: 0.95rem;
+          }
+          .material-image-frame {
+            padding: 10px;
+          }
+          .material-overlay-tag {
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            font-size: 0.6rem;
+            padding: 8px 10px;
           }
         }
       `}</style>

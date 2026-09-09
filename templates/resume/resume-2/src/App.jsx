@@ -1,4 +1,5 @@
-﻿import "./App.css";
+import { useState } from "react";
+import "./App.css";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProfessionalOverview from "./components/ProfessionalOverview";
@@ -11,13 +12,16 @@ import Recognition from "./components/Recognition";
 import Philosophy from "./components/Philosophy";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import CVModal from "./components/CVModal";
 
 export default function App() {
+  const [isCVOpen, setIsCVOpen] = useState(false);
+
   return (
     <>
-      <Navbar />
+      <Navbar onOpenCV={() => setIsCVOpen(true)} />
       <main>
-        <Hero />
+        <Hero onOpenCV={() => setIsCVOpen(true)} />
         <ProfessionalOverview />
         <Expertise />
         <ExperienceTimeline />
@@ -29,6 +33,7 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      <CVModal isOpen={isCVOpen} onClose={() => setIsCVOpen(false)} />
     </>
   );
 }

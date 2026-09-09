@@ -11,7 +11,7 @@ const navLinks = [
   { label: "Contact", href: "#contact" },
 ];
 
-export default function Navbar() {
+export default function Navbar({ onOpenCV }) {
   const [scrolled, setScrolled] = useState(false);
   const [active, setActive] = useState("home");
   const [menuOpen, setMenuOpen] = useState(false);
@@ -66,9 +66,13 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className="navbar__actions">
-          <a href="#" className="btn btn--primary navbar__cv-btn" download>
+          <button
+            type="button"
+            className="btn btn--primary navbar__cv-btn"
+            onClick={onOpenCV}
+          >
             Download CV
-          </a>
+          </button>
         </div>
 
         {/* Hamburger */}
@@ -99,7 +103,17 @@ export default function Navbar() {
           ))}
         </nav>
         <div className="navbar__mobile-actions">
-          <a href="#" className="btn btn--outline" style={{ width: "100%", justifyContent: "center" }}>Download CV</a>
+          <button
+            type="button"
+            className="btn btn--outline"
+            style={{ width: "100%", justifyContent: "center" }}
+            onClick={() => {
+              setMenuOpen(false);
+              if (onOpenCV) onOpenCV();
+            }}
+          >
+            Download CV
+          </button>
         </div>
       </div>
     </header>

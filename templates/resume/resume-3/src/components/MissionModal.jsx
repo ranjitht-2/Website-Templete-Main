@@ -6,8 +6,14 @@ export default function MissionModal({ mission, onClose }) {
   if (!mission) return null;
 
   return (
-    <div className="fixed inset-0 z-[80] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fadeIn">
-      <div className="bg-slate-900 border border-slate-700 text-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative tech-corner-box">
+    <div 
+      className="fixed inset-0 z-[80] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fadeIn cursor-pointer"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-slate-900 border border-slate-700 text-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl relative tech-corner-box cursor-default"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Modal Header */}
         <div className="sticky top-0 bg-slate-950/90 backdrop-blur-md px-6 py-4 border-b border-slate-800 flex items-center justify-between z-20">

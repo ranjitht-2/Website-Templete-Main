@@ -49,7 +49,7 @@ export default function Navbar({ onOpenCV }) {
           </ul>
 
           <div className="nav-right">
-            <button className="btn-secondary" onClick={onOpenCV} style={{ padding: '0.6rem 1.2rem', fontSize: '0.75rem' }}>
+            <button className="btn-secondary nav-cv-btn" onClick={onOpenCV}>
               <Download size={15} /> Download CV
             </button>
 

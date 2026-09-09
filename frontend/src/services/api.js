@@ -3455,7 +3455,7 @@ export const api = {
         const slug = (t.category.slug || '').toLowerCase().trim();
         const name = (t.category.name || '').toLowerCase().trim();
         return slug === target || name === target ||
-          ((target === 'coming-soon' || target === 'coming-soon') && (slug === 'coming-soon' || slug === 'coming-soon')) ||
+          ((target === 'coming-soon' || target === 'comingsoon') && (slug === 'coming-soon' || slug === 'comingsoon')) ||
           ((target === 'business' || target === 'buisness') && (slug === 'business' || slug === 'buisness')) ||
           ((target === 'corporate' || target === 'cooperate') && (slug === 'corporate' || slug === 'cooperate')) ||
           ((target === 'blog-magazine' || target === 'block-magazine') && (slug === 'blog-magazine' || slug === 'block-magazine'));

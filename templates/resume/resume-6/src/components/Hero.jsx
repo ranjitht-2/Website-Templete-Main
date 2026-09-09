@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { profile } from '../data.js';
 import './Hero.css';
 
-export default function Hero() {
+export default function Hero({ onOpenCV }) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -51,7 +51,9 @@ export default function Hero() {
                 <path d="M1 7h12M7 1l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
-            <a href="#" className="btn-outline">Download CV</a>
+            <button type="button" className="btn-outline" onClick={onOpenCV}>
+              Download CV
+            </button>
           </div>
         </div>
 
@@ -60,7 +62,7 @@ export default function Hero() {
           <div className="em-hero__portrait-wrap">
             <div className="em-hero__portrait-frame">
               <img
-                src="images/elena_portrait.jpg"
+                src={profile.portrait}
                 alt="Elena Marlowe — Creative Director & Brand Strategist"
                 className="em-hero__portrait-img"
               />

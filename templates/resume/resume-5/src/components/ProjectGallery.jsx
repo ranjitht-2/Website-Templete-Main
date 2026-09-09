@@ -401,6 +401,15 @@ export default function ProjectGallery({ onSelectProject }) {
           height: 440px;
         }
 
+        /* 5. Standard 50/50 Layout */
+        .layout-standard {
+          grid-template-columns: 1fr 1fr;
+          align-items: center;
+        }
+        .layout-standard .project-image-box {
+          height: 400px;
+        }
+
         @media (max-width: 1024px) {
           .project-layout-item {
             grid-template-columns: 1fr !important;
@@ -413,6 +422,48 @@ export default function ProjectGallery({ onSelectProject }) {
           }
           .project-image-box {
             height: 320px !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .filter-bar {
+            padding: 12px 14px;
+            margin-bottom: 30px;
+          }
+          .filter-buttons {
+            gap: 6px;
+          }
+          .filter-btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+          }
+          .projects-gallery-list {
+            gap: 32px;
+          }
+          .project-layout-item {
+            padding: 16px;
+            gap: 20px;
+          }
+          .project-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+          }
+          .project-description {
+            font-size: 0.92rem;
+            margin-bottom: 16px;
+          }
+          .project-mini-specs {
+            grid-template-columns: 1fr;
+            gap: 10px;
+            padding: 12px;
+            margin-bottom: 16px;
+          }
+          .project-image-box {
+            height: 220px !important;
+          }
+          .image-overlay-bar {
+            padding: 8px 12px;
+            font-size: 0.65rem;
           }
         }
       `}</style>

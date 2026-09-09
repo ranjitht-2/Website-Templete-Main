@@ -4,7 +4,7 @@ import { collectionsData } from '../data/portfolioData';
 
 export default function Collections({ onSelectCollection }) {
   return (
-    <section id="collections" className="editorial-section" style={{ paddingTop: '8rem' }}>
+    <section id="collections" className="editorial-section collections-section">
       <div className="section-label">
         <span>02 / COLLECTIONS</span>
       </div>

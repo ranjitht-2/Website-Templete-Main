@@ -401,6 +401,29 @@ export default function Navbar({ onOpenCV }) {
             display: flex;
           }
         }
+
+        @media (max-width: 600px) {
+          .cv-btn {
+            display: none;
+          }
+          .brand-title {
+            display: none;
+          }
+          .monogram-box {
+            width: 36px;
+            height: 36px;
+            font-size: 0.95rem;
+          }
+          .brand-name {
+            font-size: 0.95rem;
+          }
+          .mobile-link {
+            padding: 12px 0;
+          }
+          .link-text {
+            font-size: 1.25rem;
+          }
+        }
       `}</style>
     </>
   );
