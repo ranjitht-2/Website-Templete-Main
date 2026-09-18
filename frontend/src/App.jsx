@@ -6,7 +6,6 @@ import Home from './pages/Home';
 import Templates from './pages/Templates';
 import TemplateDetails from './pages/TemplateDetails';
 import Dashboard from './pages/Dashboard';
-import Builder from './pages/Builder';
 import Admin from './pages/Admin';
 import Auth from './pages/Auth';
 import HotelTemplate from './pages/HotelTemplate';
@@ -375,7 +374,6 @@ function Footer() {
         <div>
           <h4 style={{ color: '#fff', fontSize: '0.95rem', fontWeight: 600, marginBottom: 16 }}>Platform</h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10, fontSize: '0.85rem' }}>
-            <li><Link to="/builder" style={{ color: '#94a3b8' }}>Template Builder</Link></li>
             <li><Link to="/dashboard" style={{ color: '#94a3b8' }}>User Dashboard</Link></li>
             <li><Link to="/auth" style={{ color: '#94a3b8' }}>Create Account</Link></li>
           </ul>
@@ -504,15 +502,6 @@ function AppRoutes({ user, cart, addToCart, removeFromCart, clearCart, handleLog
     );
   }
 
-  // Full-screen builder route
-  if (location.pathname === '/builder') {
-    return (
-      <Routes>
-        <Route path="/builder" element={<Builder user={user} />} />
-      </Routes>
-    );
-  }
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <Header cartCount={cart.length} user={user} onLogout={handleLogout} />
@@ -525,7 +514,6 @@ function AppRoutes({ user, cart, addToCart, removeFromCart, clearCart, handleLog
           <Route path="/photography-catalog" element={<PhotographyCatalog />} />
           <Route path="/templates/:slug" element={<TemplateDetails addToCart={addToCart} cart={cart} />} />
           <Route path="/dashboard" element={<Dashboard user={user} cart={cart} removeFromCart={removeFromCart} clearCart={clearCart} />} />
-          <Route path="/builder" element={<Builder user={user} />} />
           <Route path="/admin" element={<Admin user={user} />} />
           <Route path="/auth" element={<Auth onLogin={handleLogin} />} />
         </Routes>

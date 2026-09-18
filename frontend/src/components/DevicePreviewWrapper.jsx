@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { Monitor, Tablet, Smartphone, RotateCcw, RotateCw, ArrowLeft, Download, Pencil } from 'lucide-react';
+import { Monitor, Tablet, Smartphone, RotateCcw, RotateCw, ArrowLeft, Download } from 'lucide-react';
 
 export default function DevicePreviewWrapper({ children }) {
   const location = useLocation();
@@ -234,31 +234,6 @@ export default function DevicePreviewWrapper({ children }) {
             <RotateCcw size={14} />
           </button>
 
-          {/* Edit Template in Visual Builder */}
-          <a
-            href={`/builder?template=${templateSlug}&category=${categorySlug}&page=index.html`}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              background: '#4f46e5',
-              color: '#ffffff',
-              textDecoration: 'none',
-              fontSize: '0.82rem',
-              fontWeight: 600,
-              padding: '7px 16px',
-              borderRadius: '99px',
-              boxShadow: '0 2px 8px rgba(79,70,229,0.25)',
-              transition: 'all 0.2s',
-              marginLeft: '4px'
-            }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#4338ca'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#4f46e5'}
-            title="Customize in Visual Website Builder"
-          >
-            <Pencil size={14} />
-            Edit Template
-          </a>
 
           {/* Download Action */}
           <a

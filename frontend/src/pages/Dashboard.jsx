@@ -129,7 +129,7 @@ export default function Dashboard({ user, cart, removeFromCart, clearCart }) {
       <div style={{ marginBottom: 35, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '2.3rem', fontWeight: 800, marginBottom: 5 }}>User Dashboard</h1>
-          <p style={{ color: 'var(--text-muted)' }}>Welcome back, <strong style={{ color: 'var(--secondary-color)' }}>{user?.name}</strong>. Manage your licenses and template builder archives.</p>
+          <p style={{ color: 'var(--text-muted)' }}>Welcome back, <strong style={{ color: 'var(--secondary-color)' }}>{user?.name}</strong>. Manage your licenses and downloads.</p>
         </div>
         <div style={{
           padding: '6px 16px',
@@ -418,7 +418,7 @@ export default function Dashboard({ user, cart, removeFromCart, clearCart }) {
           {/* 5. SAVED PROJECTS TAB */}
           {activeTab === 'projects' && (
             <div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 20 }}>Builder Saves</h3>
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: 20 }}>Saved Projects</h3>
               {projects.length > 0 ? (
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 20 }}>
                   {projects.map(proj => (
@@ -438,13 +438,6 @@ export default function Dashboard({ user, cart, removeFromCart, clearCart }) {
                         </span>
                       </div>
                       <div style={{ display: 'flex', gap: 6 }}>
-                        <Link
-                          to={`/builder?project=${proj.id}`}
-                          className="btn btn-secondary"
-                          style={{ flex: 1, padding: '6px 0', fontSize: '0.75rem', borderRadius: 6 }}
-                        >
-                          Edit
-                        </Link>
                         <button
                           onClick={() => handleExportProject(proj.id)}
                           className="btn btn-primary"
@@ -458,8 +451,7 @@ export default function Dashboard({ user, cart, removeFromCart, clearCart }) {
                 </div>
               ) : (
                 <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                  <p style={{ color: 'var(--text-muted)', marginBottom: 15 }}>No saved layout designs.</p>
-                  <Link to="/builder" className="btn btn-primary">Create Layout Design</Link>
+                  <p style={{ color: 'var(--text-muted)' }}>No saved layout designs.</p>
                 </div>
               )}
             </div>
