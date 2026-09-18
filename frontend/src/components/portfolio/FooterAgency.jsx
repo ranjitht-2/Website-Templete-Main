@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { agencyData, SOCIAL_FA_MAP } from '../../data/portfolio/agencyData';
 
 export default function FooterAgency() {

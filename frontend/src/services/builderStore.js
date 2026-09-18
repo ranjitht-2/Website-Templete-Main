@@ -345,7 +345,7 @@ export const INITIAL_BUILDER_STATE = {
 
 // Generates complete live CSS to inject into the live canvas/iframe
 export function generateLiveCSS(builderState) {
-  const { colors, fonts, showPageTitle, pageBaseTemplate, headerTemplate, pageCustomCode } = builderState;
+  const { colors, fonts, showPageTitle, pageBaseTemplate, headerTemplate } = builderState;
 
   // Base Layout Container overrides
   let layoutCSS = '';

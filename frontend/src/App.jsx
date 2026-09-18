@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
-import { ShoppingCart, User as UserIcon, LogOut, Layout, Settings, Compass, HelpCircle, Bell, Heart, Search } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
+import { LogOut, Layout, Settings, Bell, Heart, Search } from 'lucide-react';
 import { api } from './services/api';
 import Home from './pages/Home';
 import Templates from './pages/Templates';
@@ -34,7 +34,7 @@ import PhotographyPortfolio from './pages/PhotographyPortfolio';
 import CreativeMultipagePortfolio from './pages/CreativeMultipagePortfolio';
 
 
-function Header({ cartCount, user, onLogout }) {
+function Header({ cartCount: _cartCount, user, onLogout }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const megaMenuTimeoutRef = useRef(null);
@@ -166,14 +166,20 @@ function Header({ cartCount, user, onLogout }) {
           <Bell size={20} />
           <span style={{
             position: 'absolute',
-            top: -2,
-            right: -2,
+            top: -4,
+            right: -6,
             background: '#ef4444',
-            width: 8,
-            height: 8,
+            color: '#fff',
+            fontSize: '10px',
+            fontWeight: 700,
+            width: 15,
+            height: 15,
             borderRadius: '50%',
-            border: '1.5px solid #fff'
-          }}></span>
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            lineHeight: 1
+          }}>0</span>
         </div>
 
         {user ? (
@@ -306,12 +312,12 @@ function Header({ cartCount, user, onLogout }) {
             <Link to="/auth" style={{
               fontSize: '0.85rem',
               fontWeight: 600,
-              background: 'var(--primary-color)',
+              background: '#0066ff',
               color: '#fff',
               textDecoration: 'none',
-              padding: '8px 18px',
+              padding: '9px 20px',
               borderRadius: '8px',
-              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.2)'
+              boxShadow: '0 2px 8px rgba(0, 102, 255, 0.25)'
             }}>
               Get Started
             </Link>
@@ -521,6 +527,7 @@ function AppRoutes({ user, cart, addToCart, removeFromCart, clearCart, handleLog
         <Routes>
           <Route path="/" element={<Home addToCart={addToCart} cart={cart} />} />
           <Route path="/templates" element={<Templates />} />
+          <Route path="/templates/details/:slug" element={<TemplateDetails addToCart={addToCart} cart={cart} />} />
           <Route path="/templates/:categorySlug" element={<Templates />} />
           <Route path="/photography-catalog" element={<PhotographyCatalog />} />
           <Route path="/templates/:slug" element={<TemplateDetails addToCart={addToCart} cart={cart} />} />

@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { useLocation, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Monitor, Tablet, Smartphone, RotateCcw, RotateCw, ArrowLeft, Download, Pencil } from 'lucide-react';
 
 export default function DevicePreviewWrapper({ children }) {
@@ -7,7 +7,6 @@ export default function DevicePreviewWrapper({ children }) {
   const isIframe = window.self !== window.top;
   const [viewMode, setViewMode] = useState('desktop'); // desktop (laptop), tablet, mobile
   const [orientation, setOrientation] = useState('portrait'); // portrait or landscape
-  const iframeRef = useRef(null);
 
   const handleRefresh = () => {
     window.location.reload();

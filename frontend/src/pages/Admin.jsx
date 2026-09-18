@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { Settings, Shield, Plus, Edit, Trash, BarChart3, Database, RefreshCw, Layers } from 'lucide-react';
+import { Plus, Edit, Trash, Database } from 'lucide-react';
 
 export default function Admin({ user }) {
   const navigate = useNavigate();
@@ -131,12 +131,12 @@ export default function Admin({ user }) {
     setSeeding(true);
     fetch('http://localhost:8080/api/seed', { method: 'POST' })
       .then(res => res.json())
-      .then(res => {
+      .then(() => {
         setSeeding(false);
         alert('Database seeding completed successfully! Reloading lists.');
         loadData();
       })
-      .catch(err => {
+      .catch(() => {
         setSeeding(false);
         alert('Error seeding database.');
       });

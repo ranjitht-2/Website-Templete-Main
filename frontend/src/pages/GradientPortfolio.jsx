@@ -8,7 +8,6 @@ import {
   Maximize2,
   Briefcase,
   Calendar,
-  Layers,
   ArrowUp
 } from 'lucide-react';
 import { gradientData, projectFilters, filterMapping } from '../data/portfolio/gradientData';

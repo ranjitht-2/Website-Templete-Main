@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { Download, CreditCard, Key, History, Trash2, ShieldCheck, ArrowRight, ExternalLink, Edit3, ShoppingBag } from 'lucide-react';
+import { Download, Key, Trash2, ShieldCheck, ArrowRight, Edit3 } from 'lucide-react';
 
 export default function Dashboard({ user, cart, removeFromCart, clearCart }) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -117,7 +117,7 @@ export default function Dashboard({ user, cart, removeFromCart, clearCart }) {
         link.click();
         link.parentNode.removeChild(link);
       })
-      .catch(err => {
+      .catch(() => {
         alert('Failed to compile and export custom layout project.');
       });
   };

@@ -15,7 +15,6 @@ export default function BuilderLayout() {
   const navigate = useNavigate();
 
   const templateParam = searchParams.get('template') || searchParams.get('project') || '';
-  const categoryParam = searchParams.get('category') || '';
   const pageParam = searchParams.get('page') || 'index.html';
   const drawerParam = searchParams.get('drawer') || searchParams.get('panel') || 'colors';
 

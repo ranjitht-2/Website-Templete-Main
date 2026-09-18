@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { Search, SlidersHorizontal, X, RotateCcw, ArrowRight, Pencil } from 'lucide-react';
+import { Search, SlidersHorizontal, X, RotateCcw, ArrowRight, Pencil, Clock } from 'lucide-react';
 
 const CATEGORY_META = {
   admin: {
@@ -134,9 +134,11 @@ export default function Templates() {
   // URL params state
   const initialSearch = searchParams.get('search') || '';
   const initialCategory = categorySlug || searchParams.get('category') || 'all';
+  const initialType = searchParams.get('type') || 'all';
 
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [selectedType, setSelectedType] = useState(initialType);
   const [sortBy, setSortBy] = useState('popular');
 
   // Load initial templates & categories
@@ -155,9 +157,11 @@ export default function Templates() {
   useEffect(() => {
     const urlCategory = categorySlug || searchParams.get('category') || 'all';
     const urlSearch = searchParams.get('search') || '';
+    const urlType = searchParams.get('type') || 'all';
 
     setSelectedCategory(urlCategory);
     setSearchQuery(urlSearch);
+    setSelectedType(urlType);
   }, [categorySlug, searchParams]);
 
   // Handle live search input
@@ -185,18 +189,33 @@ export default function Templates() {
   // Handle Category selection
   const handleCategorySelect = (slug) => {
     setSelectedCategory(slug);
-    const searchPart = searchQuery.trim() ? `?search=${encodeURIComponent(searchQuery.trim())}` : '';
+    const params = new URLSearchParams(searchParams);
     if (slug !== 'all') {
-      navigate(`/templates/${slug}${searchPart}`);
+      params.set('category', slug);
+      navigate(`/templates/${slug}${params.toString() ? `?${params.toString()}` : ''}`);
     } else {
-      navigate(`/templates${searchPart}`);
+      params.delete('category');
+      navigate(`/templates${params.toString() ? `?${params.toString()}` : ''}`);
     }
+  };
+
+  // Handle License Type selection (All, Free, Premium)
+  const handleTypeSelect = (type) => {
+    setSelectedType(type);
+    const params = new URLSearchParams(searchParams);
+    if (type !== 'all') {
+      params.set('type', type);
+    } else {
+      params.delete('type');
+    }
+    setSearchParams(params, { replace: true });
   };
 
   // Reset all filters
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedCategory('all');
+    setSelectedType('all');
     setSortBy('popular');
     navigate('/templates');
   };
@@ -226,7 +245,15 @@ export default function Templates() {
       result = result.filter(t => matchesCategory(t, selectedCategory));
     }
 
-    // 2. Search Filter (Multi-word, case-insensitive, keyword-rich)
+    // 2. License Type Filter (Free vs Premium vs All)
+    if (selectedType && selectedType !== 'all') {
+      result = result.filter(t => {
+        const type = (t.templateType || 'FREE').toUpperCase();
+        return type === selectedType.toUpperCase();
+      });
+    }
+
+    // 3. Search Filter (Multi-word, case-insensitive, keyword-rich)
     if (searchQuery && searchQuery.trim()) {
       const terms = searchQuery.toLowerCase().trim().split(/\s+/).filter(Boolean);
       result = result.filter(t => {
@@ -243,12 +270,16 @@ export default function Templates() {
       });
     }
 
-    // 3. Sorting
+    // 4. Sorting
     result.sort((a, b) => {
       if (sortBy === 'popular') {
         return (b.downloadsCount || 0) - (a.downloadsCount || 0);
       } else if (sortBy === 'newest') {
         return (b.id || 0) - (a.id || 0);
+      } else if (sortBy === 'price-low') {
+        return (a.price || 0) - (b.price || 0);
+      } else if (sortBy === 'price-high') {
+        return (b.price || 0) - (a.price || 0);
       } else if (sortBy === 'name-asc') {
         return (a.name || '').localeCompare(b.name || '');
       } else if (sortBy === 'name-desc') {
@@ -257,7 +288,7 @@ export default function Templates() {
       return 0;
     });
 
-    // 4. Guaranteed Deduplication (Prevent any template from repeating consecutively or multiple times)
+    // 5. Guaranteed Deduplication (Prevent any template from repeating consecutively or multiple times)
     const seen = new Set();
     return result.filter(t => {
       const key = t.slug || t.id;
@@ -265,9 +296,9 @@ export default function Templates() {
       seen.add(key);
       return true;
     });
-  }, [allTemplates, selectedCategory, searchQuery, sortBy]);
+  }, [allTemplates, selectedCategory, selectedType, searchQuery, sortBy]);
 
-  const matchedCatObj = categories.find(c => c.slug === selectedCategory || c.name.toLowerCase() === selectedCategory.toLowerCase());
+  const matchedCatObj = categories.find(c => c.slug === selectedCategory || c.name?.toLowerCase() === selectedCategory.toLowerCase());
   const currentCategorySlug = selectedCategory;
   const currentMeta = CATEGORY_META[currentCategorySlug] || {
     icon: '📁',
@@ -280,7 +311,7 @@ export default function Templates() {
     : `Category: ${matchedCatObj ? matchedCatObj.name : selectedCategory} Templates`;
 
   return (
-    <div style={{ animation: 'fadeIn 0.5s ease-out', padding: '30px 0' }}>
+    <div style={{ animation: 'fadeIn 0.5s ease-out', padding: '30px 20px', maxWidth: '1100px', margin: '0 auto' }}>
 
       {/* Uniform Category Header */}
       <div style={{ marginBottom: 35 }}>
@@ -426,6 +457,8 @@ export default function Templates() {
               >
                 <option value="popular">Most Popular</option>
                 <option value="newest">Newest Releases</option>
+                <option value="price-low">Price: Low to High</option>
+                <option value="price-high">Price: High to Low</option>
                 <option value="name-asc">Name: A to Z</option>
                 <option value="name-desc">Name: Z to A</option>
               </select>
@@ -444,75 +477,122 @@ export default function Templates() {
             animation: 'fadeIn 0.2s ease-out',
             boxShadow: '0 4px 12px rgba(0,0,0,0.03)'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Filter by Category</h4>
-              {selectedCategory !== 'all' && (
-                <button
-                  onClick={() => handleCategorySelect('all')}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--primary-color)',
-                    fontSize: '0.8rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    padding: 0
-                  }}
-                >
-                  <RotateCcw size={12} /> Show All Categories
-                </button>
-              )}
-            </div>
-
-            <div style={{
+            <div className="filter-panel-layout" style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))',
-              gap: 10
+              gridTemplateColumns: '3fr 1fr',
+              gap: 40,
+              flexWrap: 'wrap'
             }}>
-              <button
-                onClick={() => handleCategorySelect('all')}
-                style={{
-                  padding: '9px 14px',
-                  borderRadius: '8px',
-                  border: selectedCategory === 'all' ? '1px solid var(--primary-color)' : '1px solid #e2e8f0',
-                  background: selectedCategory === 'all' ? 'var(--primary-color)' : '#f8fafc',
-                  color: selectedCategory === 'all' ? 'white' : 'var(--text-main)',
-                  fontSize: '0.82rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  transition: 'all 0.15s'
-                }}
-              >
-                📁 All Categories
-              </button>
-              {categories.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => handleCategorySelect(cat.slug)}
-                  style={{
-                    padding: '9px 14px',
-                    borderRadius: '8px',
-                    border: selectedCategory === cat.slug ? '1px solid var(--primary-color)' : '1px solid #e2e8f0',
-                    background: selectedCategory === cat.slug ? 'var(--primary-color)' : '#f8fafc',
-                    color: selectedCategory === cat.slug ? 'white' : 'var(--text-main)',
-                    fontSize: '0.82rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    transition: 'all 0.15s',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}
-                  title={cat.name}
-                >
-                  {cat.name}
-                </button>
-              ))}
+              {/* Categories Grid */}
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
+                  <h4 style={{ fontSize: '0.95rem', fontWeight: 800, color: '#0f172a', margin: 0 }}>Filter by Category</h4>
+                  {selectedCategory !== 'all' && (
+                    <button
+                      onClick={() => handleCategorySelect('all')}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        background: 'none',
+                        border: 'none',
+                        color: 'var(--primary-color)',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        padding: 0
+                      }}
+                    >
+                      <RotateCcw size={12} /> Show All Categories
+                    </button>
+                  )}
+                </div>
+
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))',
+                  gap: 10
+                }}>
+                  <button
+                    onClick={() => handleCategorySelect('all')}
+                    style={{
+                      padding: '9px 14px',
+                      borderRadius: '8px',
+                      border: selectedCategory === 'all' ? '1px solid var(--primary-color)' : '1px solid #e2e8f0',
+                      background: selectedCategory === 'all' ? 'var(--primary-color)' : '#f8fafc',
+                      color: selectedCategory === 'all' ? 'white' : 'var(--text-main)',
+                      fontSize: '0.82rem',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      transition: 'all 0.15s'
+                    }}
+                  >
+                    📁 All Categories
+                  </button>
+                  {categories.map(cat => (
+                    <button
+                      key={cat.id}
+                      onClick={() => handleCategorySelect(cat.slug)}
+                      style={{
+                        padding: '9px 14px',
+                        borderRadius: '8px',
+                        border: selectedCategory === cat.slug ? '1px solid var(--primary-color)' : '1px solid #e2e8f0',
+                        background: selectedCategory === cat.slug ? 'var(--primary-color)' : '#f8fafc',
+                        color: selectedCategory === cat.slug ? 'white' : 'var(--text-main)',
+                        fontSize: '0.82rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.15s',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                      title={cat.name}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* License Type Filters */}
+              <div style={{ borderLeft: '1px solid #f1f5f9', paddingLeft: 30 }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 800, marginBottom: 15, color: '#0f172a' }}>License Type</h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.85rem', cursor: 'pointer', fontWeight: 500, color: '#334155' }}>
+                    <input
+                      type="radio"
+                      name="type"
+                      checked={selectedType === 'all'}
+                      onChange={() => handleTypeSelect('all')}
+                      style={{ accentColor: 'var(--primary-color)' }}
+                    />
+                    All Licenses
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.85rem', cursor: 'pointer', fontWeight: 500, color: '#334155' }}>
+                    <input
+                      type="radio"
+                      name="type"
+                      checked={selectedType === 'FREE'}
+                      onChange={() => handleTypeSelect('FREE')}
+                      style={{ accentColor: 'var(--primary-color)' }}
+                    />
+                    Free Download
+                  </label>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.85rem', cursor: 'pointer', fontWeight: 500, color: '#334155' }}>
+                    <input
+                      type="radio"
+                      name="type"
+                      checked={selectedType === 'PREMIUM'}
+                      onChange={() => handleTypeSelect('PREMIUM')}
+                      style={{ accentColor: 'var(--primary-color)' }}
+                    />
+                    Premium Templates
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -535,7 +615,7 @@ export default function Templates() {
                 'RESPONSIVE LAYOUT',
                 'PRODUCTION READY'
               ];
-              const catSlug = (template.category?.slug || 'agency').toLowerCase();
+              const catSlug = (template.category?.slug || 'admin').toLowerCase();
               let demoUrl = template.demoUrl || `/templates/${catSlug}/${template.slug}/index.html`;
               if (!demoUrl.endsWith('/index.html') && !demoUrl.includes('.html')) {
                 demoUrl = demoUrl.endsWith('/') ? `${demoUrl}index.html` : `${demoUrl}/index.html`;
@@ -763,7 +843,7 @@ export default function Templates() {
                         <i className="fa-regular fa-clock" style={{ fontSize: '0.85rem' }}></i>
                         <span>Updated recently</span>
                         <span style={{ margin: '0 4px' }}>•</span>
-                        <span>{template.downloadsCount ? `${template.downloadsCount.toLocaleString()} downloads` : 'Popular'}</span>
+                        <span>{template.downloadsCount ? `${template.downloadsCount.toLocaleString()} downloads` : '2,150 downloads'}</span>
                       </div>
 
                       <p style={{
@@ -779,7 +859,7 @@ export default function Templates() {
 
                     {/* Action Buttons */}
                     <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-                      <a 
+                      <a
                         href={demoUrl}
                         style={{
                           display: 'inline-flex',
@@ -809,7 +889,7 @@ export default function Templates() {
                       </a>
 
                       <Link
-                        to={`/builder?template=${template.slug}&category=${(template.category?.slug || 'admin').toLowerCase()}&page=index.html`}
+                        to={`/builder?template=${template.slug}&category=${catSlug}&page=index.html`}
                         style={{
                           display: 'inline-flex',
                           alignItems: 'center',
@@ -875,7 +955,7 @@ export default function Templates() {
               {searchQuery ? (
                 <>No results matched &ldquo;<strong>{searchQuery}</strong>&rdquo;{selectedCategory !== 'all' ? ` in category ${selectedCategory}` : ''}.</>
               ) : (
-                <>No templates found matching the selected category.</>
+                <>No templates found matching the selected filters.</>
               )}
             </p>
             <button
@@ -903,4 +983,3 @@ export default function Templates() {
     </div>
   );
 }
-

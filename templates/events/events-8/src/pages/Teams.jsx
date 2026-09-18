@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import GlitchText from '../components/GlitchText';
 import { Users, Search, PlusCircle, UserCheck, CheckCircle2, Shield, Code, Sparkles, Filter } from 'lucide-react';
+import { SKILLS_LIST, SKILLS_FILTER_OPTIONS, AVAILABLE_TEAMS } from '../data/teamsData';
 
 const Teams = () => {
   const [activeTab, setActiveTab] = useState('FIND_TEAM');
@@ -20,15 +21,9 @@ const Teams = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedSkillFilter, setSelectedSkillFilter] = useState('ALL');
 
-  const skillsList = ['ALL', 'React', 'Python', 'AI', 'UI/UX', 'Java', 'C++', 'Cybersecurity', 'Cloud', 'Robotics'];
+  const skillsList = SKILLS_FILTER_OPTIONS;
 
-  const availableTeams = [
-    { id: 1, name: 'Neural Overlords', captain: 'Alex Rivera', college: 'IIT Madras', membersNeeded: 1, requiredSkills: ['AI', 'Python'], projectTrack: 'AI & Machine Learning' },
-    { id: 2, name: 'Cyber Phantom', college: 'Anna University', captain: 'Priya Sharma', membersNeeded: 2, requiredSkills: ['Cybersecurity', 'C++'], projectTrack: 'Cybersecurity' },
-    { id: 3, name: 'Quantum Coders', college: 'SRM Institute', captain: 'Rohan Gupta', membersNeeded: 1, requiredSkills: ['React', 'UI/UX'], projectTrack: 'Web & App Development' },
-    { id: 4, name: 'RoboBytes', college: 'VIT Chennai', captain: 'Karthik Raja', membersNeeded: 2, requiredSkills: ['Robotics', 'C++'], projectTrack: 'Smart Cities' },
-    { id: 5, name: 'Cloud Architects', college: 'SSN College', captain: 'Ananya Roy', membersNeeded: 1, requiredSkills: ['Cloud', 'Java'], projectTrack: 'FinTech' }
-  ];
+  const availableTeams = AVAILABLE_TEAMS;
 
   const handleCreateSubmit = (e) => {
     e.preventDefault();
@@ -291,7 +286,7 @@ const Teams = () => {
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
-                {['React', 'Python', 'AI', 'UI/UX', 'Java', 'C++', 'Cybersecurity', 'Cloud', 'Robotics'].map((skillName, idx) => (
+                {SKILLS_LIST.map((skillName, idx) => (
                   <div key={idx} className="cyber-card" style={{ textAlign: 'center', padding: '1.75rem 1rem', backgroundColor: 'rgba(10, 16, 12, 0.85)' }}>
                     <div className="cyber-corner-tl" />
                     <div className="cyber-corner-br" />

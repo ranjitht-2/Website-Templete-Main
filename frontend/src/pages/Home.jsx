@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { api } from '../services/api';
-import { ArrowRight, Star, Sparkles, Search, Bookmark, X, SlidersHorizontal, ArrowUpRight, Check, Eye } from 'lucide-react';
+import { ArrowRight, Star, Sparkles, Search, Bookmark, X } from 'lucide-react';
 
-export default function Home({ addToCart, cart }) {
+export default function Home({ addToCart: _addToCart, cart: _cart }) {
   const [allTemplates, setAllTemplates] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -11,7 +11,6 @@ export default function Home({ addToCart, cart }) {
   const [sortBy, setSortBy] = useState('popular');
   const [savedSlugs, setSavedSlugs] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   useEffect(() => {
     Promise.all([

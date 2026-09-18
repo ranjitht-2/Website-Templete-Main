@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import JSZip from 'jszip';
 import { Search } from 'lucide-react';
 
 export default function PhotographyCatalog() {
-  const [downloadingSlug, setDownloadingSlug] = useState('');
+  const [_downloadingSlug, _setDownloadingSlug] = useState('');
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
   const [searchQuery, setSearchQuery] = useState('');
@@ -183,8 +182,8 @@ export default function PhotographyCatalog() {
     'aether-studio-photography': ['package.json', 'vite.config.js', 'index.html', 'src/main.jsx', 'src/App.jsx', 'src/index.css']
   };
 
-  const handleDownload = async (slug, templateName) => {
-    setDownloadingSlug(slug);
+  const _handleDownload = async (slug, templateName) => {
+    _setDownloadingSlug(slug);
 
     const zip = new JSZip();
     const filesToDownload = TEMPLATE_FILES[slug] || [];
@@ -247,7 +246,7 @@ export default function PhotographyCatalog() {
       console.error(err);
       showToast(`Failed to bundle ${templateName} files.`, 'error');
     } finally {
-      setDownloadingSlug('');
+      _setDownloadingSlug('');
     }
   };
 

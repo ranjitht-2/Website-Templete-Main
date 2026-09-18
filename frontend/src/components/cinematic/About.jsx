@@ -1,12 +1,8 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import { siteConfig } from '../../data/cinematic/config';
 import ScrollReveal from './ScrollReveal';
 
 export default function About() {
-  // Split statement words to animate them on hover/reveal
-  const words = siteConfig.about.statement.split(" ");
-
   return (
     <section id="about" className="py-32 md:py-48 w-full bg-black text-[#f5f4f1] border-b border-white/5">
       <div className="max-w-6xl mx-auto px-6 md:px-12 flex flex-col items-center">

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
@@ -111,19 +111,14 @@ function ProceduralCamera({ scrollProgress = 0 }) {
   );
 }
 
-export default function CameraModel({ glbPath = null, scrollProgress = 0 }) {
-  // CRITICAL NOTE: If a real Sony mirrorless camera .glb is provided, load it below.
-  // Example:
-  // const { scene } = useGLTF(glbPath);
-  // return <primitive object={scene} scale={[1, 1, 1]} />;
+function GlbCamera({ path }) {
+  const { scene } = useGLTF(path);
+  return <primitive object={scene} scale={[1.2, 1.2, 1.2]} />;
+}
 
+export default function CameraModel({ glbPath = null, scrollProgress = 0 }) {
   if (glbPath) {
-    try {
-      const { scene } = useGLTF(glbPath);
-      return <primitive object={scene} scale={[1.2, 1.2, 1.2]} />;
-    } catch (e) {
-      console.warn("Failed to load .glb asset, falling back to procedural camera", e);
-    }
+    return <GlbCamera path={glbPath} />;
   }
 
   // Default to procedural mirrorless camera model

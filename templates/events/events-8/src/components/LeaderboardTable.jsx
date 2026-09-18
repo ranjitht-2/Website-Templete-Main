@@ -1,36 +1,20 @@
 import React, { useState } from 'react';
-import { Search, Trophy, Medal, Award, Flame, Filter, ChevronRight } from 'lucide-react';
+import { Search, Trophy, Medal, Award, Filter } from 'lucide-react';
+import { LEADERBOARD_DATA, COLLEGES_FILTER_OPTIONS, MAX_SCORE } from '../data/leaderboardData';
+import {
+  filterLeaderboard,
+  calculateScorePercent,
+  formatRank,
+  getRankColor,
+  getScoreBarColor,
+  getStatusBadgeStyle
+} from '../utils/leaderboardUtils';
 
 const LeaderboardTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCollege, setFilterCollege] = useState('ALL');
 
-  const leaderboardData = [
-    { rank: 1, team: 'Code Titans', college: 'IIT Madras', project: 'NeuralMesh AI', challenges: 5, score: 9850, status: 'EVALUATED' },
-    { rank: 2, team: 'Neural Ninjas', college: 'Anna University', project: 'CyberShield Zero', challenges: 5, score: 9210, status: 'EVALUATED' },
-    { rank: 3, team: 'Runtime Rebels', college: 'SRM Institute', project: 'FinPulse Protocol', challenges: 4, score: 8890, status: 'EVALUATED' },
-    { rank: 4, team: 'Pixel Pirates', college: 'SSN College of Eng.', project: 'VisionHealth AI', challenges: 4, score: 8420, status: 'LIVE DEMO' },
-    { rank: 5, team: 'Binary Brawlers', college: 'VIT Chennai', project: 'EcoGrid Smart City', challenges: 4, score: 8150, status: 'LIVE DEMO' },
-    { rank: 6, team: 'Quantum Hackers', college: 'PSG Tech', project: 'Decentralized Identity', challenges: 3, score: 7900, status: 'SUBMITTED' },
-    { rank: 7, team: 'Algorithm Aces', college: 'IIT Madras', project: 'Autonomous Drone Swarm', challenges: 3, score: 7640, status: 'SUBMITTED' },
-    { rank: 8, team: 'Byte Benders', college: 'Anna University', project: 'MedGuard EHR', challenges: 3, score: 7320, status: 'SUBMITTED' },
-    { rank: 9, team: 'Stack Overflow', college: 'St. Joseph’s Eng.', project: 'AquaSense IoT', challenges: 3, score: 7100, status: 'SUBMITTED' },
-    { rank: 10, team: 'Cyber Sentinels', college: 'SRM Institute', project: 'ZeroTrust Auth Gateway', challenges: 3, score: 6850, status: 'SUBMITTED' }
-  ];
-
-  const colleges = ['ALL', 'IIT Madras', 'Anna University', 'SRM Institute', 'SSN College of Eng.', 'VIT Chennai'];
-
-  const filteredData = leaderboardData.filter((item) => {
-    const matchesSearch =
-      item.team.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.project.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.college.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesCollege = filterCollege === 'ALL' || item.college === filterCollege;
-    return matchesSearch && matchesCollege;
-  });
-
-  const maxScore = 10000;
+  const filteredData = filterLeaderboard(LEADERBOARD_DATA, searchTerm, filterCollege);
 
   return (
     <div>
@@ -72,10 +56,10 @@ const LeaderboardTable = () => {
             <Medal size={28} />
           </div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#00f0ff' }}>RANK 02</div>
-          <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: '0.25rem 0' }}>{leaderboardData[1].team}</h3>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{leaderboardData[1].college}</div>
+          <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: '0.25rem 0' }}>{LEADERBOARD_DATA[1].team}</h3>
+          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{LEADERBOARD_DATA[1].college}</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', color: '#00f0ff', marginTop: '0.75rem' }}>
-            {leaderboardData[1].score} PTS
+            {LEADERBOARD_DATA[1].score} PTS
           </div>
         </div>
 
@@ -111,8 +95,8 @@ const LeaderboardTable = () => {
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: '#00ff66', letterSpacing: '2px' }}>
             GRAND CHAMPION
           </div>
-          <h3 style={{ fontSize: '1.5rem', color: '#fff', margin: '0.25rem 0' }}>{leaderboardData[0].team}</h3>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{leaderboardData[0].college}</div>
+          <h3 style={{ fontSize: '1.5rem', color: '#fff', margin: '0.25rem 0' }}>{LEADERBOARD_DATA[0].team}</h3>
+          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{LEADERBOARD_DATA[0].college}</div>
           <div
             style={{
               fontFamily: 'var(--font-heading)',
@@ -123,7 +107,7 @@ const LeaderboardTable = () => {
               textShadow: '0 0 15px #00ff66'
             }}
           >
-            {leaderboardData[0].score} PTS
+            {LEADERBOARD_DATA[0].score} PTS
           </div>
         </div>
 
@@ -154,10 +138,10 @@ const LeaderboardTable = () => {
             <Award size={28} />
           </div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#ffb700' }}>RANK 03</div>
-          <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: '0.25rem 0' }}>{leaderboardData[2].team}</h3>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{leaderboardData[2].college}</div>
+          <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: '0.25rem 0' }}>{LEADERBOARD_DATA[2].team}</h3>
+          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{LEADERBOARD_DATA[2].college}</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', color: '#ffb700', marginTop: '0.75rem' }}>
-            {leaderboardData[2].score} PTS
+            {LEADERBOARD_DATA[2].score} PTS
           </div>
         </div>
       </div>
@@ -194,7 +178,7 @@ const LeaderboardTable = () => {
             className="cyber-input"
             style={{ minWidth: '0', width: '100%', cursor: 'pointer' }}
           >
-            {colleges.map((col, idx) => (
+            {COLLEGES_FILTER_OPTIONS.map((col, idx) => (
               <option key={idx} value={col} style={{ backgroundColor: '#050505', color: '#fff' }}>
                 {col === 'ALL' ? 'All Colleges' : col}
               </option>
@@ -234,7 +218,7 @@ const LeaderboardTable = () => {
           </thead>
           <tbody>
             {filteredData.map((row) => {
-              const scorePercent = (row.score / maxScore) * 100;
+              const scorePercent = calculateScorePercent(row.score, MAX_SCORE);
               return (
                 <tr
                   key={row.rank}
@@ -245,8 +229,8 @@ const LeaderboardTable = () => {
                   onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 255, 102, 0.05)')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
-                  <td style={{ padding: '1rem', fontWeight: '700', color: row.rank <= 3 ? '#00ff66' : '#94a3b8' }}>
-                    #{String(row.rank).padStart(2, '0')}
+                  <td style={{ padding: '1rem', fontWeight: '700', color: getRankColor(row.rank) }}>
+                    {formatRank(row.rank)}
                   </td>
                   <td style={{ padding: '1rem', color: '#ffffff', fontWeight: '600' }}>{row.team}</td>
                   <td style={{ padding: '1rem', color: '#cbd5e1' }}>{row.college}</td>
@@ -259,7 +243,7 @@ const LeaderboardTable = () => {
                           style={{
                             width: `${scorePercent}%`,
                             height: '100%',
-                            backgroundColor: row.rank === 1 ? '#00ff66' : '#00f0ff',
+                            backgroundColor: getScoreBarColor(row.rank),
                             boxShadow: '0 0 8px #00ff66'
                           }}
                         />
@@ -268,16 +252,7 @@ const LeaderboardTable = () => {
                     </div>
                   </td>
                   <td style={{ padding: '1rem' }}>
-                    <span
-                      style={{
-                        padding: '0.25rem 0.6rem',
-                        borderRadius: '4px',
-                        fontSize: '0.75rem',
-                        backgroundColor: row.status === 'EVALUATED' ? 'rgba(0, 255, 102, 0.15)' : 'rgba(255, 183, 0, 0.15)',
-                        border: `1px solid ${row.status === 'EVALUATED' ? '#00ff66' : '#ffb700'}`,
-                        color: row.status === 'EVALUATED' ? '#00ff66' : '#ffb700'
-                      }}
-                    >
+                    <span style={getStatusBadgeStyle(row.status)}>
                       {row.status}
                     </span>
                   </td>
