@@ -7,7 +7,7 @@ export const Footer = ({ onNavigate }) => {
   return (
     <footer style={{ background: 'var(--bg-glass)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', borderTop: '1px solid var(--border-light)', paddingTop: '70px', paddingBottom: '30px' }}>
       <div className="container">
-        <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr 1fr 1fr', gap: '48px', marginBottom: '60px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(250px, 100%), 1fr))', gap: '48px', marginBottom: '60px' }}>
           {/* Brand Info */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '18px', cursor: 'pointer' }} onClick={() => onNavigate('home')}>

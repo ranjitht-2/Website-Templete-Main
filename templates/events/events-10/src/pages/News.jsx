@@ -37,7 +37,7 @@ export const News = () => {
             ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '30px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '30px' }}>
             {filteredNews.map((item) => (
               <NewsCard key={item.id} item={item} />
             ))}

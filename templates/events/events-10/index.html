@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chennai Premier League 2026 — Official Tournament Portal</title>
     <script>(function(){if(window.location.pathname.endsWith('/index.html')){window.history.replaceState(null,'',window.location.pathname.slice(0,-10)+window.location.search+window.location.hash);}})();</script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
 
     <!-- TechnoSprint Responsive Template Preview Wrapper Script -->
     <script>
@@ -239,6 +246,8 @@
             btnRefresh.addEventListener('click', () => {
               iframe.src = iframe.src;
             });
+
+            updateStyles();
           }
           
           if (document.readyState === 'interactive' || document.readyState === 'complete') {
@@ -250,12 +259,9 @@
         }
       })();
     </script>
-
-    
   </head>
   <body>
-  
     <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="./src/main.jsx"></script>
   </body>
 </html>
