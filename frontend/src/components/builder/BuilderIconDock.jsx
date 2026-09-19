@@ -10,7 +10,6 @@ import {
   Sun,
   Moon,
   HelpCircle,
-  Terminal,
   MessageSquareHeart
 } from 'lucide-react';
 

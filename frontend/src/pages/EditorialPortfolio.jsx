@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Check, 
-  Send, 
   CheckCircle2, 
   X,
   Briefcase,

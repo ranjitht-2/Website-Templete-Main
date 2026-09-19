@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Layers, 
@@ -9,7 +9,6 @@ import {
   Briefcase, 
   Calendar,
   CheckCircle,
-  Eye,
   MapPin,
   Mail,
   ArrowRight,
@@ -700,8 +699,6 @@ function ContactPage() {
 // ---------------- MAIN ROUTER ----------------
 
 export default function MultipagePortfolio() {
-  const location = useLocation();
-
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-zinc-300 flex flex-col justify-between selection:bg-[#e8583f] selection:text-white font-sans">
       

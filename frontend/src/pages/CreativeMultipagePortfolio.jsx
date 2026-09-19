@@ -9,8 +9,6 @@ import {
   X,
   Mail,
   MapPin,
-  Calendar,
-  Briefcase,
   CheckCircle2,
   Send
 } from 'lucide-react';

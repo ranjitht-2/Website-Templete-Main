@@ -99,7 +99,7 @@ export default function FineArtTemplate() {
       <CollectionsGrid />
 
       {/* 4. Feature Work Blocks (Dynamic alternating layout) */}
-      {siteConfig.featureBlocks.map((block, idx) => (
+      {siteConfig.featureBlocks.map((block) => (
         <FeatureBlock
           key={block.id}
           id={block.id}

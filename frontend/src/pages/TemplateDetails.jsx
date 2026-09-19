@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../services/api';
-import { ArrowLeft, Check, Download, ExternalLink, Globe, Layout, ShieldCheck, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Check, ExternalLink, Globe } from 'lucide-react';
 
-export default function TemplateDetails({ addToCart, cart }) {
+export default function TemplateDetails({ addToCart: _addToCart, cart: _cart }) {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const [template, setTemplate] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadLink, setDownloadLink] = useState('');
   const [activeTab, setActiveTab] = useState('description');
   const navigate = useNavigate();
 
@@ -74,8 +72,6 @@ export default function TemplateDetails({ addToCart, cart }) {
       </div>
     );
   }
-
-  const isAdded = cart.some(item => item.id === template.id);
 
   return (
     <div style={{ animation: 'fadeIn 0.5s ease-out', padding: '20px 0' }}>

@@ -14,7 +14,6 @@ import {
   Mail, 
   MapPin, 
   ArrowRight,
-  BookOpen,
   Calendar,
   X,
   Maximize2,
@@ -689,8 +688,6 @@ function ContactPage() {
 // ---------------- MAIN ROUTER ----------------
 
 export default function AgencyPortfolio() {
-  const location = useLocation();
-
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 flex flex-col justify-between selection:bg-[#3ecf6e] selection:text-black font-sans">
       
