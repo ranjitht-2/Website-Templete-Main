@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Search, Trophy, Medal, Award, Filter } from 'lucide-react';
-import { LEADERBOARD_DATA, COLLEGES_FILTER_OPTIONS, MAX_SCORE } from '../data/leaderboardData';
+import { LEADERBOARD_DATA, MAX_SCORE } from '../data/leaderboardData';
 import {
   filterLeaderboard,
+  getCollegeFilterOptions,
   calculateScorePercent,
   formatRank,
   getRankColor,
@@ -10,15 +11,140 @@ import {
   getStatusBadgeStyle
 } from '../utils/leaderboardUtils';
 
+/**
+ * Reusable Podium Card sub-component for top 3 positions.
+ * Preserves exact visual hierarchy and tier styling while accepting dynamic team data safely.
+ */
+const PodiumCard = ({ data, position }) => {
+  if (!data) return null;
+
+  const isChampion = position === 1;
+  const isRankTwo = position === 2;
+
+  // Tier specific visual tokens
+  const cardClassName = isChampion ? 'cyber-card pulse-glow' : 'cyber-card';
+  const accentColor = isChampion ? '#00ff66' : isRankTwo ? '#00f0ff' : '#ffb700';
+  const badgeLabel = isChampion ? 'GRAND CHAMPION' : `RANK 0${position}`;
+  
+  const cardStyle = {
+    textAlign: 'center',
+    backgroundColor: isChampion
+      ? 'rgba(0, 255, 102, 0.1)'
+      : isRankTwo
+      ? 'rgba(0, 240, 255, 0.05)'
+      : 'rgba(255, 183, 0, 0.05)',
+    border: `${isChampion ? '2px' : '1px'} solid ${accentColor}`,
+    padding: isChampion ? '2rem 1rem' : '1.75rem 1rem'
+  };
+
+  const iconCircleStyle = {
+    width: isChampion ? '60px' : '50px',
+    height: isChampion ? '60px' : '50px',
+    borderRadius: '50%',
+    backgroundColor: isChampion
+      ? 'rgba(0, 255, 102, 0.25)'
+      : isRankTwo
+      ? 'rgba(0, 240, 255, 0.2)'
+      : 'rgba(255, 183, 0, 0.2)',
+    border: `2px solid ${accentColor}`,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: accentColor,
+    margin: '0 auto 0.75rem auto',
+    boxShadow: isChampion ? '0 0 25px rgba(0, 255, 102, 0.5)' : 'none'
+  };
+
+  const scoreStyle = {
+    fontFamily: 'var(--font-heading)',
+    fontSize: isChampion ? '1.9rem' : '1.6rem',
+    fontWeight: isChampion ? '900' : 'normal',
+    color: accentColor,
+    marginTop: '0.75rem',
+    textShadow: isChampion ? '0 0 15px #00ff66' : 'none'
+  };
+
+  return (
+    <div className={cardClassName} style={cardStyle}>
+      {isChampion && (
+        <>
+          <div className="cyber-corner-tl" />
+          <div className="cyber-corner-br" />
+        </>
+      )}
+
+      <div style={iconCircleStyle}>
+        {isChampion ? (
+          <Trophy size={32} />
+        ) : isRankTwo ? (
+          <Medal size={28} />
+        ) : (
+          <Award size={28} />
+        )}
+      </div>
+
+      <div
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: isChampion ? '0.85rem' : '0.8rem',
+          color: accentColor,
+          letterSpacing: isChampion ? '2px' : 'normal'
+        }}
+      >
+        {badgeLabel}
+      </div>
+
+      <h3 style={{ fontSize: isChampion ? '1.5rem' : '1.3rem', color: '#fff', margin: '0.25rem 0' }}>
+        {data.team || 'N/A'}
+      </h3>
+
+      <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
+        {data.college || 'N/A'}
+      </div>
+
+      <div style={scoreStyle}>
+        {data.score ?? 0} PTS
+      </div>
+    </div>
+  );
+};
+
 const LeaderboardTable = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCollege, setFilterCollege] = useState('ALL');
 
-  const filteredData = filterLeaderboard(LEADERBOARD_DATA, searchTerm, filterCollege);
+  // Dynamic derivation of college filter options from dataset
+  const collegeOptions = useMemo(
+    () => getCollegeFilterOptions(LEADERBOARD_DATA),
+    []
+  );
+
+  // Memoized search and filter pipeline
+  const filteredData = useMemo(
+    () => filterLeaderboard(LEADERBOARD_DATA, searchTerm, filterCollege),
+    [searchTerm, filterCollege]
+  );
+
+  // Extract top 3 positions dynamically from active filtered dataset
+  const topThree = useMemo(() => filteredData.slice(0, 3), [filteredData]);
+  const firstPlace = topThree[0];
+  const secondPlace = topThree[1];
+  const thirdPlace = topThree[2];
 
   return (
     <div>
-      {/* Top 3 Podium Design */}
+      {/* Declarative CSS for row hover states to replace imperative DOM mutations */}
+      <style>{`
+        .cyber-table-row {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          transition: background-color 0.2s ease;
+        }
+        .cyber-table-row:hover {
+          background-color: rgba(0, 255, 102, 0.05) !important;
+        }
+      `}</style>
+
+      {/* Top 3 Podium Design — Synced dynamically with filtered state */}
       <div
         style={{
           display: 'grid',
@@ -29,121 +155,10 @@ const LeaderboardTable = () => {
           width: '100%'
         }}
       >
-        {/* Rank 2 */}
-        <div
-          className="cyber-card"
-          style={{
-            textAlign: 'center',
-            backgroundColor: 'rgba(0, 240, 255, 0.05)',
-            border: '1px solid #00f0ff',
-            padding: '1.75rem 1rem'
-          }}
-        >
-          <div
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(0, 240, 255, 0.2)',
-              border: '2px solid #00f0ff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#00f0ff',
-              margin: '0 auto 0.75rem auto'
-            }}
-          >
-            <Medal size={28} />
-          </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#00f0ff' }}>RANK 02</div>
-          <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: '0.25rem 0' }}>{LEADERBOARD_DATA[1].team}</h3>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{LEADERBOARD_DATA[1].college}</div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', color: '#00f0ff', marginTop: '0.75rem' }}>
-            {LEADERBOARD_DATA[1].score} PTS
-          </div>
-        </div>
-
-        {/* Rank 1 (Center Champion) */}
-        <div
-          className="cyber-card pulse-glow"
-          style={{
-            textAlign: 'center',
-            backgroundColor: 'rgba(0, 255, 102, 0.1)',
-            border: '2px solid #00ff66',
-            padding: '2rem 1rem'
-          }}
-        >
-          <div className="cyber-corner-tl" />
-          <div className="cyber-corner-br" />
-          <div
-            style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(0, 255, 102, 0.25)',
-              border: '2px solid #00ff66',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#00ff66',
-              margin: '0 auto 0.75rem auto',
-              boxShadow: '0 0 25px rgba(0, 255, 102, 0.5)'
-            }}
-          >
-            <Trophy size={32} />
-          </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: '#00ff66', letterSpacing: '2px' }}>
-            GRAND CHAMPION
-          </div>
-          <h3 style={{ fontSize: '1.5rem', color: '#fff', margin: '0.25rem 0' }}>{LEADERBOARD_DATA[0].team}</h3>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{LEADERBOARD_DATA[0].college}</div>
-          <div
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: '1.9rem',
-              fontWeight: '900',
-              color: '#00ff66',
-              marginTop: '0.75rem',
-              textShadow: '0 0 15px #00ff66'
-            }}
-          >
-            {LEADERBOARD_DATA[0].score} PTS
-          </div>
-        </div>
-
-        {/* Rank 3 */}
-        <div
-          className="cyber-card"
-          style={{
-            textAlign: 'center',
-            backgroundColor: 'rgba(255, 183, 0, 0.05)',
-            border: '1px solid #ffb700',
-            padding: '1.75rem 1rem'
-          }}
-        >
-          <div
-            style={{
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255, 183, 0, 0.2)',
-              border: '2px solid #ffb700',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#ffb700',
-              margin: '0 auto 0.75rem auto'
-            }}
-          >
-            <Award size={28} />
-          </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#ffb700' }}>RANK 03</div>
-          <h3 style={{ fontSize: '1.3rem', color: '#fff', margin: '0.25rem 0' }}>{LEADERBOARD_DATA[2].team}</h3>
-          <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{LEADERBOARD_DATA[2].college}</div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.6rem', color: '#ffb700', marginTop: '0.75rem' }}>
-            {LEADERBOARD_DATA[2].score} PTS
-          </div>
-        </div>
+        {/* Render Order: Rank 2 (Left), Rank 1 (Center Champion), Rank 3 (Right) */}
+        {secondPlace && <PodiumCard data={secondPlace} position={2} />}
+        {firstPlace && <PodiumCard data={firstPlace} position={1} />}
+        {thirdPlace && <PodiumCard data={thirdPlace} position={3} />}
       </div>
 
       {/* Controls: Search & College Filter */}
@@ -178,7 +193,7 @@ const LeaderboardTable = () => {
             className="cyber-input"
             style={{ minWidth: '0', width: '100%', cursor: 'pointer' }}
           >
-            {COLLEGES_FILTER_OPTIONS.map((col, idx) => (
+            {collegeOptions.map((col, idx) => (
               <option key={idx} value={col} style={{ backgroundColor: '#050505', color: '#fff' }}>
                 {col === 'ALL' ? 'All Colleges' : col}
               </option>
@@ -220,15 +235,7 @@ const LeaderboardTable = () => {
             {filteredData.map((row) => {
               const scorePercent = calculateScorePercent(row.score, MAX_SCORE);
               return (
-                <tr
-                  key={row.rank}
-                  style={{
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(0, 255, 102, 0.05)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                >
+                <tr key={row.rank ?? row.team} className="cyber-table-row">
                   <td style={{ padding: '1rem', fontWeight: '700', color: getRankColor(row.rank) }}>
                     {formatRank(row.rank)}
                   </td>
@@ -267,3 +274,4 @@ const LeaderboardTable = () => {
 };
 
 export default LeaderboardTable;
+
