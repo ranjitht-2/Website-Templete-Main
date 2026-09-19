@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
-import { Search, SlidersHorizontal, X, RotateCcw, ArrowRight, Pencil, Clock } from 'lucide-react';
+import { Search, SlidersHorizontal, X, RotateCcw, ArrowRight, Clock } from 'lucide-react';
 
 const CATEGORY_META = {
   admin: {
@@ -887,39 +887,6 @@ export default function Templates() {
                       >
                         Live Demo <ArrowRight size={14} />
                       </a>
-
-                      <Link
-                        to={`/builder?template=${template.slug}&category=${catSlug}&page=index.html`}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: '8px',
-                          padding: '12px 24px',
-                          backgroundColor: '#ffffff',
-                          color: '#0f172a',
-                          borderRadius: '99px',
-                          border: '1px solid #cbd5e1',
-                          fontWeight: '600',
-                          fontSize: '0.85rem',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                          textDecoration: 'none',
-                          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.04)'
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = '#f8fafc';
-                          e.currentTarget.style.borderColor = '#4f46e5';
-                          e.currentTarget.style.color = '#4f46e5';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = '#ffffff';
-                          e.currentTarget.style.borderColor = '#cbd5e1';
-                          e.currentTarget.style.color = '#0f172a';
-                        }}
-                      >
-                        <Pencil size={14} style={{ color: '#4f46e5' }} /> Edit Template
-                      </Link>
                     </div>
 
                   </div>
