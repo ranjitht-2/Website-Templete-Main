@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import { Search, SlidersHorizontal, X, RotateCcw, ArrowRight, Clock } from 'lucide-react';
+import HeartButton from '../components/HeartButton';
 
 const CATEGORY_META = {
   admin: {
@@ -648,25 +649,26 @@ export default function Templates() {
                   }}
                 >
                   {/* Left Column: Responsive Multi-Device CSS Mockup */}
-                  <a
-                    href={demoUrl}
-                    style={{
-                      position: 'relative',
-                      width: '100%',
-                      aspectRatio: '16/11',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background: '#f8fafc',
-                      borderRadius: '16px',
-                      overflow: 'hidden',
-                      border: '1px solid #f1f5f9',
-                      boxSizing: 'border-box',
-                      padding: '24px',
-                      textDecoration: 'none',
-                      cursor: 'pointer'
-                    }}
-                  >
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <a
+                      href={demoUrl}
+                      style={{
+                        position: 'relative',
+                        width: '100%',
+                        aspectRatio: '16/11',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        background: '#f8fafc',
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        border: '1px solid #f1f5f9',
+                        boxSizing: 'border-box',
+                        padding: '24px',
+                        textDecoration: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
                     {/* 1. Laptop Mockup Frame */}
                     <div style={{
                       position: 'relative',
@@ -798,6 +800,8 @@ export default function Templates() {
                       </div>
                     </div>
                   </a>
+                  <HeartButton template={template} size={16} style={{ position: 'absolute', top: 12, right: 12, zIndex: 10 }} />
+                  </div>
 
                   {/* Right Column: Title, Metadata, Description & Pill Buttons */}
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
@@ -887,6 +891,7 @@ export default function Templates() {
                       >
                         Live Demo <ArrowRight size={14} />
                       </a>
+                      <HeartButton template={template} variant="inline" size={16} />
                     </div>
 
                   </div>

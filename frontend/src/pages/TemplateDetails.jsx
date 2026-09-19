@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api } from '../services/api';
 import { ArrowLeft, Check, ExternalLink, Globe } from 'lucide-react';
+import HeartButton from '../components/HeartButton';
 
 export default function TemplateDetails({ addToCart: _addToCart, cart: _cart }) {
   const { slug } = useParams();
@@ -280,6 +281,7 @@ export default function TemplateDetails({ addToCart: _addToCart, cart: _cart }) 
               >
                 <Globe size={18} /> Live Interactive Demo <ExternalLink size={14} />
               </a>
+              <HeartButton template={template} variant="inline" size={18} style={{ width: '100%', justifyContent: 'center', padding: '12px 0' }} />
             </div>
 
             {/* Info Table */}
