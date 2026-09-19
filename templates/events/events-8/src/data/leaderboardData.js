@@ -11,7 +11,9 @@ export const COLLEGES_FILTER_OPTIONS = [
   'Anna University',
   'SRM Institute',
   'SSN College of Eng.',
-  'VIT Chennai'
+  'VIT Chennai',
+  'PSG Tech',
+  'St. Joseph’s Eng.'
 ];
 
 export const LEADERBOARD_DATA = [
@@ -106,3 +108,4 @@ export const LEADERBOARD_DATA = [
     status: 'SUBMITTED'
   }
 ];
+
