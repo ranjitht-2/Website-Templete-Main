@@ -20,6 +20,8 @@ import KairoPhotography from './pages/KairoPhotography';
 import ISteadyGimbal from './pages/ISteadyGimbal';
 import DevicePreviewWrapper from './components/DevicePreviewWrapper';
 import MegaMenu from './components/MegaMenu';
+import { FavoritesProvider, useFavorites } from './context/FavoritesContext';
+import FavoritesDrawer from './components/FavoritesDrawer';
 
 // Portfolio templates
 import ArchitecturePortfolio from './pages/ArchitecturePortfolio';
@@ -41,6 +43,7 @@ function Header({ cartCount: _cartCount, user, onLogout }) {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const { likedCount, toggleFavoritesDrawer } = useFavorites();
 
   const handleMouseEnter = () => {
     if (megaMenuTimeoutRef.current) clearTimeout(megaMenuTimeoutRef.current);
@@ -157,9 +160,46 @@ function Header({ cartCount: _cartCount, user, onLogout }) {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
         {/* Wishlist Heart Icon */}
-        <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', color: '#64748b', transition: 'var(--transition)' }} title="Wishlist">
-          <Heart size={20} />
-        </Link>
+        <button
+          type="button"
+          onClick={toggleFavoritesDrawer}
+          style={{
+            position: 'relative',
+            display: 'flex',
+            alignItems: 'center',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            color: likedCount > 0 ? '#e11d48' : '#64748b',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease'
+          }}
+          title={`Saved Favorites (${likedCount})`}
+        >
+          <Heart size={20} fill={likedCount > 0 ? '#e11d48' : 'none'} color={likedCount > 0 ? '#e11d48' : '#64748b'} />
+          {likedCount > 0 && (
+            <span style={{
+              position: 'absolute',
+              top: -6,
+              right: -8,
+              background: '#e11d48',
+              color: '#fff',
+              fontSize: '10px',
+              fontWeight: 700,
+              minWidth: 16,
+              height: 16,
+              padding: '0 4px',
+              borderRadius: '99px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              lineHeight: 1,
+              boxShadow: '0 2px 4px rgba(225, 29, 72, 0.3)'
+            }}>
+              {likedCount}
+            </span>
+          )}
+        </button>
 
         {/* Notification Bell Icon */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', color: '#64748b', cursor: 'pointer', transition: 'var(--transition)' }} title="Notifications">
@@ -583,17 +623,20 @@ function MainApp() {
   };
 
   return (
-    <Router>
-      <AppRoutes
-        user={user}
-        cart={cart}
-        addToCart={addToCart}
-        removeFromCart={removeFromCart}
-        clearCart={clearCart}
-        handleLogin={handleLogin}
-        handleLogout={handleLogout}
-      />
-    </Router>
+    <FavoritesProvider>
+      <Router>
+        <AppRoutes
+          user={user}
+          cart={cart}
+          addToCart={addToCart}
+          removeFromCart={removeFromCart}
+          clearCart={clearCart}
+          handleLogin={handleLogin}
+          handleLogout={handleLogout}
+        />
+        <FavoritesDrawer />
+      </Router>
+    </FavoritesProvider>
   );
 }
 

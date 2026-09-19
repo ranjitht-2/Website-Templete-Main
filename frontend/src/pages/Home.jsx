@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { ArrowRight, Star, Sparkles, Search, Bookmark, X } from 'lucide-react';
+import HeartButton from '../components/HeartButton';
 
 export default function Home({ addToCart: _addToCart, cart: _cart }) {
   const [allTemplates, setAllTemplates] = useState([]);
@@ -697,30 +698,30 @@ export default function Home({ addToCart: _addToCart, cart: _cart }) {
                       }}
                     />
 
-                    {/* Bookmark Button overlay */}
-                    <button
-                      onClick={(e) => toggleSave(template.slug, e)}
-                      style={{
-                        position: 'absolute',
-                        top: 8,
-                        right: 8,
-                        width: 28,
-                        height: 28,
-                        borderRadius: '6px',
-                        background: isSaved ? '#0066ff' : 'rgba(255, 255, 255, 0.9)',
-                        color: isSaved ? '#ffffff' : '#64748b',
-                        border: 'none',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        cursor: 'pointer',
-                        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
-                        transition: 'all 0.15s'
-                      }}
-                      title={isSaved ? 'Saved' : 'Save template'}
-                    >
-                      <Bookmark size={14} fill={isSaved ? 'currentColor' : 'none'} />
-                    </button>
+                    {/* Heart Like & Bookmark Button overlay */}
+                    <div style={{ position: 'absolute', top: 8, right: 8, display: 'flex', gap: 6, zIndex: 10 }}>
+                      <HeartButton template={template} size={15} style={{ width: 28, height: 28 }} />
+                      <button
+                        onClick={(e) => toggleSave(template.slug, e)}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: '50%',
+                          background: isSaved ? '#0066ff' : 'rgba(255, 255, 255, 0.9)',
+                          color: isSaved ? '#ffffff' : '#64748b',
+                          border: 'none',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                          transition: 'all 0.15s'
+                        }}
+                        title={isSaved ? 'Saved' : 'Save template'}
+                      >
+                        <Bookmark size={14} fill={isSaved ? 'currentColor' : 'none'} />
+                      </button>
+                    </div>
                   </a>
 
                   {/* Card Details */}

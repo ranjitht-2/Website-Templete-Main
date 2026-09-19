@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import JSZip from 'jszip';
 import { Search } from 'lucide-react';
+import HeartButton from '../components/HeartButton';
 
 export default function PhotographyCatalog() {
   const [_downloadingSlug, _setDownloadingSlug] = useState('');
@@ -598,7 +599,11 @@ export default function PhotographyCatalog() {
 
               {/* Action Buttons */}
               <div style={{
-                marginTop: '10px'
+                marginTop: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                flexWrap: 'wrap'
               }}>
                 <a 
                   href={(tpl.demoUrl || `/templates/photography/${tpl.slug}/index.html`).endsWith('/index.html') ? (tpl.demoUrl || `/templates/photography/${tpl.slug}/index.html`) : `${tpl.demoUrl || `/templates/photography/${tpl.slug}`}/index.html`}
@@ -628,6 +633,7 @@ export default function PhotographyCatalog() {
                 >
                   Live Demo <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: '10px' }}></i>
                 </a>
+                <HeartButton template={tpl} variant="inline" size={16} />
               </div>
 
             </div>
