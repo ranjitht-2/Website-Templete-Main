@@ -230,7 +230,7 @@ export default function TemplateSelector() {
                   <div className="flex justify-start">
                     <Link 
                       to={tpl.path}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] tracking-widest uppercase transition-colors shadow shadow-blue-600/10 w-full sm:w-auto"
+                      className="auth-ignore inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] tracking-widest uppercase transition-colors shadow shadow-blue-600/10 w-full sm:w-auto"
                     >
                       LIVE DEMO <ExternalLink size={12} />
                     </Link>

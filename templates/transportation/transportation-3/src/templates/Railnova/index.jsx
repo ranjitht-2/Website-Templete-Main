@@ -135,6 +135,12 @@ export default function Railnova() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="px-3.5 py-1.5 text-xs font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/20 transition-all flex items-center gap-1.5"
+            >
+              <span>Sign In</span>
+            </button>
             <button 
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

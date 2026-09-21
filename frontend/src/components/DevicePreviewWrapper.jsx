@@ -109,7 +109,7 @@ export default function DevicePreviewWrapper({ children }) {
           gap: '4px',
           boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
         }}>
-          {/* Laptop / Desktop Button */}
+          {/* Desktop Button */}
           <button
             onClick={() => setViewMode('desktop')}
             style={{
@@ -130,7 +130,7 @@ export default function DevicePreviewWrapper({ children }) {
             }}
           >
             <Monitor size={15} />
-            Laptop / Desktop
+            Desktop
           </button>
 
           {/* Tablet Button */}
@@ -271,13 +271,13 @@ export default function DevicePreviewWrapper({ children }) {
         boxSizing: 'border-box',
         position: 'relative'
       }}>
-        {/* LAPTOP / DESKTOP VIEW */}
+        {/* DESKTOP VIEW */}
         {viewMode === 'desktop' && (
           <div style={{
             width: '100%',
             height: '100%',
             overflow: 'auto',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'width 300ms ease-in-out, height 300ms ease-in-out'
           }}>
             {children}
           </div>
@@ -286,34 +286,23 @@ export default function DevicePreviewWrapper({ children }) {
         {/* TABLET VIEW */}
         {viewMode === 'tablet' && (
           <div style={{
-            width: orientation === 'portrait' ? '768px' : '980px',
-            height: orientation === 'portrait' ? '960px' : '680px',
-            maxHeight: 'calc(100vh - 120px)',
-            maxWidth: 'calc(100vw - 60px)',
+            width: orientation === 'portrait' ? '768px' : '1024px',
+            height: orientation === 'portrait' ? '1024px' : '768px',
+            maxHeight: 'calc(100vh - 100px)',
+            maxWidth: 'calc(100vw - 32px)',
+            flexShrink: 0,
             backgroundColor: '#0f172a',
-            border: '14px solid #0f172a',
-            borderRadius: '38px',
-            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
+            border: '12px solid #1e293b',
+            borderRadius: '32px',
+            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) inset',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
             boxSizing: 'border-box',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'width 300ms ease-in-out, height 300ms ease-in-out'
           }}>
-            {/* Tablet Camera dot */}
-            <div style={{
-              position: 'absolute',
-              top: orientation === 'portrait' ? '5px' : '50%',
-              left: orientation === 'portrait' ? '50%' : '5px',
-              transform: orientation === 'portrait' ? 'translateX(-50%)' : 'translateY(-50%)',
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              backgroundColor: '#334155',
-              zIndex: 20
-            }} />
-            <div style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '24px', background: '#ffffff' }}>
+            <div style={{ width: '100%', height: '100%', overflow: 'auto', borderRadius: '20px', background: '#ffffff' }}>
               {children}
             </div>
           </div>
@@ -322,45 +311,23 @@ export default function DevicePreviewWrapper({ children }) {
         {/* MOBILE VIEW */}
         {viewMode === 'mobile' && (
           <div style={{
-            width: orientation === 'portrait' ? '390px' : '780px',
-            height: orientation === 'portrait' ? '820px' : '390px',
-            maxHeight: 'calc(100vh - 110px)',
-            maxWidth: 'calc(100vw - 40px)',
+            width: orientation === 'portrait' ? '375px' : '812px',
+            height: orientation === 'portrait' ? '812px' : '375px',
+            maxHeight: 'calc(100vh - 90px)',
+            maxWidth: 'calc(100vw - 24px)',
+            flexShrink: 0,
             backgroundColor: '#0f172a',
-            border: '12px solid #0f172a',
-            borderRadius: '48px',
-            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.12) inset',
+            border: '12px solid #1e293b',
+            borderRadius: '44px',
+            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.12) inset',
             position: 'relative',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
             boxSizing: 'border-box',
-            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+            transition: 'width 300ms ease-in-out, height 300ms ease-in-out'
           }}>
-            {/* Dynamic Island / Mobile Notch */}
-            {orientation === 'portrait' && (
-              <div style={{
-                position: 'absolute',
-                top: '8px',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                width: '96px',
-                height: '24px',
-                backgroundColor: '#0f172a',
-                borderRadius: '99px',
-                zIndex: 20,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '0 10px',
-                boxSizing: 'border-box'
-              }}>
-                <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#1e293b' }} />
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#090d16' }} />
-              </div>
-            )}
-
-            <div className="phone-screen-wrapper" style={{ width: '100%', height: '100%', maxWidth: '100%', overflow: 'auto', overflowX: 'hidden', borderRadius: '36px', background: '#ffffff', boxSizing: 'border-box' }}>
+            <div className="phone-screen-wrapper" style={{ width: '100%', height: '100%', maxWidth: '100%', overflow: 'auto', overflowX: 'hidden', borderRadius: '32px', background: '#ffffff', boxSizing: 'border-box' }}>
               {children}
             </div>
           </div>

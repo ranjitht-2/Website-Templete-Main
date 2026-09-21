@@ -23,7 +23,8 @@ try {
           const targetCategory = category.toLowerCase();
           const targetName = templateDirName.toLowerCase();
           try {
-            execSync(`npx vite build --base ./ --outDir ${path.resolve('frontend/public/templates', targetCategory, targetName)}`, {
+            const outPath = path.resolve('frontend/public/templates', targetCategory, targetName);
+            execSync(`npx vite build --base ./ --outDir "${outPath}"`, {
               cwd: templatePath,
               stdio: 'inherit'
             });

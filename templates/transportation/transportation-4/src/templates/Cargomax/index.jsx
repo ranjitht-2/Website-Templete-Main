@@ -89,6 +89,12 @@ export default function Cargomax() {
           </div>
 
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="px-3.5 py-1.5 text-xs font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/20 transition-all flex items-center gap-1.5"
+            >
+              <span>Sign In</span>
+            </button>
             <a href="#contact" className="hidden sm:inline-flex items-center gap-1 px-4 py-2 rounded bg-orange-500 hover:bg-orange-400 text-black font-bold text-xs uppercase tracking-wider transition-colors">Dispatch Quote</a>
             <button 
               type="button"

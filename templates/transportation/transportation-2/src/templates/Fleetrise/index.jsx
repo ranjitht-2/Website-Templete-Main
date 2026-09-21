@@ -48,6 +48,12 @@ export default function Fleetrise() {
       {/* Dashboard Header */}
       <header className="bg-slate-950 border-b border-slate-800 px-6 py-4 flex items-center justify-between sticky top-0 z-40">
         <div className="flex items-center gap-3">
+            <button
+              type="button"
+              className="px-3.5 py-1.5 text-xs font-semibold rounded-full bg-blue-600 text-white hover:bg-blue-500 shadow-md shadow-blue-600/20 transition-all flex items-center gap-1.5"
+            >
+              <span>Sign In</span>
+            </button>
           <div className="p-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 text-slate-900">
             <Truck size={20} />
           </div>
