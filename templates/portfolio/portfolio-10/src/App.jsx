@@ -1,22 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronDown, 
   ArrowUp, 
-  ArrowRight,
-  Maximize2,
-  X,
-  Mail,
-  MapPin,
-  Calendar,
-  Briefcase,
-  CheckCircle2,
-  Send
+  ArrowRight, 
+  Maximize2, 
+  X, 
+  Mail, 
+  MapPin, 
+  Calendar, 
+  Briefcase, 
+  CheckCircle2, 
+  Send,
+  Lock,
+  User
 } from 'lucide-react';
 import { creativeData, creativeFilters, creativeFilterMapping } from './data/creativeData';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
+import SignIn from './components/SignIn';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Scroll reset logic
 function ScrollToTopInside() {
@@ -496,9 +500,26 @@ function TestimonialsPage() {
 
 // 8. CONTACT PAGE
 function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({ 
+    name: user?.name || '', 
+    email: user?.email || '', 
+    message: '' 
+  });
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState('idle'); // idle | loading | success
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -522,6 +543,19 @@ function ContactPage() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    // Check Authentication - Protected Action
+    if (!isAuthenticated) {
+      navigate('/signin', { 
+        state: { 
+          from: '/contact', 
+          redirectTarget: '/contact', 
+          authReason: 'Please sign in or create a creative client account to start a project and submit campaign parameters.' 
+        } 
+      });
+      return;
+    }
+
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -531,111 +565,146 @@ function ContactPage() {
     setFormStatus('loading');
     setTimeout(() => {
       setFormStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setFormStatus('idle'), 3000);
+      setFormData({ name: user?.name || '', email: user?.email || '', message: '' });
+      setTimeout(() => setFormStatus('idle'), 4000);
     }, 1500);
   };
 
   return (
     <PageWrapper>
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-        
-        {/* Info detail block */}
-        <div className="col-span-12 lg:col-span-5 flex flex-col justify-between">
-          <div>
-            <SectionHeading eyebrow="STUDIO LINK" title="Start a Project" />
-            <p className="text-xs md:text-sm text-zinc-500 font-sans leading-relaxed mb-8 max-w-md text-justify font-sans">
-              Contact our design studio to coordinate branding systems, fashion campaigns, or corporate portals.
-            </p>
+      <section className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center justify-items-center">
+          
+          {/* Info detail block */}
+          <div className="w-full max-w-md lg:max-w-none flex flex-col justify-between">
+            <div>
+              <SectionHeading eyebrow="STUDIO LINK" title="Start a Project" />
+              <p className="text-xs md:text-sm text-zinc-500 font-sans leading-relaxed mb-8 max-w-md text-justify">
+                Contact our design studio to coordinate branding systems, fashion campaigns, or corporate portals.
+              </p>
 
-            <div className="flex flex-col gap-6 font-sans">
-              <div className="flex items-center gap-4 font-sans">
-                <div className="w-9 h-9 bg-zinc-100 border border-zinc-200 flex items-center justify-center text-[#ec4899]">
-                  <Mail size={16} />
+              <div className="flex flex-col gap-6 font-sans">
+                <div className="flex items-center gap-4">
+                  <div className="w-9 h-9 bg-zinc-100 border border-zinc-200 flex items-center justify-center text-[#ec4899] shrink-0">
+                    <Mail size={16} />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[9px] font-sans tracking-widest text-zinc-400 uppercase font-bold">EMAIL INBOX</div>
+                    <a href={`mailto:${creativeData.brand.email}`} className="text-xs text-zinc-900 hover:text-[#ec4899] font-bold transition-colors">
+                      {creativeData.brand.email}
+                    </a>
+                  </div>
                 </div>
-                <div className="text-left font-sans">
-                  <div className="text-[9px] font-sans tracking-widest text-zinc-400 uppercase font-bold">EMAIL INBOX</div>
-                  <a href={`mailto:${creativeData.brand.email}`} className="text-xs text-zinc-900 hover:text-[#ec4899] font-bold transition-colors">
-                    {creativeData.brand.email}
-                  </a>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-4 font-sans">
-                <div className="w-9 h-9 bg-zinc-100 border border-zinc-200 flex items-center justify-center text-[#ec4899]">
-                  <MapPin size={16} />
-                </div>
-                <div className="text-left font-sans font-sans">
-                  <div className="text-[9px] font-sans tracking-widest text-zinc-400 uppercase font-bold">STUDIO LOCAL</div>
-                  <span className="text-xs text-zinc-700 font-bold font-sans">
-                    {creativeData.brand.location}
-                  </span>
+                <div className="flex items-center gap-4">
+                  <div className="w-9 h-9 bg-zinc-100 border border-zinc-200 flex items-center justify-center text-[#ec4899] shrink-0">
+                    <MapPin size={16} />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[9px] font-sans tracking-widest text-zinc-400 uppercase font-bold">STUDIO LOCAL</div>
+                    <span className="text-xs text-zinc-700 font-bold">
+                      {creativeData.brand.location}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Form panel */}
-        <div className="col-span-12 lg:col-span-7 bg-white border border-zinc-200 p-8 relative">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-[#ec4899]" />
-          
-          <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 font-sans text-left">
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-400 uppercase font-bold mb-2">FULL NAME</label>
-              <input 
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter name"
-                className="w-full bg-[#fcfcfc] border border-zinc-200 focus:border-zinc-900 px-4 py-3 text-sm text-black placeholder-zinc-400 outline-none transition-colors"
-              />
-              {formErrors.name && <span className="text-[10px] text-rose-500 mt-1.5 font-bold">{formErrors.name}</span>}
+          {/* Form wrapper */}
+          <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 py-6 flex flex-col items-center justify-center">
+            <div className="w-full bg-white border border-stone-200 rounded-2xl p-5 sm:p-6 shadow-sm relative overflow-hidden box-border">
+              <form onSubmit={handleFormSubmit} className="w-full flex flex-col gap-4 font-sans">
+                {/* Pink top accent rule */}
+                <div className="w-full h-1 bg-pink-500 rounded-full mb-3" />
+
+                {/* Authentication Status Badge */}
+                {!isAuthenticated ? (
+                  <div className="bg-stone-50 border border-pink-500/30 rounded-lg p-2.5 text-[11px] font-sans text-zinc-600 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-zinc-700">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Unauthenticated Guest
+                    </span>
+                    <Link to="/signin" state={{ from: '/contact', redirectTarget: '/contact' }} className="text-pink-600 hover:underline font-bold uppercase text-[10px]">
+                      Sign In →
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 text-[11px] font-sans text-emerald-800 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Client Connected: <strong>{user?.name}</strong></span>
+                  </div>
+                )}
+
+                <div className="w-full text-left">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-stone-700 block mb-1">
+                    FULL NAME <span className="text-pink-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter your name"
+                    className="w-full box-border rounded-lg bg-stone-50 border border-stone-200 text-stone-900 px-3.5 py-2.5 text-sm focus:outline-none focus:border-pink-500 transition"
+                  />
+                  {formErrors.name && <span className="text-[10px] text-rose-500 mt-1.5 font-bold block">{formErrors.name}</span>}
+                </div>
+
+                <div className="w-full text-left">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-stone-700 block mb-1">
+                    EMAIL ADDRESS <span className="text-pink-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="studio@enterprise.com"
+                    className="w-full box-border rounded-lg bg-stone-50 border border-stone-200 text-stone-900 px-3.5 py-2.5 text-sm focus:outline-none focus:border-pink-500 transition"
+                  />
+                  {formErrors.email && <span className="text-[10px] text-rose-500 mt-1.5 font-bold block">{formErrors.email}</span>}
+                </div>
+
+                <div className="w-full text-left">
+                  <label className="text-[11px] font-bold uppercase tracking-wider text-stone-700 block mb-1">
+                    PROJECT PARAMETERS <span className="text-pink-500">*</span>
+                  </label>
+                  <textarea
+                    rows={4}
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="State your campaign design parameters"
+                    className="w-full box-border rounded-lg bg-stone-50 border border-stone-200 text-stone-900 px-3.5 py-2.5 text-sm focus:outline-none focus:border-pink-500 transition resize-none"
+                  />
+                  {formErrors.message && <span className="text-[10px] text-rose-500 mt-1.5 font-bold block">{formErrors.message}</span>}
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={formStatus === 'loading'}
+                  className="w-full py-3 bg-[#111111] text-white font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-stone-800 transition flex items-center justify-center gap-2 mt-2 cursor-pointer disabled:opacity-50 border-none"
+                >
+                  {formStatus === 'loading' ? (
+                    <span>Registering Campaign...</span>
+                  ) : formStatus === 'success' ? (
+                    <span className="flex items-center gap-1.5"><CheckCircle2 size={13} /> Message Dispatched!</span>
+                  ) : !isAuthenticated ? (
+                    <>
+                      <span>SIGN IN & SEND MESSAGE</span>
+                      <span>✈</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>SEND MESSAGE</span>
+                      <span>✈</span>
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
+          </div>
 
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-400 uppercase font-bold mb-2">EMAIL ADDRESS</label>
-              <input 
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="studio@enterprise.com"
-                className="w-full bg-[#fcfcfc] border border-zinc-200 focus:border-zinc-900 px-4 py-3 text-sm text-black placeholder-zinc-400 outline-none transition-colors"
-              />
-              {formErrors.email && <span className="text-[10px] text-rose-500 mt-1.5 font-bold">{formErrors.email}</span>}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-400 uppercase font-bold mb-2">PROJECT PARAMETERS</label>
-              <textarea 
-                name="message"
-                value={formData.message}
-                onChange={handleInputChange}
-                placeholder="State your campaign design parameters"
-                rows={4}
-                className="w-full bg-[#fcfcfc] border border-zinc-200 focus:border-zinc-900 px-4 py-3 text-sm text-black placeholder-zinc-400 outline-none transition-colors resize-none font-sans"
-              />
-              {formErrors.message && <span className="text-[10px] text-rose-500 mt-1.5 font-bold">{formErrors.message}</span>}
-            </div>
-
-            <button
-              type="submit"
-              disabled={formStatus === 'loading'}
-              className="w-full py-4 bg-zinc-900 disabled:bg-zinc-200 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all font-sans cursor-pointer border-none font-sans"
-            >
-              {formStatus === 'loading' ? (
-                <span>Registering Campaign...</span>
-              ) : formStatus === 'success' ? (
-                <span className="flex items-center gap-1.5 font-sans"><CheckCircle2 size={13} /> Message Dispatched!</span>
-              ) : (
-                <>
-                  Send Message <Send size={13} />
-                </>
-              )}
-            </button>
-          </form>
         </div>
       </section>
     </PageWrapper>
@@ -644,9 +713,9 @@ function ContactPage() {
 
 // ---------------- MAIN ROUTER ----------------
 
-export default function App() {
+function SashaGreyApp() {
   return (
-    <div className="min-h-screen bg-white text-zinc-800 flex flex-col justify-between selection:bg-[#ec4899] selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white text-zinc-800 flex flex-col justify-between selection:bg-[#ec4899] selection:text-white">
       
       {/* Scroll to Top on route changes */}
       <ScrollToTopInside />
@@ -655,7 +724,7 @@ export default function App() {
       <NavBar />
 
       {/* ROUTING PATHS */}
-      <main className="flex-grow">
+      <main className="flex-grow w-full max-w-full overflow-x-hidden">
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<HomePage />} />
@@ -668,6 +737,7 @@ export default function App() {
             <Route path="/pricing" element={<PricingPage />} />
             <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/signin" element={<SignIn />} />
           </Routes>
         </AnimatePresence>
       </main>
@@ -678,5 +748,13 @@ export default function App() {
       {/* Floating circular scroll up button */}
       <ScrollToTopButton />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <SashaGreyApp />
+    </AuthProvider>
   );
 }

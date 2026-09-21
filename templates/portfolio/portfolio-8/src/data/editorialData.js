@@ -82,7 +82,7 @@ export const editorialData = {
   about: {
     eyebrow: "About",
     heading: "Your Executive Partner",
-    bio: "For over ten years, I have configured administrative workflows and calendar channels for corporate startup teams. I believe that operations systems shouldn't feel cluttered—they should provide structural frameworks that allow founders to focus entirely on growth vectors.",
+    bio: "For over ten years, I have configured administrative workflows for high-growth startup teams. I believe that operations systems shouldn't complicate growth, creating structural frameworks that allow founders to focus entirely on their core mission.",
     stats: [
       { value: "10", suffix: "+", label: "Years Experience" },
       { value: "98", suffix: "%", label: "Client Satisfaction" },
@@ -99,13 +99,13 @@ export const editorialData = {
       {
         role: "Senior Executive Assistant",
         company: "Vesper Systems Inc.",
-        dates: "2032 — Present",
-        description: "Coordinating calendar schedules, travel itineraries, and email priorities for the CEO and board stakeholders."
+        dates: "2022 — Present",
+        description: "Coordinating calendar schedules, travel itineraries, and operations for the CEO and board stakeholders."
       },
       {
         role: "Operations Coordinator",
         company: "Apex Design Studio",
-        dates: "2029 — 2032",
+        dates: "2020 — 2022",
         description: "Re-structured file directories, project databases, and managed contractor invoicing pipelines."
       }
     ],
@@ -113,14 +113,14 @@ export const editorialData = {
       {
         degree: "B.S. in Business Administration",
         institution: "University of Chicago",
-        dates: "2025 — 2029",
+        dates: "2016 — 2020",
         description: "Specialized in operational management and organizational structures."
       },
       {
         degree: "Executive Assistant Certification",
         institution: "IAAP Org",
-        dates: "2030",
-        description: "Advanced certification covering modern database management and corporate travel logistics."
+        dates: "2020",
+        description: "Advanced certification covering modern database management."
       }
     ]
   },

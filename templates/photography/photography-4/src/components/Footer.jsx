@@ -1,25 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { siteConfig } from '../data/config';
+import { useAuth } from '../context/AuthContext';
 import ScrollReveal from './ScrollReveal';
 
-export default function App() {
+export default function Footer({ onOpenSignIn }) {
+  const { user, isAuthenticated } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [msg, setMsg] = useState('');
   const [status, setStatus] = useState('idle'); // idle | loading | success
 
+  useEffect(() => {
+    if (user) {
+      if (!name) setName(user.name || '');
+      if (!email) setEmail(user.email || '');
+    }
+  }, [user]);
+
   const handleContactSubmit = (e) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      if (onOpenSignIn) {
+        onOpenSignIn('Sign in or register to submit a couture wedding inquiry and receive our destination prospectus', 'contact');
+      }
+      return;
+    }
+
     if (!name || !email || !msg) return;
     setStatus('loading');
     setTimeout(() => {
       setStatus('success');
-      setName('');
-      setEmail('');
       setMsg('');
       setTimeout(() => setStatus('idle'), 4000);
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -89,11 +104,13 @@ export default function App() {
                   exit={{ opacity: 0 }}
                   className="bg-[#0c0c0c] border border-white/5 p-8 rounded-2xl flex flex-col items-center justify-center text-center space-y-4 py-16"
                 >
-                  <div className="w-12 h-12 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xl">
-                    <i className="fa-solid fa-check"></i>
+                  <div className="w-12 h-12 rounded-full bg-[#c5a880]/15 border border-[#c5a880]/30 flex items-center justify-center text-[#c5a880] text-xl">
+                    &check;
                   </div>
-                  <h4 className="text-lg font-serif font-light text-green-400">Inquiry Received</h4>
-                  <p className="text-xs text-neutral-400 max-w-xs font-sans leading-relaxed">Thank you. The studio concierge will follow up with our complete destination pricing and calendar prospectus within 24 hours.</p>
+                  <h4 className="text-lg font-serif font-light text-[#c5a880]">Inquiry Received</h4>
+                  <p className="text-xs text-neutral-400 max-w-xs font-sans leading-relaxed">
+                    Thank you {user?.name || name}. The studio concierge will follow up with our complete destination pricing and calendar prospectus at {user?.email || email} within 24 hours.
+                  </p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleContactSubmit} className="space-y-6">
@@ -105,7 +122,7 @@ export default function App() {
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Your Name" 
-                        className="w-full bg-transparent border-b border-white/10 pb-3 text-sm text-[#f5f4f1] focus:outline-none focus:border-white transition-colors duration-300 font-sans"
+                        className="w-full bg-transparent border-b border-white/10 pb-3 text-sm text-[#f5f4f1] focus:outline-none focus:border-[#c5a880] transition-colors duration-300 font-sans"
                       />
                     </div>
                     <div className="relative">
@@ -115,7 +132,7 @@ export default function App() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email Address" 
-                        className="w-full bg-transparent border-b border-white/10 pb-3 text-sm text-[#f5f4f1] focus:outline-none focus:border-white transition-colors duration-300 font-sans"
+                        className="w-full bg-transparent border-b border-white/10 pb-3 text-sm text-[#f5f4f1] focus:outline-none focus:border-[#c5a880] transition-colors duration-300 font-sans"
                       />
                     </div>
                   </div>
@@ -127,17 +144,21 @@ export default function App() {
                       value={msg}
                       onChange={(e) => setMsg(e.target.value)}
                       placeholder="Share your wedding details (Date, Destination, Vision)..." 
-                      className="w-full bg-transparent border-b border-white/10 pb-3 text-sm text-[#f5f4f1] focus:outline-none focus:border-white transition-colors duration-300 font-sans resize-none"
+                      className="w-full bg-transparent border-b border-white/10 pb-3 text-sm text-[#f5f4f1] focus:outline-none focus:border-[#c5a880] transition-colors duration-300 font-sans resize-none"
                     />
                   </div>
 
                   <div>
                     <button 
-                      type="submit"
+                      type="submit" 
                       disabled={status === 'loading'}
-                      className="w-full py-4 rounded-full bg-[#f5f4f1] text-[#0a0a0a] border border-[#f5f4f1] hover:bg-transparent hover:text-[#f5f4f1] text-xs uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500"
+                      className="w-full py-4 rounded-full bg-[#f5f4f1] hover:bg-white text-black text-xs uppercase tracking-[0.2em] font-sans font-medium transition-all duration-500 cursor-pointer border-none shadow-md"
                     >
-                      {status === 'loading' ? 'Sending...' : 'Send Inquiry'}
+                      {status === 'loading' 
+                        ? 'Dispatching Inquiry...' 
+                        : isAuthenticated 
+                          ? 'Send Couture Inquiry' 
+                          : 'Sign In & Send Inquiry'}
                     </button>
                   </div>
                 </form>

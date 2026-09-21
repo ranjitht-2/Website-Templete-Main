@@ -1,20 +1,25 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
 import { portfolioData } from '../data/portfolioData';
+import { useAuth } from '../context/AuthContext';
 
 export default function NavBar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const isActiveRoute = (path) => {
     return location.pathname === path;
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0d0d0d]/90 backdrop-blur-md border-b border-zinc-900 py-4 px-6 md:px-12">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <header 
+      style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+      className="sticky top-0 z-40 w-full max-w-full bg-[#0e0e0e]/95 backdrop-blur-md border-b border-zinc-900 pt-4 sm:pt-5 pb-4 px-4 sm:px-6 md:px-12 box-border transition-all"
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
         
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 group">
@@ -38,7 +43,7 @@ export default function NavBar() {
                   onMouseLeave={() => setDropdownOpen(false)}
                 >
                   <button
-                    className="text-[10px] font-sans tracking-widest uppercase font-bold text-zinc-400 hover:text-white flex items-center gap-1 py-1.5 focus:outline-none"
+                    className="text-[10px] font-sans tracking-widest uppercase font-bold text-zinc-400 hover:text-white flex items-center gap-1 py-1.5 focus:outline-none cursor-pointer border-none bg-transparent"
                   >
                     {item.label} <ChevronDown size={12} className={`transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
                   </button>
@@ -81,8 +86,20 @@ export default function NavBar() {
           })}
         </nav>
 
-        {/* CTA (Get Started) */}
-        <div className="hidden lg:block">
+        {/* CTA & Sign In (Desktop) */}
+        <div className="hidden lg:flex items-center gap-3">
+          <Link
+            to="/signin"
+            className={`px-4 py-2 rounded-lg text-xs font-mono uppercase tracking-wider font-bold transition-all flex items-center gap-2 border ${
+              isActiveRoute('/signin') || isAuthenticated
+                ? 'bg-white/10 text-white border-white/20'
+                : 'bg-transparent text-stone-400 hover:text-white border-white/10 hover:border-white/20'
+            }`}
+          >
+            <User size={13} className={isAuthenticated ? 'text-[#E6392F]' : ''} />
+            <span>{isAuthenticated ? (user?.name?.split(' ')[0] || 'Client') : 'Sign In'}</span>
+          </Link>
+
           <Link
             to="/contact"
             className="px-6 py-2.5 rounded-full bg-[#e8583f] hover:bg-[#cf472f] text-white font-bold text-xs tracking-widest uppercase transition-colors"
@@ -94,7 +111,7 @@ export default function NavBar() {
         {/* Hamburger Menu (Mobile) */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden text-zinc-400 hover:text-white p-1.5 focus:outline-none"
+          className="lg:hidden text-zinc-400 hover:text-white p-1.5 focus:outline-none cursor-pointer border-none bg-transparent"
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -139,10 +156,20 @@ export default function NavBar() {
               </Link>
             );
           })}
+
+          <Link
+            to="/signin"
+            onClick={() => setIsOpen(false)}
+            className="w-full text-center py-3 bg-[#1c1c1e] hover:bg-zinc-800 text-white font-bold text-xs font-mono uppercase tracking-widest rounded-lg transition-colors border border-white/10 flex items-center justify-center gap-2"
+          >
+            <User size={13} className="text-[#E6392F]" />
+            <span>{isAuthenticated ? `Client Portal (${user?.name?.split(' ')[0] || 'Active'})` : 'Client Sign In'}</span>
+          </Link>
+
           <Link
             to="/contact"
             onClick={() => setIsOpen(false)}
-            className="w-full text-center py-3.5 bg-[#e8583f] text-white font-bold text-xs tracking-widest uppercase mt-4"
+            className="w-full text-center py-3.5 bg-[#e8583f] text-white font-bold text-xs tracking-widest uppercase rounded-lg"
           >
             Get Started
           </Link>

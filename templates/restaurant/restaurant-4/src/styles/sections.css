@@ -325,6 +325,12 @@
   gap: 1.25rem;
 }
 
+.menu-category-buttons-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
 .menu-sidebar-title {
   font-family: var(--font-body);
   font-size: 0.8rem;
@@ -354,10 +360,31 @@
 .menu-items-list-container {
   display: flex;
   flex-direction: column;
+  width: 100%;
+}
+
+.menu-category-group {
+  margin-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.menu-category-heading {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--color-sage);
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+  display: block;
+  border-bottom: 1px solid rgba(38, 53, 43, 0.12);
+  padding-bottom: 0.5rem;
 }
 
 .menu-editorial-item {
-  padding: 2.2rem 0;
+  padding: 1.6rem 0;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
@@ -365,10 +392,12 @@
   transition: padding-left 0.3s ease, background-color 0.3s ease;
   cursor: pointer;
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .menu-editorial-item:hover {
-  padding-left: 1rem;
+  padding-left: 0.75rem;
 }
 
 .menu-item-left {
@@ -377,26 +406,31 @@
 
 .menu-item-name {
   font-family: var(--font-display);
-  font-size: clamp(1.8rem, 3.2vw, 2.8rem);
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem);
   color: var(--color-forest);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
+  line-height: 1.25;
 }
 
 .menu-item-ingredients {
   font-family: var(--font-accent);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-style: italic;
   color: var(--text-muted);
+  line-height: 1.4;
 }
 
 .menu-item-price-tag {
   font-family: var(--font-body);
-  font-size: 1.4rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--color-clay);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-left: 1rem;
 }
 
-/* Floating Dish Hover Image */
+/* Floating Dish Hover Image (Desktop Only) */
 .menu-hover-photo-container {
   position: fixed;
   width: 280px;
@@ -931,7 +965,43 @@
   .house-grid-asymmetric, .ingredients-sticky-container, .menu-editorial-grid,
   .chef-grid-fullheight, .journal-grid-newspaper, .location-split-grid {
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 2.5rem;
+  }
+
+  .menu-category-sidebar {
+    position: static;
+    top: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .menu-category-buttons-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .menu-cat-btn {
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 99px;
+    border: 1px solid rgba(38, 53, 43, 0.2);
+    background: rgba(251, 249, 243, 0.7);
+    color: var(--color-forest);
+    transform: none !important;
+  }
+
+  .menu-cat-btn.active, .menu-cat-btn:hover {
+    background: var(--color-forest);
+    color: var(--bg-cream);
+    border-color: var(--color-forest);
+    transform: none !important;
+  }
+
+  .menu-hover-photo-container {
+    display: none !important;
   }
 
   .garden-botanical-grid {

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './styles/fine.css';
 import Footer from './components/Footer';
 import ScrollReveal from './components/ScrollReveal';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import SignIn from './components/SignIn';
 
 export const menuData = {
   starters: [
@@ -38,35 +40,98 @@ export const menuData = {
   ]
 };
 
-export default function FineDining() {
+function MainApp() {
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'signin'
+  const [authRedirectTarget, setAuthRedirectTarget] = useState('home');
+  const [authReason, setAuthReason] = useState('');
+
   const [activeCategory, setActiveCategory] = useState('starters');
   const [orderCategory, setOrderCategory] = useState('starters');
   const [cart, setCart] = useState({});
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [orderType, setOrderType] = useState('delivery'); // pickup or delivery
   const [showCheckout, setShowCheckout] = useState(false);
   const [showCateringModal, setShowCateringModal] = useState(false);
 
-  const [booking, setBooking] = useState({ name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'chefs-counter', request: '' });
+  const [booking, setBooking] = useState(() => {
+    const saved = sessionStorage.getItem('restaurant_7_pending_booking');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return { name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'chefs-counter', request: '' };
+  });
   const [checkoutForm, setCheckoutForm] = useState({ name: '', phone: '', address: '', payment: 'upi' });
   const [cateringForm, setCateringForm] = useState({ name: '', email: '', phone: '', eventType: 'diwali', details: '' });
+
+  // Autofill forms on auth change
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      setBooking(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+      setCheckoutForm(prev => ({
+        ...prev,
+        name: prev.name || user.name || ''
+      }));
+      setCateringForm(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   const specialOffers = [
     { title: 'The Sommelier Gastronomy Pairing', offer: 'Exclusive Pairing', desc: 'Order any 2 Indian Fusion Main Courses and receive two complimentary Botanical Masala Mocktails.' },
     { title: 'Atelier Saffron Tasting Menu', offer: 'Gourmet Flight', desc: 'Indulge in our 5-course signature fusion flight including Truffle Paneer Tikka, Saffron Shorba, and Saffron Cheesecake. ₹1999 pp.' }
   ];
 
-  // 2. Handlers
+  const navigateToView = (view, target = null) => {
+    setCurrentView(view);
+    setIsMobileMenuOpen(false);
+    if (view === 'home' && target && target !== 'home') {
+      setTimeout(() => {
+        const el = document.getElementById(target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // 2. Protected Booking, Catering & Order Handlers
   const handleBookingSubmit = (e) => {
     e.preventDefault();
-    alert(`Gastronomy Table Secured! Reservation confirmed for ${booking.name} on ${booking.date} at ${booking.time} for ${booking.guests} guests (Seating preference: ${booking.preference.toUpperCase()}). Confirmation SMS sent to ${booking.phone}`);
-    setBooking({ name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'chefs-counter', request: '' });
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_7_pending_booking', JSON.stringify(booking));
+      setAuthRedirectTarget('reservations');
+      setAuthReason('Please sign in or create an Atelier Patron account to confirm your Table Reservation.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Gastronomy Table Secured! Reservation confirmed for ${booking.name || user.name} on ${booking.date} at ${booking.time} for ${booking.guests} guests (Seating preference: ${booking.preference.toUpperCase()}). Booked under Patron Account: ${user.name} (${user.email})`);
+    sessionStorage.removeItem('restaurant_7_pending_booking');
+    setBooking({ name: user ? user.name : '', phone: '', email: user ? user.email : '', date: '', time: '', guests: '2', preference: 'chefs-counter', request: '' });
   };
 
   const handleCateringSubmit = (e) => {
     e.preventDefault();
-    alert(`Enquiry Logged! Our modern gastronomy events team will contact you at ${cateringForm.phone} shortly.`);
-    setCateringForm({ name: '', email: '', phone: '', eventType: 'diwali', details: '' });
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_7_pending_catering', JSON.stringify(cateringForm));
+      setShowCateringModal(false);
+      setAuthRedirectTarget('catering');
+      setAuthReason('Please sign in to submit a Fusion Catering & Private Dinners inquiry.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Enquiry Logged! Our modern gastronomy events team will contact you at ${cateringForm.phone} shortly. Logged for Patron: ${user.name}`);
+    sessionStorage.removeItem('restaurant_7_pending_catering');
+    setCateringForm({ name: user ? user.name : '', email: user ? user.email : '', phone: '', eventType: 'diwali', details: '' });
     setShowCateringModal(false);
   };
 
@@ -96,7 +161,15 @@ export default function FineDining() {
 
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
-    alert(`Gastronomy Feast Ordered! Your fusion plates are prepared for ${checkoutForm.name}. Total: ₹${getCartTotal()}. Paid via: ${checkoutForm.payment.toUpperCase()}`);
+    if (!isAuthenticated) {
+      setShowCheckout(false);
+      setIsCartOpen(false);
+      setAuthRedirectTarget('ordering');
+      setAuthReason('Please sign in to complete your checkout and place your order.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Gastronomy Feast Ordered! Your fusion plates are prepared for ${checkoutForm.name}. Total: ₹${getCartTotal()}. Paid via: ${checkoutForm.payment.toUpperCase()}. Patron: ${user.name} (${user.email})`);
     setCart({});
     setShowCheckout(false);
     setIsCartOpen(false);
@@ -106,27 +179,118 @@ export default function FineDining() {
     <div className="fine-dining-container" id="home">
       {/* 1. Header Navigation Bar */}
       <nav className="fine-navbar">
-        <a href="#home" className="fine-nav-logo">Masala Atelier</a>
+        <a href="#home" className="fine-nav-logo" onClick={(e) => { e.preventDefault(); navigateToView('home', 'home'); }}>
+          Masala Atelier
+        </a>
         <ul className="fine-nav-links">
-          <li><a href="#home" className="fine-nav-link">Home</a></li>
-          <li><a href="#offers" className="fine-nav-link">Offers</a></li>
-          <li><a href="#menu" className="fine-nav-link">Menu</a></li>
-          <li><a href="#ordering" className="fine-nav-link">Order Online</a></li>
-          <li><a href="#reservations" className="fine-nav-link">Book Seat</a></li>
-          <li><a href="#about" className="fine-nav-link">About</a></li>
-          <li><a href="#catering" className="fine-nav-link">Catering</a></li>
-          <li><a href="#contact" className="fine-nav-link">Location</a></li>
+          <li><a href="#home" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'home'); }}>Home</a></li>
+          <li><a href="#offers" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'offers'); }}>Offers</a></li>
+          <li><a href="#menu" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'menu'); }}>Menu</a></li>
+          <li><a href="#ordering" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'ordering'); }}>Order Online</a></li>
+          <li><a href="#reservations" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'reservations'); }}>Book Seat</a></li>
+          <li><a href="#about" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'about'); }}>About</a></li>
+          <li><a href="#catering" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'catering'); }}>Catering</a></li>
+          <li><a href="#contact" className="fine-nav-link" onClick={(e) => { e.preventDefault(); navigateToView('home', 'contact'); }}>Location</a></li>
         </ul>
-        <button className="fine-btn-gold" style={{ padding: '6px 16px', fontSize: '0.8rem' }} onClick={() => setIsCartOpen(true)}>
-          🛒 Cart ({getCartCount()})
-        </button>
+        <div className="fine-nav-actions">
+          {isAuthenticated ? (
+            <button
+              className="fine-user-badge-btn"
+              onClick={() => navigateToView('signin')}
+              title="View Patron Profile"
+            >
+              👑 {user.name.split(' ')[0]}
+            </button>
+          ) : (
+            <button
+              className="fine-signin-nav-btn"
+              onClick={() => navigateToView('signin')}
+            >
+              Sign In
+            </button>
+          )}
+          <button className="fine-cart-nav-btn" onClick={() => setIsCartOpen(true)}>
+            🛒 Cart ({getCartCount()})
+          </button>
+          <button
+            className="fine-mobile-toggle"
+            aria-label="Toggle navigation menu"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? '✕' : '☰'}
+          </button>
+        </div>
       </nav>
+
+      {/* Mobile / Tablet Navigation Drawer */}
+      <div className={`fine-mobile-drawer ${isMobileMenuOpen ? 'open' : ''}`}>
+        <div className="fine-mobile-drawer-header">
+          <span className="fine-nav-logo">Masala Atelier</span>
+          <button
+            className="fine-mobile-drawer-close"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        </div>
+        <ul className="fine-mobile-nav-links">
+          <li><a href="#home" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'home')}>Home</a></li>
+          <li><a href="#offers" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'offers')}>Offers</a></li>
+          <li><a href="#menu" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'menu')}>Menu</a></li>
+          <li><a href="#ordering" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'ordering')}>Order Online</a></li>
+          <li><a href="#reservations" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'reservations')}>Book Seat</a></li>
+          <li><a href="#about" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'about')}>About</a></li>
+          <li><a href="#catering" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'catering')}>Catering</a></li>
+          <li><a href="#contact" className="fine-mobile-nav-link" onClick={() => navigateToView('home', 'contact')}>Location</a></li>
+          <li style={{ marginTop: '10px', paddingTop: '12px', borderTop: '1px solid #e5e5e0' }}>
+            {isAuthenticated ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <button
+                  className="fine-user-badge-btn"
+                  style={{ width: '100%', justifyContent: 'center' }}
+                  onClick={() => navigateToView('signin')}
+                >
+                  👑 {user.name} ({user.role})
+                </button>
+                <button
+                  className="fine-btn-outline"
+                  style={{ width: '100%', padding: '8px', fontSize: '0.8rem' }}
+                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                className="fine-btn-gold"
+                style={{ width: '100%', padding: '10px', fontSize: '0.85rem' }}
+                onClick={() => navigateToView('signin')}
+              >
+                Patron Sign In
+              </button>
+            )}
+          </li>
+        </ul>
+      </div>
+      {isMobileMenuOpen && (
+        <div className="fine-mobile-drawer-backdrop" onClick={() => setIsMobileMenuOpen(false)}></div>
+      )}
+
+      {currentView === 'signin' ? (
+        <SignIn
+          onNavigateBack={(target) => navigateToView('home', target)}
+          redirectTarget={authRedirectTarget}
+          authReason={authReason}
+        />
+      ) : (
+        <>
 
       {/* 1. Home Section */}
       <section className="fine-hero">
         <div className="fine-hero-overlay">
           <ScrollReveal animation="fade-in-down">
-            <span className="fine-font-serif fine-gold-text" style={{ fontSize: '1.25rem', letterSpacing: '4px', textTransform: 'uppercase', display: 'block', marginBottom: '15px' }}>
+            <span className="fine-font-serif fine-gold-text" style={{ fontSize: 'clamp(0.9rem, 2.5vw, 1.25rem)', letterSpacing: '4px', textTransform: 'uppercase', display: 'block', marginBottom: '15px' }}>
               Masala Atelier
             </span>
           </ScrollReveal>
@@ -139,13 +303,13 @@ export default function FineDining() {
           
           <ScrollReveal animation="zoom-in" delay={400}>
             <div className="fine-section-divider"></div>
-            <p style={{ fontSize: '0.95rem', fontWeight: 400, marginBottom: '35px', lineHeight: 1.8, textTransform: 'uppercase', letterSpacing: '2px', color: '#666', maxWidth: '600px', margin: '0 auto 35px auto' }}>
+            <p className="fine-hero-desc">
               A contemporary Indian fine dining experience in Mumbai. Open Daily 6:30 PM - 11:30 PM.
             </p>
           </ScrollReveal>
           
           <ScrollReveal animation="fade-in-up" delay={600}>
-            <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div className="fine-hero-actions">
               <a href="#menu" className="fine-btn-gold" style={{ textDecoration: 'none' }}>Gastronomy Menu</a>
               <a href="#reservations" className="fine-btn-outline" style={{ textDecoration: 'none' }}>Book Counter</a>
               <a href="#ordering" className="fine-btn-gold" style={{ textDecoration: 'none', background: 'white', color: '#1c1c1c', borderColor: '#1c1c1c' }}>Order Online</a>
@@ -164,7 +328,7 @@ export default function FineDining() {
           </div>
         </ScrollReveal>
 
-        <div className="fine-menu-category-tabs" style={{ maxWidth: '1000px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+        <div className="fine-offers-grid">
           {specialOffers.map((o, idx) => (
             <ScrollReveal key={idx} animation="zoom-in" delay={idx * 150}>
               <div style={{ border: '1px solid #e5e5e0', padding: '30px', background: 'white', borderRadius: '4px' }}>
@@ -317,89 +481,93 @@ export default function FineDining() {
       </section>
 
       {/* 5. Reservations Section */}
-      <section className="fine-section-padding" style={{ background: 'white' }} id="reservations">
-        <ScrollReveal animation="fade-in-up">
-          <div className="fine-section-header">
-            <span className="fine-section-subtitle">Gastronomy Counter</span>
-            <h2 className="fine-font-serif fine-section-title">Table Reservations</h2>
-            <div className="fine-section-divider"></div>
-          </div>
-        </ScrollReveal>
+      <section className="fine-section-padding fine-reservation-section" id="reservations">
+        <div className="fine-reservation-wrapper">
+          <ScrollReveal animation="fade-in-up">
+            <div className="fine-reservation-header">
+              <span className="fine-section-subtitle">Gastronomy Counter</span>
+              <h2 className="fine-font-serif fine-reservation-title">Table Reservations</h2>
+              <div className="fine-section-divider"></div>
+            </div>
+          </ScrollReveal>
 
-        <ScrollReveal animation="zoom-in">
-          <div className="fine-modal-content" style={{ margin: '0 auto', width: '100%', maxWidth: '600px', border: '1px solid #e5e5e0' }}>
-            <h3 className="fine-font-serif" style={{ textAlign: 'center', color: '#1c1c1c', fontSize: '1.5rem', marginBottom: '30px' }}>Atelier Gastronomy Request</h3>
-            
-            <form onSubmit={handleBookingSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d45b27' }}>Full Name</span>
-                  <input type="text" required placeholder="Jane Doe" className="fastfood-form-control" value={booking.name} onChange={(e) => setBooking({ ...booking, name: e.target.value })} />
-                </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d45b27' }}>Mobile Number</span>
-                  <input type="tel" required placeholder="+91 97890 12345" className="fastfood-form-control" value={booking.phone} onChange={(e) => setBooking({ ...booking, phone: e.target.value })} />
-                </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d45b27' }}>Email Address</span>
-                  <input type="email" required placeholder="jane@example.com" className="fastfood-form-control" value={booking.email} onChange={(e) => setBooking({ ...booking, email: e.target.value })} />
-                </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d45b27' }}>Preferred Date</span>
-                  <input type="date" required className="fastfood-form-control" value={booking.date} onChange={(e) => setBooking({ ...booking, date: e.target.value })} />
-                </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d45b27' }}>Banquet Time</span>
-                  <select required className="fastfood-form-control" value={booking.time} onChange={(e) => setBooking({ ...booking, time: e.target.value })}>
-                    <option value="">Select Time</option>
-                    <option value="7:00 PM">7:00 PM</option>
-                    <option value="8:30 PM">8:30 PM</option>
-                    <option value="10:00 PM">10:00 PM</option>
-                  </select>
-                </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d45b27' }}>Seating Preference</span>
-                  <select className="fastfood-form-control" value={booking.preference} onChange={(e) => setBooking({ ...booking, preference: e.target.value })}>
-                    <option value="chefs-counter">Gastronomy Chef Counter</option>
-                    <option value="indoor">Window Side Table</option>
-                  </select>
-                </div>
-                <div style={{ gridColumn: 'span 2' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#d45b27' }}>Guests</span>
-                  <select className="fastfood-form-control" value={booking.guests} onChange={(e) => setBooking({ ...booking, guests: e.target.value })}>
-                    <option value="2">2 Guests</option>
-                    <option value="4">4 Guests</option>
-                    <option value="6">6 Guests</option>
-                  </select>
-                </div>
-              </div>
+          <ScrollReveal animation="zoom-in" style={{ width: '100%' }}>
+            <div className="fine-reservation-card">
+              <h3 className="fine-font-serif" style={{ textAlign: 'center', color: '#1c1c1c', fontSize: '1.4rem', marginBottom: '25px' }}>Atelier Gastronomy Request</h3>
               
-              <button type="submit" className="fine-btn-gold" style={{ width: '100%' }}>
-                SUBMIT RESERVATION REQUEST
-              </button>
-            </form>
-          </div>
-        </ScrollReveal>
+              <form onSubmit={handleBookingSubmit} style={{ width: '100%' }}>
+                <div className="fine-reservation-grid">
+                  <div className="fine-form-group">
+                    <span className="fine-form-label">Full Name</span>
+                    <input type="text" required placeholder="Jane Doe" className="fine-form-control" value={booking.name} onChange={(e) => setBooking({ ...booking, name: e.target.value })} />
+                  </div>
+                  <div className="fine-form-group">
+                    <span className="fine-form-label">Mobile Number</span>
+                    <input type="tel" required placeholder="+91 97890 12345" className="fine-form-control" value={booking.phone} onChange={(e) => setBooking({ ...booking, phone: e.target.value })} />
+                  </div>
+                  <div className="fine-form-group">
+                    <span className="fine-form-label">Email Address</span>
+                    <input type="email" required placeholder="jane@example.com" className="fine-form-control" value={booking.email} onChange={(e) => setBooking({ ...booking, email: e.target.value })} />
+                  </div>
+                  <div className="fine-form-group">
+                    <span className="fine-form-label">Preferred Date</span>
+                    <input type="date" required className="fine-form-control" value={booking.date} onChange={(e) => setBooking({ ...booking, date: e.target.value })} />
+                  </div>
+                  <div className="fine-form-group">
+                    <span className="fine-form-label">Banquet Time</span>
+                    <select required className="fine-form-control" value={booking.time} onChange={(e) => setBooking({ ...booking, time: e.target.value })}>
+                      <option value="">Select Time</option>
+                      <option value="7:00 PM">7:00 PM</option>
+                      <option value="8:30 PM">8:30 PM</option>
+                      <option value="10:00 PM">10:00 PM</option>
+                    </select>
+                  </div>
+                  <div className="fine-form-group">
+                    <span className="fine-form-label">Seating Preference</span>
+                    <select className="fine-form-control" value={booking.preference} onChange={(e) => setBooking({ ...booking, preference: e.target.value })}>
+                      <option value="chefs-counter">Gastronomy Chef Counter</option>
+                      <option value="indoor">Window Side Table</option>
+                    </select>
+                  </div>
+                  <div className="fine-form-group" style={{ gridColumn: 'span 2' }}>
+                    <span className="fine-form-label">Guests</span>
+                    <select className="fine-form-control" value={booking.guests} onChange={(e) => setBooking({ ...booking, guests: e.target.value })}>
+                      <option value="2">2 Guests</option>
+                      <option value="4">4 Guests</option>
+                      <option value="6">6 Guests</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <button type="submit" className="fine-btn-gold" style={{ width: '100%', padding: '14px 20px' }}>
+                  SUBMIT RESERVATION REQUEST
+                </button>
+              </form>
+            </div>
+          </ScrollReveal>
+        </div>
       </section>
 
       {/* 3. About Us Section */}
-      <section className="fine-section-padding" id="about" style={{ background: '#faf9f6' }}>
-        <div className="casual-about-split">
+      <section className="fine-section-padding fine-about-section" id="about">
+        <div className="fine-about-split">
           <ScrollReveal animation="fade-in-left">
-            <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" alt="Exquisite Indian Plating" className="casual-about-img" />
+            <div className="fine-about-image-wrapper">
+              <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" alt="Exquisite Indian Plating" className="fine-about-img" />
+            </div>
           </ScrollReveal>
           
           <ScrollReveal animation="fade-in-right" delay={150}>
-            <div>
+            <div className="fine-about-content">
               <span className="fine-section-subtitle">Exquisite Heritage</span>
-              <h2 className="fine-font-serif fine-section-title" style={{ textAlign: 'left', marginTop: '10px' }}>
+              <h2 className="fine-font-serif fine-about-title">
                 Deconstructed Indian Gastronomy
               </h2>
-              <div className="fine-section-divider" style={{ margin: '15px 0 25px 0' }}></div>
-              <p style={{ lineHeight: 1.8, fontSize: '0.95rem', color: '#666', marginBottom: '20px' }}>
+              <div className="fine-about-divider"></div>
+              <p className="fine-about-text">
                 Masala Atelier is Mumbai's premier destination for contemporary Indian dining. Founded by creative culinary artists, our kitchen specializes in food spherifications, deconstructed chaats, and local wood-smoke flavor infusions.
               </p>
-              <p style={{ lineHeight: 1.8, fontSize: '0.95rem', color: '#666' }}>
+              <p className="fine-about-text">
                 We combine organic spices with premium international ingredients like black truffles and Wagyu beef to deliver an unparalleled dining journey.
               </p>
             </div>
@@ -417,32 +585,36 @@ export default function FineDining() {
           </div>
         </ScrollReveal>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '50px', maxWidth: '1050px', margin: '0 auto' }}>
+        <div className="fine-chefs-grid">
           <ScrollReveal animation="fade-in-left" delay={100}>
-            <div style={{ borderLeft: '2px solid #d45b27', paddingLeft: '30px', background: 'rgba(0,0,0,0.01)', padding: '30px', borderRadius: '4px' }}>
-              <img
-                src="./images/restaurants/kesar-courtyard/chef-rohan.png"
-                alt="Chef Rohan Deshmukh"
-                style={{ width: '100%', height: '300px', objectFit: 'cover', border: '1px solid #e5e5e0', marginBottom: '20px' }}
-              />
-              <span className="fine-gold-text" style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>Creative Director & Head Chef</span>
-              <h3 className="fine-font-serif" style={{ fontSize: '1.8rem', color: '#1c1c1c', margin: '5px 0 15px 0' }}>Chef Rohan Deshmukh</h3>
-              <p style={{ color: '#666', fontSize: '0.88rem', lineHeight: 1.7, fontStyle: 'italic' }}>
+            <div className="fine-chef-card">
+              <div className="fine-chef-img-wrapper">
+                <img
+                  src="./images/restaurants/kesar-courtyard/chef-rohan.png"
+                  alt="Chef Rohan Deshmukh"
+                  className="fine-chef-img"
+                />
+              </div>
+              <span className="fine-chef-role">Creative Director & Head Chef</span>
+              <h3 className="fine-font-serif fine-chef-name">Chef Rohan Deshmukh</h3>
+              <p className="fine-chef-bio">
                 "Gastronomy is a storytelling medium. We take classic comfort tastes from Mumbai's streets and present them in deconstructed visual layers."
               </p>
             </div>
           </ScrollReveal>
           
           <ScrollReveal animation="fade-in-right" delay={200}>
-            <div style={{ borderLeft: '2px solid #d45b27', paddingLeft: '30px', background: 'rgba(0,0,0,0.01)', padding: '30px', borderRadius: '4px' }}>
-              <img
-                src="./images/restaurants/kesar-courtyard/chef-nikhil.png"
-                alt="Chef Nikhil Sen"
-                style={{ width: '100%', height: '300px', objectFit: 'cover', border: '1px solid #e5e5e0', marginBottom: '20px' }}
-              />
-              <span className="fine-gold-text" style={{ fontSize: '0.75rem', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase' }}>Pastry Artist</span>
-              <h3 className="fine-font-serif" style={{ fontSize: '1.8rem', color: '#1c1c1c', margin: '5px 0 15px 0' }}>Chef Nikhil Sen</h3>
-              <p style={{ color: '#666', fontSize: '0.88rem', lineHeight: 1.7, fontStyle: 'italic' }}>
+            <div className="fine-chef-card">
+              <div className="fine-chef-img-wrapper">
+                <img
+                  src="./images/restaurants/kesar-courtyard/chef-nikhil.png"
+                  alt="Chef Nikhil Sen"
+                  className="fine-chef-img"
+                />
+              </div>
+              <span className="fine-chef-role">Pastry Artist</span>
+              <h3 className="fine-font-serif fine-chef-name">Chef Nikhil Sen</h3>
+              <p className="fine-chef-bio">
                 "Blending sweet textures with savory spices—like cardamom and saffron—leads to memorable desserts that close the dining experience with surprise."
               </p>
             </div>
@@ -649,22 +821,22 @@ export default function FineDining() {
             <form onSubmit={handleCheckoutSubmit}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}>
                 <div className="fine-form-group">
-                  <span>Full Name</span>
-                  <input type="text" required className="fastfood-form-control" value={checkoutForm.name} onChange={(e) => setCheckoutForm({...checkoutForm, name: e.target.value})} placeholder="Rohan Mehta" />
+                  <span className="fine-form-label">Full Name</span>
+                  <input type="text" required className="fine-form-control" value={checkoutForm.name} onChange={(e) => setCheckoutForm({...checkoutForm, name: e.target.value})} placeholder="Rohan Mehta" />
                 </div>
                 <div className="fine-form-group">
-                  <span>Mobile Number</span>
-                  <input type="text" required className="fastfood-form-control" value={checkoutForm.phone} onChange={(e) => setCheckoutForm({...checkoutForm, phone: e.target.value})} placeholder="+91 97890 12345" />
+                  <span className="fine-form-label">Mobile Number</span>
+                  <input type="text" required className="fine-form-control" value={checkoutForm.phone} onChange={(e) => setCheckoutForm({...checkoutForm, phone: e.target.value})} placeholder="+91 97890 12345" />
                 </div>
                 {orderType === 'delivery' && (
                   <div className="fine-form-group">
-                    <span>Delivery Address</span>
-                    <input type="text" required className="fastfood-form-control" value={checkoutForm.address} onChange={(e) => setCheckoutForm({...checkoutForm, address: e.target.value})} placeholder="Enter flat/street in Bandra West" />
+                    <span className="fine-form-label">Delivery Address</span>
+                    <input type="text" required className="fine-form-control" value={checkoutForm.address} onChange={(e) => setCheckoutForm({...checkoutForm, address: e.target.value})} placeholder="Enter flat/street in Bandra West" />
                   </div>
                 )}
                 <div className="fine-form-group">
-                  <span>Payment Method</span>
-                  <select className="fastfood-form-control" value={checkoutForm.payment} onChange={(e) => setCheckoutForm({...checkoutForm, payment: e.target.value})}>
+                  <span className="fine-form-label">Payment Method</span>
+                  <select className="fine-form-control" value={checkoutForm.payment} onChange={(e) => setCheckoutForm({...checkoutForm, payment: e.target.value})}>
                     <option value="upi">UPI (GPay / PhonePe / Paytm)</option>
                     <option value="card">Credit / Debit Card</option>
                     <option value="banking">Net Banking</option>
@@ -687,34 +859,37 @@ export default function FineDining() {
             <form onSubmit={handleCateringSubmit}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginBottom: '20px' }}>
                 <div className="fine-form-group">
-                  <span>Contact Name</span>
-                  <input type="text" required className="fastfood-form-control" value={cateringForm.name} onChange={(e) => setCateringForm({...cateringForm, name: e.target.value})} placeholder="Rohan Mehta" />
+                  <span className="fine-form-label">Contact Name</span>
+                  <input type="text" required className="fine-form-control" value={cateringForm.name} onChange={(e) => setCateringForm({...cateringForm, name: e.target.value})} placeholder="Rohan Mehta" />
                 </div>
                 <div className="fine-form-group">
-                  <span>Email Address</span>
-                  <input type="email" required className="fastfood-form-control" value={cateringForm.email} onChange={(e) => setCateringForm({...cateringForm, email: e.target.value})} placeholder="rohan@example.com" />
+                  <span className="fine-form-label">Email Address</span>
+                  <input type="email" required className="fine-form-control" value={cateringForm.email} onChange={(e) => setCateringForm({...cateringForm, email: e.target.value})} placeholder="rohan@example.com" />
                 </div>
                 <div className="fine-form-group">
-                  <span>Mobile Number</span>
-                  <input type="text" required className="fastfood-form-control" value={cateringForm.phone} onChange={(e) => setCateringForm({...cateringForm, phone: e.target.value})} placeholder="+91 97890 12345" />
+                  <span className="fine-form-label">Mobile Number</span>
+                  <input type="text" required className="fine-form-control" value={cateringForm.phone} onChange={(e) => setCateringForm({...cateringForm, phone: e.target.value})} placeholder="+91 97890 12345" />
                 </div>
                 <div className="fine-form-group">
-                  <span>Banquet Theme</span>
-                  <select className="fastfood-form-control" value={cateringForm.eventType} onChange={(e) => setCateringForm({...cateringForm, eventType: e.target.value})}>
+                  <span className="fine-form-label">Banquet Theme</span>
+                  <select className="fine-form-control" value={cateringForm.eventType} onChange={(e) => setCateringForm({...cateringForm, eventType: e.target.value})}>
                     <option value="diwali">Diwali Royal Buffet</option>
                     <option value="wedding">Imperial Wedding Reception</option>
                     <option value="corporate">Gala Corporate Banquet</option>
                   </select>
                 </div>
                 <div className="fine-form-group">
-                  <span>Special Details</span>
-                  <textarea rows="3" className="fastfood-form-control" value={cateringForm.details} onChange={(e) => setCateringForm({...cateringForm, details: e.target.value})} placeholder="Describe setup details, seating requests..."></textarea>
+                  <span className="fine-form-label">Special Details</span>
+                  <textarea rows="3" className="fine-form-control" value={cateringForm.details} onChange={(e) => setCateringForm({...cateringForm, details: e.target.value})} placeholder="Describe setup details, seating requests..."></textarea>
                 </div>
               </div>
               <button type="submit" className="fine-btn-gold" style={{ width: '100%' }}>SUBMIT ENQUIRY GALA</button>
             </form>
           </div>
         </div>
+      )}
+
+        </>
       )}
 
       {/* 12. Footer Section */}
@@ -725,5 +900,13 @@ export default function FineDining() {
         dark={true}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

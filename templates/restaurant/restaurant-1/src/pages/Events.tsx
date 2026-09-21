@@ -1,7 +1,57 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const Events: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+
+  const [chefTableSuccess, setChefTableSuccess] = useState<string | null>(null);
+  const [buyoutSuccess, setBuyoutSuccess] = useState<string | null>(null);
+  const [chefLoading, setChefLoading] = useState(false);
+  const [buyoutLoading, setBuyoutLoading] = useState(false);
+
+  // Check if returning from signin with pending event action
+  useEffect(() => {
+    const pendingAction = sessionStorage.getItem('restaurant_1_pending_event_action');
+    if (pendingAction && isAuthenticated && user) {
+      if (pendingAction === 'chef_table') {
+        setChefTableSuccess(`Chef’s Live Hearth Table requested for ${user.name}! Our sommelier team will confirm your Friday seating at ${user.email}.`);
+      } else if (pendingAction === 'private_buyout') {
+        setBuyoutSuccess(`Private Mezzanine Buyout inquiry received for ${user.name}. A customized dining proposal has been dispatched to ${user.email}.`);
+      }
+      sessionStorage.removeItem('restaurant_1_pending_event_action');
+    }
+  }, [isAuthenticated, user]);
+
+  const handleChefTableRequest = () => {
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_1_pending_event_action', 'chef_table');
+      navigate('/signin?redirect=/events&reason=Please+sign+in+to+request+the+Chef’s+Live+Hearth+Table');
+      return;
+    }
+
+    setChefLoading(true);
+    setTimeout(() => {
+      setChefLoading(false);
+      setChefTableSuccess(`Chef’s Live Hearth Table requested for ${user?.name}! Our sommelier team will confirm your Friday seating at ${user?.email}.`);
+    }, 800);
+  };
+
+  const handleBuyoutInquiry = () => {
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_1_pending_event_action', 'private_buyout');
+      navigate('/signin?redirect=/events&reason=Please+sign+in+to+submit+a+private+dining+buyout+inquiry');
+      return;
+    }
+
+    setBuyoutLoading(true);
+    setTimeout(() => {
+      setBuyoutLoading(false);
+      setBuyoutSuccess(`Private Mezzanine Buyout inquiry received for ${user?.name}. A customized dining proposal has been dispatched to ${user?.email}.`);
+    }, 800);
+  };
+
   return (
     <>
       {/* Banner */}
@@ -18,6 +68,7 @@ export const Events: React.FC = () => {
       {/* Events List */}
       <section className="section-py bg-cream-light">
         <div className="container">
+          {/* Chef Table Section */}
           <div className="row g-5 align-items-center mb-5">
             <div className="col-lg-6">
               <img
@@ -33,12 +84,27 @@ export const Events: React.FC = () => {
               <p className="text-muted-custom mb-4">
                 Sit directly before our live fire kitchen and enjoy an 8-course omakase-style hearth menu personally crafted and introduced by Chef Arjun Rao and our head sommelier.
               </p>
-              <Link to="/contact#reservation" className="btn-ember-primary">Request Chef’s Table</Link>
+
+              {chefTableSuccess ? (
+                <div className="p-3 bg-white border border-gold rounded-2 text-gold fw-semibold">
+                  <i className="bi bi-check-circle-fill me-2"></i> {chefTableSuccess}
+                </div>
+              ) : (
+                <button 
+                  type="button" 
+                  onClick={handleChefTableRequest} 
+                  className="btn-ember-primary"
+                  disabled={chefLoading}
+                >
+                  {chefLoading ? 'Processing Request...' : 'Request Chef’s Table'}
+                </button>
+              )}
             </div>
           </div>
 
           <hr className="border-secondary opacity-25 my-5" />
 
+          {/* Private Buyout Section */}
           <div className="row g-5 align-items-center mb-5 flex-lg-row-reverse">
             <div className="col-lg-6">
               <img
@@ -54,7 +120,21 @@ export const Events: React.FC = () => {
               <p className="text-muted-custom mb-4">
                 An atmospheric private salon overlooking the main dining room with its own bespoke hearth bar, dedicated sommelier, and custom printed four-course menus.
               </p>
-              <Link to="/contact" className="btn-ember-outline">Inquire for Private Buyout</Link>
+
+              {buyoutSuccess ? (
+                <div className="p-3 bg-white border border-gold rounded-2 text-gold fw-semibold">
+                  <i className="bi bi-check-circle-fill me-2"></i> {buyoutSuccess}
+                </div>
+              ) : (
+                <button 
+                  type="button" 
+                  onClick={handleBuyoutInquiry} 
+                  className="btn-ember-outline"
+                  disabled={buyoutLoading}
+                >
+                  {buyoutLoading ? 'Submitting Inquiry...' : 'Inquire for Private Buyout'}
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const NAV_ITEMS = [
   { num: '01', label: 'THE HOUSE', target: '#house', previewId: 'preview-1', imgSrc: 'assets/images/hero.jpg', alt: 'The House Preview' },
@@ -7,11 +8,12 @@ const NAV_ITEMS = [
   { num: '04', label: 'THE GARDEN', target: '#garden', previewId: 'preview-4', imgSrc: 'assets/images/signature.jpg', alt: 'The Garden Preview' },
   { num: '05', label: 'EXPERIENCE', target: '#experience', previewId: 'preview-5', imgSrc: 'assets/images/night.jpg', alt: 'Experience Preview' },
   { num: '06', label: 'JOURNAL', target: '#journal', previewId: 'preview-6', imgSrc: 'assets/images/chef.jpg', alt: 'Journal Preview' },
-  { num: '07', label: 'CONTACT', target: '#contact', previewId: 'preview-7', imgSrc: 'assets/images/cocktail.jpg', alt: 'Contact Preview' }
+  { num: '07', label: 'RESERVATIONS', target: '#reservation', previewId: 'preview-7', imgSrc: 'assets/images/cocktail.jpg', alt: 'Reservations Preview' }
 ];
 
-export default function FullscreenNav({ isOpen, onCloseNav }) {
+export default function FullscreenNav({ isOpen, onCloseNav, onNavigateToAuth }) {
   const [activePreview, setActivePreview] = useState('preview-1');
+  const { user, isAuthenticated, logout } = useAuth();
 
   useEffect(() => {
     if (isOpen) {
@@ -41,13 +43,74 @@ export default function FullscreenNav({ isOpen, onCloseNav }) {
     }
   };
 
+  const handleAuthClick = () => {
+    onCloseNav();
+    if (onNavigateToAuth) {
+      onNavigateToAuth();
+    }
+  };
+
   return (
     <nav className={`fullscreen-nav ${isOpen ? 'open' : ''}`} id="fullscreen-nav">
       <div className="nav-header">
         <div className="pill-logo-mark">C</div>
-        <button className="btn-close-nav" id="close-nav" onClick={onCloseNav}>
-          CLOSE &times;
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          {isAuthenticated ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <button
+                onClick={handleAuthClick}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--color-sage)',
+                  color: 'var(--bg-cream)',
+                  borderRadius: '100px',
+                  padding: '0.4rem 0.9rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  cursor: 'pointer'
+                }}
+              >
+                👤 {user.name}
+              </button>
+              <button
+                onClick={() => { logout(); onCloseNav(); }}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--color-sage)',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.1em',
+                  textDecoration: 'underline',
+                  cursor: 'pointer'
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handleAuthClick}
+              style={{
+                background: 'var(--bg-cream)',
+                color: 'var(--color-forest)',
+                border: 'none',
+                borderRadius: '100px',
+                padding: '0.4rem 1rem',
+                fontSize: '0.75rem',
+                fontWeight: 700,
+                letterSpacing: '0.15em',
+                cursor: 'pointer',
+                textTransform: 'uppercase'
+              }}
+            >
+              PATRON SIGN IN
+            </button>
+          )}
+          <button className="btn-close-nav" id="close-nav" onClick={onCloseNav}>
+            CLOSE &times;
+          </button>
+        </div>
       </div>
       <div className="nav-container">
         <div className="nav-links-list">
@@ -63,6 +126,13 @@ export default function FullscreenNav({ isOpen, onCloseNav }) {
               <span className="nav-item-num">{item.num}</span> {item.label}
             </a>
           ))}
+          <a
+            className="nav-item"
+            style={{ color: 'var(--color-sage)', marginTop: '0.5rem' }}
+            onClick={handleAuthClick}
+          >
+            <span className="nav-item-num">08</span> {isAuthenticated ? 'PATRON PROFILE' : 'PATRON ACCESS'}
+          </a>
         </div>
         <div className="nav-preview-panel">
           {NAV_ITEMS.map((item) => (

@@ -279,18 +279,30 @@
 .seafood-boarding-pass {
   background: white;
   border: 1px solid #d4af37;
-  border-radius: 4px;
+  border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.05);
   display: grid;
   grid-template-columns: 1.2fr 2.8fr;
   max-width: 900px;
+  width: 100%;
   margin: 0 auto;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
   .seafood-boarding-pass {
     grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 100%;
+  }
+  .seafood-boarding-stub {
+    border-right: none !important;
+    border-bottom: 1.5px dashed #d4af37;
+    padding: 24px 16px !important;
+  }
+  .seafood-boarding-form-body {
+    padding: 24px 16px !important;
   }
 }
 
@@ -304,6 +316,7 @@
   justify-content: center;
   align-items: center;
   border-right: 1.5px dashed #d4af37;
+  box-sizing: border-box;
 }
 
 .seafood-boarding-stub-logo {
@@ -316,14 +329,58 @@
 .seafood-boarding-form-body {
   padding: 40px;
   background: #faf6f0;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.seafood-booking-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .seafood-booking-form-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+}
+
+.seafood-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.seafood-form-full-span {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .seafood-form-full-span {
+    grid-column: span 2;
+  }
 }
 
 .seafood-form-control {
+  width: 100%;
+  box-sizing: border-box;
   padding: 12px 16px;
   border: 1px solid rgba(212, 175, 55, 0.25);
   background: white;
   font-family: inherit;
+  font-size: 0.95rem;
   color: #3f2a1d;
+  border-radius: 4px;
 }
 
 .seafood-form-control:focus {
@@ -371,29 +428,403 @@
 /* Navbar Alignment Styles */
 .casual-navbar {
   backdrop-filter: blur(8px);
-  padding: 16px 40px;
+  padding: 14px 24px;
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-bottom: 10px;
   position: sticky;
   top: 0;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  box-sizing: border-box;
 }
+
+.seafood-brand-logo {
+  flex-shrink: 0;
+  white-space: nowrap;
+  color: #d4af37;
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
 .casual-nav-links {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   list-style: none;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
+
 .seafood-nav-link {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   text-decoration: none;
   transition: color 0.2s;
   cursor: pointer;
   color: #fce8eb;
+  white-space: nowrap;
 }
+
 .seafood-nav-link:hover {
   color: #d4af37;
 }
+
+.seafood-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.seafood-desktop-auth {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.seafood-mobile-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid #d4af37;
+  color: #d4af37;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.seafood-mobile-toggle:hover {
+  background: rgba(212, 175, 55, 0.15);
+}
+
+/* Mobile Nav Drawer / Overlay */
+.seafood-mobile-menu {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .casual-nav-links {
+    display: none;
+  }
+  
+  .seafood-mobile-toggle {
+    display: flex;
+  }
+  
+  .casual-navbar {
+    padding: 12px 18px 8px 18px;
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .seafood-brand-logo {
+    font-size: 1.25rem;
+  }
+
+  .seafood-mobile-menu {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(45, 27, 17, 0.98);
+    backdrop-filter: blur(12px);
+    z-index: 1500;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    padding: 24px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+
+  .seafood-mobile-menu.open {
+    transform: translateX(0);
+  }
+
+  .seafood-mobile-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .seafood-mobile-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .seafood-mobile-links li a {
+    color: #faf6f0;
+    font-size: 1.15rem;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 1px;
+    display: block;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    transition: color 0.2s;
+  }
+
+  .seafood-mobile-links li a:hover {
+    color: #d4af37;
+  }
+}
+
+@media (max-width: 639px) {
+  .casual-navbar {
+    padding: 12px 14px 8px 14px;
+    padding-top: max(1.1rem, env(safe-area-inset-top));
+  }
+
+  .seafood-brand-logo {
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    margin-right: 6px;
+  }
+
+  .seafood-desktop-auth {
+    display: none;
+  }
+
+  .seafood-header-actions {
+    gap: 6px;
+  }
+
+  .seafood-btn-accent.seafood-cart-nav-btn {
+    padding: 6px 10px !important;
+    font-size: 0.78rem !important;
+  }
+}
+
+/* About Grid Section */
+.seafood-about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.seafood-about-img {
+  width: 100%;
+  max-width: 520px;
+  height: 420px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1.5px solid #d4af37;
+  box-shadow: 0 15px 35px rgba(45, 27, 17, 0.15);
+  display: block;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .seafood-about-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    text-align: center;
+    padding: 0 16px;
+  }
+  .seafood-about-img {
+    height: 300px;
+  }
+}
+
+/* Veg / Non-Veg Badges */
+.casual-veg-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.casual-veg-badge.veg {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.casual-veg-badge.non-veg {
+  background: #fee2e2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+/* Order Category Toggle */
+.casual-order-toggle {
+  display: inline-flex;
+  background: #e8ded2;
+  padding: 4px;
+  border-radius: 6px;
+  gap: 4px;
+}
+
+.casual-order-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 8px 20px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #3f2a1d;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.casual-order-toggle-btn.active {
+  background: #7c1524;
+  color: white;
+}
+
+/* Chefs Wave Grid */
+.seafood-wave-chefs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.seafood-wave-chef-card {
+  background: white;
+  padding: 24px;
+  border-radius: 6px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+}
+
+.seafood-wave-chef-img {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 16px auto;
+  display: block;
+  border: 2px solid #d4af37;
+}
+
+/* Banners / Catering */
+.seafood-banners-list {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.seafood-banner-card {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.seafood-banner-img {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+  display: block;
+}
+
+.seafood-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(45, 27, 17, 0.9) 0%, rgba(45, 27, 17, 0.4) 60%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 32px;
+  color: white;
+}
+
+.seafood-banner-date {
+  font-size: 0.8rem;
+  color: #d4af37;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.seafood-banner-title {
+  font-size: 1.8rem;
+  color: white;
+  margin: 0 0 10px 0;
+  font-family: 'Cinzel', serif;
+}
+
+.seafood-banner-desc {
+  font-size: 0.95rem;
+  color: #f1ede6;
+  max-width: 600px;
+}
+
+/* Gallery Grid */
+.seafood-wave-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.seafood-wave-item {
+  overflow: hidden;
+  border-radius: 6px;
+  height: 220px;
+}
+
+.seafood-wave-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.seafood-wave-item:hover .seafood-wave-img {
+  transform: scale(1.05);
+}
+
+/* Contact Grid */
+.seafood-contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.seafood-contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.seafood-map-container {
+  height: 340px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .seafood-contact-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

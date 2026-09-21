@@ -1,58 +1,51 @@
 import React from 'react';
 
-export default function App() {
+export default function Footer({ onNavClick }) {
   const links = [
-    { label: "Home", href: "#home" },
-    { label: "Portfolio", href: "#portfolio" },
-    { label: "About", href: "#about" },
-    { label: "Services", href: "#services" },
-    { label: "Contact", href: "#contact" }
+    { label: "Home", id: "home" },
+    { label: "Portfolio", id: "portfolio" },
+    { label: "About", id: "about" },
+    { label: "Services", id: "services" },
+    { label: "Contact", id: "contact" }
   ];
 
+  const handleNavClick = (sectionId) => {
+    if (onNavClick) {
+      onNavClick(sectionId);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
-    <footer style={{
-      backgroundColor: '#ffffff',
-      borderTop: '1px solid rgba(0, 0, 0, 0.06)',
-      padding: '80px 40px 60px 40px',
-      color: '#111827',
-      fontFamily: "'Poppins', sans-serif"
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: '40px'
-      }}>
+    <footer className="w-full max-w-full overflow-x-hidden bg-white border-t border-black/5 py-16 sm:py-20 px-4 sm:px-8 text-neutral-900 font-['Poppins',sans-serif]">
+      <div className="max-w-6xl mx-auto flex flex-col items-center gap-10">
         {/* Logo */}
-        <a href="#home" style={{
-          textDecoration: 'none',
-          color: '#111827',
-          fontWeight: '800',
-          fontSize: '1.5rem',
-          letterSpacing: '3px'
-        }}>
+        <a 
+          href="#home" 
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavClick('home');
+          }}
+          className="no-underline text-neutral-900 font-extrabold text-2xl tracking-[3px]"
+        >
           LUME STUDIO
         </a>
 
         {/* Small Navigation Links */}
-        <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div className="flex gap-6 flex-wrap justify-center">
           {links.map((link) => (
             <a 
               key={link.label}
-              href={link.href}
-              style={{
-                color: '#4b5563',
-                textDecoration: 'none',
-                fontSize: '0.72rem',
-                fontWeight: '600',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                transition: 'color 0.2s'
+              href={`#${link.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick(link.id);
               }}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#ff7a52'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#4b5563'}
+              className="text-neutral-600 no-underline text-xs font-semibold tracking-wider uppercase hover:text-[#ff7a52] transition-colors cursor-pointer"
             >
               {link.label}
             </a>
@@ -60,23 +53,14 @@ export default function App() {
         </div>
 
         {/* Divider */}
-        <div style={{ width: '100%', height: '1px', backgroundColor: 'rgba(0, 0, 0, 0.06)' }} />
+        <div className="w-full h-px bg-black/5" />
 
         {/* Lower row */}
-        <div style={{
-          width: '100%',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '20px',
-          fontSize: '0.75rem',
-          color: '#4b5563'
-        }}>
+        <div className="w-full flex justify-between items-center flex-wrap gap-4 text-xs text-neutral-500">
           <span>&copy; 2026 Lume Studio. All rights reserved.</span>
-          <div style={{ display: 'flex', gap: '20px' }}>
-            <a href="#" style={{ color: '#4b5563', textDecoration: 'none' }}>Privacy Policy</a>
-            <a href="#" style={{ color: '#4b5563', textDecoration: 'none' }}>Terms of Service</a>
+          <div className="flex gap-5">
+            <a href="#" className="text-neutral-500 no-underline hover:text-neutral-900">Privacy Policy</a>
+            <a href="#" className="text-neutral-500 no-underline hover:text-neutral-900">Terms of Service</a>
           </div>
         </div>
       </div>

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import SignIn from './components/SignIn';
 
 // Google Fonts and FontAwesome
 const FontLinks = () => (
@@ -26,36 +28,173 @@ const IMAGES = {
 };
 
 // 1. NAVBAR COMPONENT
-function Navbar() {
+function Navbar({ onNavigateTo, onOpenSignIn, currentView }) {
+  const { isAuthenticated, user, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const handleInquireClick = (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      onOpenSignIn('Please sign in or create an account to start your wedding photography inquiry.', 'contact');
+    } else {
+      onNavigateTo('contact');
+    }
+  };
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-neutral-100 px-6 md:px-12 py-5 flex items-center justify-between">
-      <a href="#home" className="flex items-center gap-2 group">
-        <div className="w-8 h-8 rounded-full bg-[#F4B8C8] flex items-center justify-center text-white">
-          <i className="fa-solid fa-camera text-xs"></i>
+    <>
+      <nav 
+        className="fixed top-0 left-0 right-0 z-40 bg-[#FFFFFF]/90 backdrop-blur-md border-b border-neutral-100 px-6 md:px-12 py-4 flex items-center justify-between"
+        style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+      >
+        <button 
+          onClick={() => onNavigateTo('home')} 
+          className="flex items-center gap-2 group bg-transparent border-none cursor-pointer p-0 text-inherit"
+        >
+          <div className="w-8 h-8 rounded-full bg-[#F4B8C8] flex items-center justify-center text-white">
+            <i className="fa-solid fa-camera text-xs"></i>
+          </div>
+          <span className="font-sans font-extrabold text-sm tracking-[0.2em] text-[#1A1A1A] uppercase">
+            BLUSH LENS
+          </span>
+        </button>
+
+        {/* Desktop Links (Visible on lg and above) */}
+        <div className="hidden lg:flex items-center gap-8">
+          <button onClick={() => onNavigateTo('home')} className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors bg-transparent border-none cursor-pointer">Home</button>
+          <button onClick={() => onNavigateTo('demos')} className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors bg-transparent border-none cursor-pointer">Demos</button>
+          <button onClick={() => onNavigateTo('portfolio')} className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors bg-transparent border-none cursor-pointer">Gallery</button>
+          <button onClick={() => onNavigateTo('features')} className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors bg-transparent border-none cursor-pointer">Services</button>
+          
+          {/* Protected Inquire Action */}
+          <button 
+            onClick={handleInquireClick} 
+            className="px-6 py-2 rounded-full bg-[#1A1A1A] text-white text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-[#F4B8C8] hover:text-[#1A1A1A] transition-colors cursor-pointer border-none"
+          >
+            Inquire
+          </button>
+
+          {/* Auth State Button */}
+          {isAuthenticated && user ? (
+            <div className="flex items-center gap-3 pl-2 border-l border-neutral-200">
+              <button 
+                onClick={() => onOpenSignIn('', 'home')}
+                className="flex items-center gap-2 text-xs font-bold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors cursor-pointer bg-transparent border-none"
+              >
+                <span className="w-7 h-7 rounded-full bg-[#F4B8C8]/20 border border-[#F4B8C8]/40 flex items-center justify-center text-xs text-[#1A1A1A]">
+                  {user.name ? user.name[0].toUpperCase() : 'B'}
+                </span>
+                <span className="max-w-[90px] truncate">{user.name.split(' ')[0]}</span>
+              </button>
+              <button
+                onClick={logout}
+                className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 hover:text-[#1A1A1A] transition-colors bg-transparent border-none cursor-pointer"
+                title="Sign Out"
+              >
+                <i className="fa-solid fa-arrow-right-from-bracket"></i>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => onOpenSignIn('', 'home')}
+              className="text-xs font-bold uppercase tracking-[0.2em] text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors px-4 py-1.5 border border-neutral-300 rounded-full hover:border-[#F4B8C8] cursor-pointer bg-transparent"
+            >
+              Sign In
+            </button>
+          )}
         </div>
-        <span className="font-sans font-extrabold text-sm tracking-[0.2em] text-[#1A1A1A] uppercase">
-          BLUSH LENS
-        </span>
-      </a>
 
-      <div className="hidden md:flex items-center gap-8">
-        <a href="#home" className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors">Home</a>
-        <a href="#demos" className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors">Demos</a>
-        <a href="#portfolio" className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors">Gallery</a>
-        <a href="#features" className="text-[11px] uppercase tracking-[0.25em] font-semibold text-[#1A1A1A] hover:text-[#F4B8C8] transition-colors">Services</a>
-        <a href="#contact" className="px-6 py-2 rounded-full bg-[#1A1A1A] text-white text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-[#F4B8C8] transition-colors">Inquire</a>
+        {/* Mobile / Tablet Hamburger Toggle Button */}
+        <button 
+          type="button"
+          aria-label="Toggle navigation"
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+          className="lg:hidden p-2 text-stone-900 focus:outline-none cursor-pointer bg-transparent border-none text-xl"
+        >
+          {isMenuOpen ? '✕' : '☰'}
+        </button>
+      </nav>
+
+      {/* Mobile/Tablet Menu Drawer or Dropdown */}
+      <div
+        className={`fixed inset-0 z-50 bg-black/40 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+          isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsMenuOpen(false)}
+      >
+        <div
+          className={`fixed top-0 right-0 h-full w-64 max-w-[80vw] bg-white shadow-2xl p-6 flex flex-col justify-between transform transition-transform duration-300 ${
+            isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex items-center justify-between pb-6 border-b border-stone-200">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-[#F4B8C8] flex items-center justify-center text-white text-xs">
+                <i className="fa-solid fa-camera"></i>
+              </div>
+              <span className="font-bold text-base tracking-wide text-stone-900">BLUSH LENS</span>
+            </div>
+            <button 
+              onClick={() => setIsMenuOpen(false)} 
+              className="text-xl p-1 bg-transparent border-none cursor-pointer text-stone-700 hover:text-stone-900"
+              aria-label="Close navigation"
+            >
+              ✕
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-5 py-6 font-medium text-stone-800 text-sm tracking-widest uppercase text-left">
+            <button onClick={() => { setIsMenuOpen(false); onNavigateTo('home'); }} className="text-left bg-transparent border-none uppercase tracking-widest text-sm font-medium hover:text-pink-600 transition cursor-pointer">Home</button>
+            <button onClick={() => { setIsMenuOpen(false); onNavigateTo('demos'); }} className="text-left bg-transparent border-none uppercase tracking-widest text-sm font-medium hover:text-pink-600 transition cursor-pointer">Demos</button>
+            <button onClick={() => { setIsMenuOpen(false); onNavigateTo('portfolio'); }} className="text-left bg-transparent border-none uppercase tracking-widest text-sm font-medium hover:text-pink-600 transition cursor-pointer">Gallery</button>
+            <button onClick={() => { setIsMenuOpen(false); onNavigateTo('features'); }} className="text-left bg-transparent border-none uppercase tracking-widest text-sm font-medium hover:text-pink-600 transition cursor-pointer">Services</button>
+            <button onClick={() => { setIsMenuOpen(false); onNavigateTo('contact'); }} className="text-left bg-transparent border-none uppercase tracking-widest text-sm font-medium hover:text-pink-600 transition cursor-pointer">Contact</button>
+          </nav>
+
+          <div className="pt-4 border-t border-stone-100 flex flex-col gap-3">
+            <button
+              onClick={(e) => { setIsMenuOpen(false); handleInquireClick(e); }}
+              className="block w-full py-2.5 bg-stone-900 text-white text-center text-xs uppercase tracking-widest font-semibold rounded-full hover:bg-[#F4B8C8] hover:text-stone-900 transition cursor-pointer border-none"
+            >
+              Book Session
+            </button>
+
+            {/* Mobile Auth Status */}
+            {isAuthenticated && user ? (
+              <div className="flex items-center justify-between pt-2 border-t border-neutral-100">
+                <button 
+                  onClick={() => { setIsMenuOpen(false); onOpenSignIn('', 'home'); }}
+                  className="text-xs font-bold text-neutral-800 flex items-center gap-1.5 bg-transparent border-none cursor-pointer"
+                >
+                  <i className="fa-solid fa-user-check text-[#F4B8C8]"></i>
+                  <span>{user.name}</span>
+                </button>
+                <button 
+                  onClick={() => { setIsMenuOpen(false); logout(); }}
+                  className="text-[10px] text-neutral-400 hover:text-neutral-900 uppercase font-bold bg-transparent border-none cursor-pointer"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => { setIsMenuOpen(false); onOpenSignIn('', 'home'); }}
+                className="w-full py-2 rounded-full border border-neutral-300 text-neutral-700 text-xs uppercase font-bold tracking-wider hover:border-[#F4B8C8] cursor-pointer bg-transparent"
+              >
+                Sign In / Register
+              </button>
+            )}
+          </div>
+        </div>
       </div>
-
-      <button className="md:hidden text-[#1A1A1A] focus:outline-none">
-        <i className="fa-solid fa-bars text-lg"></i>
-      </button>
-    </nav>
+    </>
   );
 }
 
 // 2. HERO SECTION
-function Hero({ activeDemo, setActiveDemo }) {
-  // Demo configurations mapping
+function Hero({ activeDemo, onExploreDemos }) {
   const demoTitles = {
     1: "CLASSIC ROMANCE — EDITORIAL GALLERY",
     2: "MOODY MONOCHROME — SILENT EMOTIONS",
@@ -106,19 +245,19 @@ function Hero({ activeDemo, setActiveDemo }) {
           </p>
 
           <div>
-            <a 
-              href="#demos" 
-              className="inline-block px-8 py-3.5 rounded-full bg-[#1A1A1A] hover:bg-[#F4B8C8] text-white text-[11px] uppercase tracking-[0.25em] font-bold shadow-md transition-all"
+            <button 
+              onClick={onExploreDemos}
+              className="inline-block px-8 py-3.5 rounded-full bg-[#1A1A1A] hover:bg-[#F4B8C8] hover:text-[#1A1A1A] text-white text-[11px] uppercase tracking-[0.25em] font-bold shadow-md transition-all cursor-pointer border-none"
             >
               Explore Demos
-            </a>
+            </button>
           </div>
         </div>
 
         {/* Right Layout Visuals (Stacked Mockups) */}
         <div className="lg:col-span-7 relative h-[500px] md:h-[600px] flex items-center justify-center">
           
-          {/* Mockup Card 1: Full-Bleed Romantic Couple Photo (Background layer) */}
+          {/* Mockup Card 1 */}
           <motion.div 
             whileHover={{ y: -8, scale: 1.01 }}
             className="absolute left-4 top-12 w-64 md:w-80 aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-200 shadow-2xl z-10 border border-white/60"
@@ -128,14 +267,13 @@ function Hero({ activeDemo, setActiveDemo }) {
               alt="Romantic Couple Mockup" 
               className="w-full h-full object-cover" 
             />
-            {/* Elegant Serif Accent overlay inside card */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-6 text-left">
               <span className="font-sans text-[9px] tracking-widest text-[#F4B8C8] uppercase font-bold">Editorial Portrait</span>
               <h4 className="font-serif italic text-white text-lg mt-1">Whispers in the Sun</h4>
             </div>
           </motion.div>
 
-          {/* Mockup Card 2: Venue / Church Photo (Middle layer) */}
+          {/* Mockup Card 2 */}
           <motion.div 
             whileHover={{ y: -8, scale: 1.01 }}
             className="absolute right-4 bottom-8 w-56 md:w-72 aspect-square rounded-2xl overflow-hidden bg-neutral-300 shadow-2xl z-20 border border-white/60"
@@ -151,12 +289,11 @@ function Hero({ activeDemo, setActiveDemo }) {
             </div>
           </motion.div>
 
-          {/* Mockup Card 3: Browser Frame Mini Homepage (Top Front Layer) */}
+          {/* Mockup Card 3 */}
           <motion.div 
             whileHover={{ y: -8, scale: 1.02 }}
             className="absolute left-[20%] right-[10%] top-[30%] bg-white rounded-xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] border border-neutral-100 overflow-hidden z-30 flex flex-col"
           >
-            {/* Browser mock topbar */}
             <div className="bg-neutral-50 px-4 py-2 border-b border-neutral-100 flex items-center justify-between">
               <div className="flex gap-1.5">
                 <span className="w-2.5 h-2.5 rounded-full bg-red-400"></span>
@@ -169,9 +306,7 @@ function Hero({ activeDemo, setActiveDemo }) {
               <div className="w-4"></div>
             </div>
 
-            {/* Browser body mockup */}
             <div className="p-4 space-y-4">
-              {/* Mini Navbar */}
               <div className="flex items-center justify-between border-b border-neutral-50 pb-2">
                 <span className="text-[8px] font-bold uppercase tracking-wider text-[#1A1A1A]">BLUSH PRESET</span>
                 <div className="flex gap-2 text-[6px] text-neutral-400 uppercase font-bold">
@@ -180,7 +315,6 @@ function Hero({ activeDemo, setActiveDemo }) {
                 </div>
               </div>
 
-              {/* Dynamic Image Preview Container depending on activeDemo */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="col-span-2 aspect-video bg-neutral-100 rounded overflow-hidden">
                   <img 
@@ -195,7 +329,6 @@ function Hero({ activeDemo, setActiveDemo }) {
                 </div>
               </div>
 
-              {/* Mini Thumbnail Grid */}
               <div className="flex gap-2">
                 <span className="w-6 h-6 rounded bg-neutral-100 overflow-hidden flex-shrink-0">
                   <img src={IMAGES.thumbnail1} alt="thumb" className="w-full h-full object-cover" />
@@ -259,7 +392,6 @@ function DemoSwitcher({ activeDemo, setActiveDemo }) {
                   : 'border-neutral-200/80 shadow-sm hover:border-[#F4B8C8]/45'
               }`}
             >
-              {/* Mini browser mock navbar */}
               <div className="bg-white border-b border-neutral-200/60 px-4 py-2.5 flex items-center justify-between">
                 <div className="flex gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-neutral-300"></span>
@@ -270,7 +402,6 @@ function DemoSwitcher({ activeDemo, setActiveDemo }) {
                 <div className="w-3"></div>
               </div>
 
-              {/* Preview image */}
               <div className="aspect-[4/3] relative overflow-hidden bg-neutral-200">
                 <img 
                   src={demo.preview} 
@@ -278,15 +409,13 @@ function DemoSwitcher({ activeDemo, setActiveDemo }) {
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
                 />
                 
-                {/* Hover CTA overlay */}
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <button className="px-6 py-2.5 rounded-full bg-white text-neutral-900 text-[10px] uppercase tracking-wider font-bold shadow-lg">
+                  <button className="px-6 py-2.5 rounded-full bg-white text-neutral-900 text-[10px] uppercase tracking-wider font-bold shadow-lg border-none cursor-pointer">
                     Select Layout
                   </button>
                 </div>
               </div>
 
-              {/* Info strip */}
               <div className="p-5 flex justify-between items-center bg-white">
                 <div>
                   <h4 className="font-sans font-bold text-xs uppercase tracking-wider text-[#1A1A1A]">{demo.title}</h4>
@@ -308,7 +437,7 @@ function DemoSwitcher({ activeDemo, setActiveDemo }) {
 }
 
 // 4. PORTFOLIO GRID SECTION
-function PortfolioGrid() {
+function PortfolioGrid({ onReserveDate }) {
   return (
     <section id="portfolio" className="py-24 md:py-32 bg-[#FAFAFA] text-[#1A1A1A]">
       <div className="max-w-7xl mx-auto px-6 md:px-12 space-y-16">
@@ -334,10 +463,7 @@ function PortfolioGrid() {
         {/* Masonry-Style Responsive Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* Left Column: Description & Square Grid (8 grid-spans) */}
           <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            {/* Description Text block */}
             <div className="p-8 md:p-10 rounded-2xl bg-white border border-neutral-100 flex flex-col justify-between aspect-square text-left shadow-sm">
               <div className="space-y-4">
                 <span className="w-8 h-8 rounded-full bg-[#F4B8C8]/10 text-[#F4B8C8] flex items-center justify-center">
@@ -353,24 +479,19 @@ function PortfolioGrid() {
               </div>
             </div>
 
-            {/* Thumbnail Image 1 */}
             <div className="aspect-square rounded-2xl overflow-hidden bg-neutral-200 border border-neutral-100 shadow-sm">
               <img src={IMAGES.thumbnail1} alt="Gallery detail" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
             </div>
 
-            {/* Thumbnail Image 2 */}
             <div className="aspect-square rounded-2xl overflow-hidden bg-neutral-200 border border-neutral-100 shadow-sm">
               <img src={IMAGES.thumbnail2} alt="Gallery detail" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
             </div>
 
-            {/* Thumbnail Image 3 */}
             <div className="aspect-square rounded-2xl overflow-hidden bg-neutral-200 border border-neutral-100 shadow-sm">
               <img src={IMAGES.thumbnail3} alt="Gallery detail" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
             </div>
-
           </div>
 
-          {/* Right Column: Large Hero Portrait (4 grid-spans) */}
           <div className="lg:col-span-4 space-y-6">
             <div className="aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-300 border border-neutral-100 shadow-sm">
               <img src={IMAGES.portraitLarge} alt="Large romantic portrait" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
@@ -381,9 +502,14 @@ function PortfolioGrid() {
               <p className="text-[11px] text-neutral-500 leading-relaxed">
                 We accept only a limited number of destination and boutique weddings annually to keep our styling custom and highly personal.
               </p>
-              <a href="#contact" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#F4B8C8] hover:text-[#1A1A1A] transition-colors">
+              
+              {/* Protected Reserve Date Action */}
+              <button 
+                onClick={onReserveDate} 
+                className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#F4B8C8] hover:text-[#1A1A1A] transition-colors bg-transparent border-none cursor-pointer p-0"
+              >
                 Reserve Date <i className="fa-solid fa-arrow-right text-[8px]"></i>
-              </a>
+              </button>
             </div>
           </div>
 
@@ -421,14 +547,54 @@ function Features() {
   );
 }
 
-// 6. CONTACT FORM
-function ContactForm() {
+// 6. CONTACT FORM (Protected Submission)
+function ContactForm({ onOpenSignIn }) {
+  const { isAuthenticated, user } = useAuth();
+
+  const [names, setNames] = useState('');
+  const [email, setEmail] = useState('');
+  const [details, setDetails] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      if (!names) setNames(user.name || '');
+      if (!email) setEmail(user.email || '');
+    }
+  }, [user]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      onOpenSignIn('Authentication required: Please sign in or create an account to send your inquiry.', 'contact');
+      return;
+    }
+
+    if (!names || !email || !details) return;
+
+    // Save inquiry to localStorage mock ledger
+    try {
+      const existing = JSON.parse(localStorage.getItem('blush_photography9_inquiries') || '[]');
+      const newInquiry = {
+        id: 'inq_' + Date.now(),
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        coupleNames: names,
+        details: details,
+        createdAt: new Date().toISOString()
+      };
+      existing.push(newInquiry);
+      localStorage.setItem('blush_photography9_inquiries', JSON.stringify(existing));
+    } catch (err) {
+      console.error('Failed to log inquiry in photography-9:', err);
+    }
+
     setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 4000);
+    setTimeout(() => {
+      setSubmitted(false);
+      setDetails('');
+    }, 4000);
   };
 
   return (
@@ -444,51 +610,64 @@ function ContactForm() {
           <div className="w-8 h-[2px] bg-[#F4B8C8] mx-auto mt-2"></div>
         </div>
 
+        {isAuthenticated && user && (
+          <div className="bg-white border border-[#F4B8C8]/40 p-3 rounded-2xl text-xs flex items-center justify-between text-neutral-800 shadow-sm">
+            <span>Client Verified: <strong>{user.name}</strong> ({user.email})</span>
+            <span className="font-mono text-[9px] uppercase bg-[#F4B8C8]/20 px-2 py-0.5 rounded text-[#1A1A1A] font-bold">Portal Active</span>
+          </div>
+        )}
+
         {submitted ? (
           <div className="p-8 rounded-2xl bg-white border border-neutral-100 space-y-4 shadow-sm">
-            <div className="w-12 h-12 rounded-full bg-[#F4B8C8]/10 text-[#F4B8C8] flex items-center justify-center text-xl mx-auto">
-              <i className="fa-solid fa-circle-check"></i>
+            <div className="w-12 h-12 rounded-full bg-[#F4B8C8]/20 text-[#1A1A1A] flex items-center justify-center text-xl mx-auto">
+              <i className="fa-solid fa-circle-check text-[#F4B8C8]"></i>
             </div>
             <h4 className="text-sm font-bold uppercase tracking-wider">Inquiry Sent</h4>
-            <p className="text-xs text-neutral-400 leading-relaxed max-w-xs mx-auto">
-              We appreciate you sharing your vision. We will follow up with pricing options within 24 hours.
+            <p className="text-xs text-neutral-500 leading-relaxed max-w-xs mx-auto">
+              Thank you, {user ? user.name : names}! We appreciate you sharing your vision. We will follow up with custom boutique pricing within 24 hours.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 text-left bg-white p-8 rounded-2xl border border-neutral-100 shadow-sm">
             <div className="space-y-1.5">
-              <label className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]">Name</label>
+              <label className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]">Name *</label>
               <input 
                 type="text" 
                 required 
+                value={names}
+                onChange={(e) => setNames(e.target.value)}
                 placeholder="Sarah & David"
-                className="w-full px-4 py-3 border border-neutral-200 rounded-xl outline-none text-xs text-[#1A1A1A] focus:border-[#F4B8C8] transition-colors"
+                className="w-full px-4 py-3 border border-neutral-200 rounded-xl outline-none text-xs text-[#1A1A1A] focus:border-[#F4B8C8] transition-colors box-border"
               />
             </div>
             
             <div className="space-y-1.5">
-              <label className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]">Email</label>
+              <label className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]">Email *</label>
               <input 
                 type="email" 
                 required 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="sarah@example.com"
-                className="w-full px-4 py-3 border border-neutral-200 rounded-xl outline-none text-xs text-[#1A1A1A] focus:border-[#F4B8C8] transition-colors"
+                className="w-full px-4 py-3 border border-neutral-200 rounded-xl outline-none text-xs text-[#1A1A1A] focus:border-[#F4B8C8] transition-colors box-border"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]">Celebration details</label>
+              <label className="text-[9px] font-bold uppercase tracking-widest text-[#1A1A1A]">Celebration details *</label>
               <textarea 
                 rows="3" 
                 required 
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
                 placeholder="Share your wedding location, style, and timeline..."
-                className="w-full px-4 py-3 border border-neutral-200 rounded-xl outline-none text-xs text-[#1A1A1A] focus:border-[#F4B8C8] transition-colors resize-none"
+                className="w-full px-4 py-3 border border-neutral-200 rounded-xl outline-none text-xs text-[#1A1A1A] focus:border-[#F4B8C8] transition-colors resize-none box-border"
               />
             </div>
 
             <button 
-              type="submit"
-              className="w-full py-3.5 bg-[#1A1A1A] hover:bg-[#F4B8C8] text-white text-[11px] uppercase tracking-widest font-bold rounded-xl transition-colors shadow-md mt-2"
+              type="submit" 
+              className="w-full py-3.5 bg-[#1A1A1A] hover:bg-[#F4B8C8] hover:text-[#1A1A1A] text-white text-[11px] uppercase tracking-widest font-bold rounded-xl transition-colors shadow-md mt-2 cursor-pointer border-none"
             >
               Send Message
             </button>
@@ -500,7 +679,7 @@ function ContactForm() {
 }
 
 // 7. FOOTER
-function Footer() {
+function Footer({ onNavigateTo }) {
   return (
     <footer className="bg-white text-[#1A1A1A] border-t border-neutral-100 py-16 px-6 md:px-12 text-center">
       <div className="max-w-7xl mx-auto flex flex-col items-center space-y-6">
@@ -517,10 +696,10 @@ function Footer() {
 
         {/* Minimal Nav */}
         <div className="flex flex-wrap justify-center gap-6 text-[10px] uppercase tracking-[0.2em] font-bold text-neutral-400">
-          <a href="#home" className="hover:text-[#F4B8C8]">Home</a>
-          <a href="#demos" className="hover:text-[#F4B8C8]">Demos</a>
-          <a href="#portfolio" className="hover:text-[#F4B8C8]">Portfolio</a>
-          <a href="#contact" className="hover:text-[#F4B8C8]">Inquire</a>
+          <button onClick={() => onNavigateTo('home')} className="hover:text-[#F4B8C8] bg-transparent border-none cursor-pointer uppercase font-bold text-inherit">Home</button>
+          <button onClick={() => onNavigateTo('demos')} className="hover:text-[#F4B8C8] bg-transparent border-none cursor-pointer uppercase font-bold text-inherit">Demos</button>
+          <button onClick={() => onNavigateTo('portfolio')} className="hover:text-[#F4B8C8] bg-transparent border-none cursor-pointer uppercase font-bold text-inherit">Portfolio</button>
+          <button onClick={() => onNavigateTo('contact')} className="hover:text-[#F4B8C8] bg-transparent border-none cursor-pointer uppercase font-bold text-inherit">Inquire</button>
         </div>
 
         <div className="w-12 h-[1px] bg-neutral-200 my-4"></div>
@@ -541,20 +720,99 @@ function Footer() {
   );
 }
 
-// 8. CONTAINER COMPONENT
-export default function App() {
+// 8. INNER TEMPLATE CONTAINER
+function BlushTemplateApp() {
+  const { isAuthenticated } = useAuth();
+
   const [activeDemo, setActiveDemo] = useState(1);
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'signin'
+  const [redirectTarget, setRedirectTarget] = useState('home');
+  const [authReason, setAuthReason] = useState('');
+
+  const navigateToSection = (sectionId) => {
+    if (currentView !== 'home') {
+      setCurrentView('home');
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
+    } else {
+      const el = document.getElementById(sectionId);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      else window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleOpenSignIn = (reason = '', target = 'home') => {
+    setAuthReason(reason);
+    setRedirectTarget(target);
+    setCurrentView('signin');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleReserveDateAction = (e) => {
+    e?.preventDefault();
+    if (!isAuthenticated) {
+      handleOpenSignIn('Please sign in or create an account to reserve your boutique wedding date.', 'contact');
+    } else {
+      navigateToSection('contact');
+    }
+  };
 
   return (
     <div className="bg-white text-[#1A1A1A] min-h-screen overflow-x-hidden relative select-none font-sans animate-fadeIn">
       <FontLinks />
-      <Navbar />
-      <Hero activeDemo={activeDemo} setActiveDemo={setActiveDemo} />
-      <DemoSwitcher activeDemo={activeDemo} setActiveDemo={setActiveDemo} />
-      <PortfolioGrid />
-      <Features />
-      <ContactForm />
-      <Footer />
+      <Navbar 
+        onNavigateTo={navigateToSection}
+        onOpenSignIn={handleOpenSignIn}
+        currentView={currentView}
+      />
+
+      {currentView === 'signin' ? (
+        <main className="w-full max-w-full overflow-x-hidden pt-12">
+          <SignIn 
+            onNavigateBack={(target) => {
+              setCurrentView('home');
+              if (target && target !== 'home') {
+                setTimeout(() => {
+                  const el = document.getElementById(target);
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            redirectTarget={redirectTarget}
+            authReason={authReason}
+          />
+        </main>
+      ) : (
+        <main>
+          <Hero 
+            activeDemo={activeDemo} 
+            onExploreDemos={() => navigateToSection('demos')} 
+          />
+          <DemoSwitcher 
+            activeDemo={activeDemo} 
+            setActiveDemo={setActiveDemo} 
+          />
+          <PortfolioGrid onReserveDate={handleReserveDateAction} />
+          <Features />
+          <ContactForm onOpenSignIn={handleOpenSignIn} />
+        </main>
+      )}
+
+      <Footer onNavigateTo={navigateToSection} />
     </div>
+  );
+}
+
+// 9. ROOT EXPORT
+export default function App() {
+  return (
+    <AuthProvider>
+      <BlushTemplateApp />
+    </AuthProvider>
   );
 }

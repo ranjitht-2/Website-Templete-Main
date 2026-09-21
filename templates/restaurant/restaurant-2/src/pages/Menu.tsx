@@ -267,17 +267,17 @@ export const Menu: React.FC = () => {
 
           {/* Chef's 7-Course Tasting Menu Callout */}
           <div className="mt-5 pt-5 border-top border-bone">
-            <div className="p-4 p-lg-5 bg-primary-dark text-white rounded-4 border border-dark-subtle">
+            <div className="p-4 p-lg-5 light-card rounded-4 border border-dark-subtle" style={{ backgroundColor: '#EFE8DC', color: '#1c1917' }}>
               <div className="row align-items-center g-4">
                 <div className="col-lg-8">
                   <div className="eyebrow text-accent">THE ULTIMATE TASTING</div>
-                  <h3 className="font-heading text-white fs-2 mb-2">Chef's Hearth Tasting Menu</h3>
-                  <p className="text-bone opacity-85 mb-0">
+                  <h3 className="font-heading fs-2 mb-2" style={{ color: '#1c1917' }}>Chef's Hearth Tasting Menu</h3>
+                  <p className="mb-0" style={{ color: '#292524' }}>
                     A blind 7-course progression curated daily by Chef Arjun Mehta showcasing that morning's coastal catch, wild foraged mushrooms, and reserve dry-aged cuts.
                   </p>
                 </div>
                 <div className="col-lg-4 text-lg-end">
-                  <div className="fs-3 font-heading text-accent fw-bold mb-2">₹3,800 <span className="fs-6 fw-normal text-bone opacity-75">/ Guest</span></div>
+                  <div className="fs-3 font-heading text-accent fw-bold mb-2">₹3,800 <span className="fs-6 fw-normal" style={{ color: '#44403c' }}>/ Guest</span></div>
                   <Link to="/#reservation" className="btn-custom btn-primary-accent w-100 w-lg-auto">Reserve Tasting Experience</Link>
                 </div>
               </div>

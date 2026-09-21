@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const Header: React.FC = () => {
   const location = useLocation();
+  const { user, isAuthenticated, logout } = useAuth();
   const isHomePage = location.pathname === '/' || location.pathname === '/index.html';
   const headerClass = `site-header${!isHomePage ? ' header-light' : ''}`;
 
@@ -45,8 +47,39 @@ export const Header: React.FC = () => {
             <Link to="/contact" className={`nav-link-custom ${isActive('contact') ? 'active' : ''}`}>Contact</Link>
           </nav>
 
-          {/* Desktop CTA & Mobile Toggle */}
-          <div className="d-flex align-items-center gap-3">
+          {/* Desktop CTA, Auth State & Mobile Toggle */}
+          <div className="d-flex align-items-center gap-2">
+            
+            {/* Auth Button for Desktop */}
+            {isAuthenticated && user ? (
+              <div className="d-none d-sm-flex align-items-center gap-2">
+                <Link 
+                  to="/signin" 
+                  className="d-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-dark-surface border border-accent text-decoration-none text-bone small"
+                  title="View Account Profile"
+                >
+                  <i className="bi bi-person-check-fill text-accent"></i>
+                  <span className="fw-medium text-truncate" style={{ maxWidth: '110px' }}>{user.name.split(' ')[0]}</span>
+                </Link>
+                <button 
+                  onClick={logout} 
+                  className="btn btn-sm btn-outline-secondary text-bone border-dark-subtle"
+                  title="Sign Out"
+                >
+                  <i className="bi bi-box-arrow-right"></i>
+                </button>
+              </div>
+            ) : (
+              <Link 
+                to="/signin" 
+                className={`btn-custom btn-outline-dark-custom d-none d-sm-inline-flex ${isActive('signin') ? 'active' : ''}`}
+                style={{ padding: '0.5rem 1rem' }}
+              >
+                <i className="bi bi-person me-1"></i>
+                <span>Sign In</span>
+              </Link>
+            )}
+
             <Link to="/#reservation" className="btn-custom btn-primary-accent d-none d-sm-inline-flex" id="navReserveBtn">
               <i className="bi bi-calendar-check"></i>
               <span>Reserve a Table</span>
@@ -86,6 +119,30 @@ export const Header: React.FC = () => {
             <Link to="/events" onClick={closeOffcanvas} className={`nav-link-mobile ${isActive('events') ? 'active' : ''}`}>Private Dining & Events</Link>
             <Link to="/gallery" onClick={closeOffcanvas} className={`nav-link-mobile ${isActive('gallery') ? 'active' : ''}`}>Visual Gallery</Link>
             <Link to="/contact" onClick={closeOffcanvas} className={`nav-link-mobile ${isActive('contact') ? 'active' : ''}`}>Contact & Location</Link>
+            
+            {/* Mobile Auth Link */}
+            {isAuthenticated && user ? (
+              <div className="mt-2 p-3 rounded-3 bg-dark-surface border border-dark-subtle d-flex align-items-center justify-content-between">
+                <div className="d-flex align-items-center gap-2">
+                  <i className="bi bi-person-circle text-accent fs-4"></i>
+                  <div>
+                    <div className="text-white fw-medium small">{user.name}</div>
+                    <div className="text-muted-custom" style={{ fontSize: '0.75rem' }}>{user.email}</div>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => { logout(); closeOffcanvas(); }}
+                  className="btn btn-sm btn-outline-danger"
+                  title="Sign Out"
+                >
+                  <i className="bi bi-box-arrow-right"></i>
+                </button>
+              </div>
+            ) : (
+              <Link to="/signin" onClick={closeOffcanvas} className={`nav-link-mobile ${isActive('signin') ? 'active' : ''}`}>
+                <i className="bi bi-box-arrow-in-right me-2 text-accent"></i> Member Sign In
+              </Link>
+            )}
           </nav>
 
           <div className="mt-4 pt-4 border-top border-dark-subtle">

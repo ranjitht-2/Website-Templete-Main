@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface FullscreenNavProps {
   isOpen: boolean;
@@ -89,11 +90,20 @@ const NAV_ITEMS: NavItem[] = [
     captionTitle: '08 — RESERVATIONS',
     captionSub: 'Reserve your table at Ember House',
   },
+  {
+    num: '09',
+    text: 'Member Access',
+    path: '/signin',
+    bg: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop',
+    captionTitle: '09 — MEMBER HEARTH',
+    captionSub: 'Authentication, guest profile & exclusive privileges',
+  }
 ];
 
 export const FullscreenNav: React.FC<FullscreenNavProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, isAuthenticated, logout } = useAuth();
 
   const [activeItem, setActiveItem] = useState<NavItem>(NAV_ITEMS[0]);
   const [bgSrc, setBgSrc] = useState<string>(NAV_ITEMS[0].bg);
@@ -146,9 +156,16 @@ export const FullscreenNav: React.FC<FullscreenNavProps> = ({ isOpen, onClose })
       <div className="fullscreen-nav-right">
         <div className="nav-top-bar">
           <span className="nav-index-label">EXPLORE</span>
-          <button type="button" className="btn-nav-close" id="btnNavClose" onClick={onClose} aria-label="Close Menu">
-            CLOSE <span className="close-icon">&times;</span>
-          </button>
+          <div className="d-flex align-items-center gap-3">
+            {isAuthenticated && user && (
+              <span className="badge bg-burgundy text-white px-3 py-2 small">
+                {user.name} ({user.role || 'Member'})
+              </span>
+            )}
+            <button type="button" className="btn-nav-close" id="btnNavClose" onClick={onClose} aria-label="Close Menu">
+              CLOSE <span className="close-icon">&times;</span>
+            </button>
+          </div>
         </div>
 
         <div className="nav-body-container">
@@ -189,9 +206,17 @@ export const FullscreenNav: React.FC<FullscreenNavProps> = ({ isOpen, onClose })
           </div>
         </div>
 
-        <div className="nav-bottom-meta">
+        <div className="nav-bottom-meta d-flex justify-content-between align-items-center">
           <span>WOOD-FIRED SANCTUARY &bull; CHENNAI</span>
-          <span>OPEN TUE–SUN</span>
+          {isAuthenticated ? (
+            <button onClick={() => { logout(); onClose(); }} className="btn btn-sm btn-link text-soft text-decoration-none p-0">
+              Sign Out ({user?.name})
+            </button>
+          ) : (
+            <Link to="/signin" onClick={onClose} className="text-gold text-decoration-none small fw-bold">
+              Sign In to Member Account &rarr;
+            </Link>
+          )}
         </div>
       </div>
     </div>

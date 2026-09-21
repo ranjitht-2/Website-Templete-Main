@@ -1,12 +1,20 @@
 import React from 'react';
 import { NOIRE_CONFIG } from '../data/noireData';
+import { useAuth } from '../context/AuthContext';
 
 interface NoireFooterProps {
   onNavigate: (targetId: string) => void;
   onOpenReservation: () => void;
+  onNavigateToAuth?: () => void;
 }
 
-export const NoireFooter: React.FC<NoireFooterProps> = ({ onNavigate, onOpenReservation }) => {
+export const NoireFooter: React.FC<NoireFooterProps> = ({
+  onNavigate,
+  onOpenReservation,
+  onNavigateToAuth
+}) => {
+  const { user, isAuthenticated } = useAuth();
+
   return (
     <footer className="w-full bg-[#171512] text-[#F3EBDD] pt-24 pb-12 border-t border-[rgba(243,235,221,0.14)] relative overflow-hidden">
       {/* Infinite Ticker Bar */}
@@ -54,7 +62,17 @@ export const NoireFooter: React.FC<NoireFooterProps> = ({ onNavigate, onOpenRese
 
           {/* Column 3 */}
           <div className="flex flex-col space-y-3">
-            <span className="text-[#B87552] uppercase tracking-widest mb-2 font-bold">SOCIAL</span>
+            <span className="text-[#B87552] uppercase tracking-widest mb-2 font-bold">MEMBERSHIP</span>
+            {onNavigateToAuth && (
+              <button
+                onClick={onNavigateToAuth}
+                className="text-left text-[#F3EBDD] hover:text-[#B87552] font-bold transition-colors"
+              >
+                {isAuthenticated && user
+                  ? `08 // PATRON PROFILE (${user.name.split(' ')[0].toUpperCase()})`
+                  : '08 // PATRON SIGN IN'}
+              </button>
+            )}
             <a href={NOIRE_CONFIG.socials.instagram} target="_blank" rel="noreferrer" className="text-[#B8AA98] hover:text-[#F3EBDD] transition-colors">INSTAGRAM</a>
             <a href={NOIRE_CONFIG.socials.spotify} target="_blank" rel="noreferrer" className="text-[#B8AA98] hover:text-[#F3EBDD] transition-colors">SPOTIFY PLAYLIST</a>
             <a href={NOIRE_CONFIG.socials.vimeo} target="_blank" rel="noreferrer" className="text-[#B8AA98] hover:text-[#F3EBDD] transition-colors">FILM REEL</a>

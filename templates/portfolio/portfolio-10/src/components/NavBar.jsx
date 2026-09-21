@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, User, LogOut } from 'lucide-react';
 import { creativeData } from '../data/creativeData';
+import { useAuth } from '../context/AuthContext';
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white border-b border-zinc-100 py-4 px-6 md:px-12 font-sans shadow-xs">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
+    <header 
+      style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+      className="sticky top-0 z-40 w-full max-w-full bg-white border-b border-zinc-100 pt-4 pb-3 px-4 sm:px-6 md:px-12 font-sans shadow-xs relative"
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between w-full max-w-full relative z-40">
         
         {/* Logo */}
-        <Link to="/" className="font-serif-heading text-xl md:text-2xl font-black text-zinc-900 hover:text-zinc-600 transition-colors uppercase tracking-wider">
+        <Link to="/" className="font-serif-heading text-xl md:text-2xl font-black text-zinc-900 hover:text-zinc-600 transition-colors uppercase tracking-wider shrink-0">
           {creativeData.brand.logoText}
         </Link>
 
@@ -65,21 +70,51 @@ export default function NavBar() {
               </NavLink>
             );
           })}
+
+          <NavLink
+            to="/signin"
+            className={({ isActive }) => 
+              `text-[11px] font-sans tracking-widest uppercase font-bold transition-all flex items-center gap-1.5 ${
+                isActive ? 'text-[#ec4899]' : 'text-zinc-500 hover:text-zinc-900'
+              }`
+            }
+          >
+            <User size={13} />
+            {isAuthenticated ? (user?.name?.split(' ')[0] || 'Portal') : 'Sign In'}
+          </NavLink>
         </nav>
 
-        {/* Social Links (Desktop) */}
+        {/* Social Links & Auth Action (Desktop) */}
         <div className="hidden lg:flex items-center gap-4 text-zinc-400">
-          {creativeData.socials.map((soc, idx) => (
-            <a
-              key={idx}
-              href={soc.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-zinc-900 transition-colors text-xs"
-            >
-              <i className={soc.icon}></i>
-            </a>
-          ))}
+          {isAuthenticated ? (
+            <div className="flex items-center gap-3">
+              <Link
+                to="/signin"
+                className="px-3.5 py-1.5 rounded-full bg-stone-100 border border-stone-200 text-zinc-900 hover:text-[#ec4899] font-bold text-[10px] tracking-widest uppercase transition-colors"
+              >
+                {user?.name?.split(' ')[0] || 'Client'}
+              </Link>
+              <button
+                onClick={logout}
+                title="Sign Out"
+                className="p-1.5 rounded-full bg-transparent hover:bg-stone-100 text-zinc-400 hover:text-rose-500 transition-colors cursor-pointer border-none"
+              >
+                <LogOut size={15} />
+              </button>
+            </div>
+          ) : (
+            creativeData.socials.map((soc, idx) => (
+              <a
+                key={idx}
+                href={soc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-zinc-900 transition-colors text-xs"
+              >
+                <i className={soc.icon}></i>
+              </a>
+            ))
+          )}
         </div>
 
         {/* Hamburger Menu (Mobile) */}
@@ -93,7 +128,7 @@ export default function NavBar() {
 
       {/* Mobile Drawer */}
       {isOpen && (
-        <div className="lg:hidden w-full bg-white border-b border-zinc-100 px-6 py-6 flex flex-col gap-4 absolute top-full left-0 z-50">
+        <div className="lg:hidden w-full bg-white border-b border-zinc-100 px-6 py-6 flex flex-col gap-4 absolute top-full left-0 z-50 shadow-xl">
           {creativeData.navigation.map((item, idx) => {
             if (item.submenu) {
               return (
@@ -134,6 +169,29 @@ export default function NavBar() {
               </NavLink>
             );
           })}
+
+          <NavLink
+            to="/signin"
+            onClick={() => setIsOpen(false)}
+            className={({ isActive }) => 
+              `text-xs font-sans tracking-widest uppercase font-bold py-2 flex items-center gap-2 ${
+                isActive ? 'text-[#ec4899]' : 'text-zinc-500'
+              }`
+            }
+          >
+            <User size={15} />
+            <span>{isAuthenticated ? `Client Portal (${user?.name})` : 'Sign In / Register'}</span>
+          </NavLink>
+
+          {isAuthenticated && (
+            <button
+              onClick={() => { logout(); setIsOpen(false); }}
+              className="w-full text-center py-2.5 bg-stone-100 hover:bg-stone-200 text-rose-600 font-bold text-xs uppercase tracking-widest mt-2 rounded-xl cursor-pointer border-none flex items-center justify-center gap-2"
+            >
+              <LogOut size={14} />
+              <span>Sign Out</span>
+            </button>
+          )}
         </div>
       )}
     </header>

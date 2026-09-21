@@ -9,11 +9,14 @@ import {
   MapPin, 
   Send, 
   ArrowRight,
-  Maximize2 
+  Maximize2,
+  Lock
 } from 'lucide-react';
 import { portfolioData, projectFilters, filterMapping } from './data/portfolioData';
 import NavBar from './components/NavBar';
 import GalleryModal from './components/GalleryModal';
+import SignIn from './components/SignIn';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Reusable Section Heading component
 function SectionHeading({ number, title, subtitle }) {
@@ -23,14 +26,14 @@ function SectionHeading({ number, title, subtitle }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
       transition={{ duration: 0.6 }}
-      className="mb-16"
+      className="mb-10 sm:mb-16 w-full max-w-full"
     >
-      <div className="flex items-center gap-3 mb-2">
+      <div className="flex items-center gap-3 mb-2 flex-wrap">
         <span className="text-xs font-sans tracking-widest text-[#4da6ff] uppercase font-bold">{number}</span>
         <div className="w-8 h-[1px] bg-[#4da6ff]/30" />
         {subtitle && <span className="text-xs font-sans tracking-wider text-slate-500 uppercase font-medium">{subtitle}</span>}
       </div>
-      <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+      <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight break-words">
         {title}
       </h2>
     </motion.div>
@@ -51,10 +54,17 @@ const SOCIAL_FA_MAP = {
   Twitter: "fa-brands fa-twitter"
 };
 
-export default function App() {
+function PortfolioMain() {
+  const { isAuthenticated, user } = useAuth();
+
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Authentication Modal states
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authReason, setAuthReason] = useState('');
+  const [pendingAction, setPendingAction] = useState(null);
 
   // Form states
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -81,6 +91,15 @@ export default function App() {
     return errors;
   };
 
+  const executeFormSubmit = () => {
+    setFormStatus('loading');
+    setTimeout(() => {
+      setFormStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setFormStatus('idle'), 3000);
+    }, 1500);
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const errors = validateForm();
@@ -89,12 +108,21 @@ export default function App() {
       return;
     }
 
-    setFormStatus('loading');
-    setTimeout(() => {
-      setFormStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setFormStatus('idle'), 3000);
-    }, 1500);
+    if (!isAuthenticated) {
+      setAuthReason('Client partner authentication required to send direct project inquiries & engineering requests.');
+      setPendingAction(() => () => executeFormSubmit());
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    executeFormSubmit();
+  };
+
+  const handleAuthSuccess = () => {
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
   };
 
   const handleProjectClick = (project) => {
@@ -108,13 +136,13 @@ export default function App() {
     : portfolioData.projects.filter(proj => proj.tag === filterMapping[selectedFilter]);
 
   return (
-    <div className="min-h-screen bg-[#05070f] text-slate-300 font-sans selection:bg-[#4da6ff] selection:text-slate-950 grid-overlay">
+    <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-[#0d0f12] text-white font-sans selection:bg-[#4da6ff] selection:text-slate-950 grid-overlay">
       
       {/* STICKY TOP NAVBAR */}
-      <NavBar />
+      <NavBar onOpenAuth={() => { setAuthReason(''); setIsAuthModalOpen(true); }} />
 
       {/* 1. HERO SECTION */}
-      <section id="home" className="min-h-screen flex items-center py-16 sm:py-20 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto relative overflow-hidden">
+      <section id="home" className="min-h-screen flex items-center py-16 sm:py-20 px-4 sm:px-6 w-full max-w-sm sm:max-w-md lg:max-w-5xl mx-auto relative overflow-hidden" style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}>
         <div className="w-full flex flex-col items-center text-center z-10 max-w-full">
           
           {/* Circular avatar with glowing accent-color ring */}
@@ -147,7 +175,7 @@ export default function App() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight max-w-4xl"
+            className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight max-w-4xl break-words"
           >
             I'm <span className="text-[#4da6ff] glow-text">{portfolioData.brand.siteName}</span>, a product designer & developer building delightful digital experiences.
           </motion.h1>
@@ -157,7 +185,7 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-6 text-sm md:text-base text-slate-400 max-w-2xl leading-relaxed"
+            className="mt-6 text-xs sm:text-sm md:text-base text-slate-400 max-w-2xl leading-relaxed"
           >
             {portfolioData.hero.subtext}
           </motion.p>
@@ -186,42 +214,43 @@ export default function App() {
       </section>
 
       {/* 2. ABOUT SECTION */}
-      <section id="about" className="py-24 px-6 md:px-12 max-w-7xl mx-auto border-t border-slate-900/50">
+      <section id="about" className="py-16 sm:py-24 px-4 sm:px-6 w-full max-w-sm sm:max-w-md lg:max-w-5xl mx-auto border-t border-slate-900/50" style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}>
         <SectionHeading number="01 // BACKGROUND" title="About My Studio" subtitle="The Narrative" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          
-          {/* Portrait Photo */}
-          <div className="col-span-12 lg:col-span-5 relative group w-full max-w-full">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-[#4da6ff]/20 to-transparent blur-md opacity-70 group-hover:opacity-100 transition-opacity" />
-            <div className="relative aspect-[4/3] lg:aspect-[3/4] bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center w-full max-w-full">
+          {/* Centered Showcase Image Card */}
+          <div className="w-full max-w-sm sm:max-w-md mx-auto pt-4 sm:pt-8 pb-4 sm:pb-6 px-2 sm:px-4 flex items-center justify-center">
+            <div className="w-full aspect-[4/3] rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-stone-900 group">
               <img 
                 src={portfolioData.about.image} 
-                alt="Workspace and laptop" 
-                className="w-full h-full object-cover filter grayscale opacity-75 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000"
+                alt="Design & Development Experience Showcase" 
+                className="w-full h-full object-cover block mx-auto filter grayscale opacity-85 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                onError={(e) => {
+                  e.currentTarget.src = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1000&q=80';
+                }}
               />
             </div>
           </div>
 
-          {/* Biography Narrative & Stat counters */}
-          <div className="col-span-12 lg:col-span-7 flex flex-col gap-10">
-            <div>
-              <span className="text-[10px] font-sans tracking-widest text-slate-500 font-bold uppercase block mb-3">
-                CRAFT ETHIC
-              </span>
-              <p className="text-base md:text-lg text-slate-300 leading-relaxed text-justify">
-                {portfolioData.about.story}
-              </p>
-            </div>
+          {/* Centered Text & Bio Section */}
+          <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col items-start sm:items-center text-left sm:text-center">
+            {/* Badge */}
+            <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.25em] text-blue-400 font-bold mb-3">
+              CRAFT ETHIC
+            </span>
 
-            {/* Stat counts grid */}
-            <div className="grid grid-cols-3 gap-6 pt-6 border-t border-slate-900">
+            {/* Paragraph Text with Auto-Wrap */}
+            <p className="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-sm break-words">
+              {portfolioData.about.story}
+            </p>
+
+            <div className="grid grid-cols-3 gap-4 sm:gap-6 pt-6 border-t border-slate-900/60 mt-6 w-full max-w-sm">
               {portfolioData.about.stats.map((stat, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <span className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+                <div key={idx} className="flex flex-col items-center">
+                  <span className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                     {stat.value}
                   </span>
-                  <span className="text-[9px] font-sans tracking-widest text-[#4da6ff]/80 uppercase font-bold mt-1.5 leading-snug">
+                  <span className="text-[9px] font-sans tracking-widest text-[#4da6ff]/80 uppercase font-bold mt-1 text-center">
                     {stat.label}
                   </span>
                 </div>
@@ -232,8 +261,8 @@ export default function App() {
       </section>
 
       {/* 3. SERVICES SECTION */}
-      <section id="services" className="py-24 bg-[#080b15]/40 border-y border-slate-900/50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section id="services" className="py-16 sm:py-24 bg-[#080b15]/40 border-y border-slate-900/50 w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-sm sm:max-w-md lg:max-w-5xl mx-auto px-4 sm:px-6">
           <SectionHeading number="02 // CAPABILITIES" title="Services & Solutions" subtitle="Core Offerings" />
 
           {/* Cards Grid */}
@@ -255,7 +284,7 @@ export default function App() {
                     <IconComponent size={20} />
                   </div>
                   
-                  <h3 className="text-lg font-bold text-white tracking-tight mb-2 group-hover:text-[#4da6ff] transition-colors">
+                  <h3 className="text-base sm:text-lg font-bold text-white tracking-tight mb-2 group-hover:text-[#4da6ff] transition-colors">
                     {service.title}
                   </h3>
                   
@@ -270,10 +299,10 @@ export default function App() {
       </section>
 
       {/* 4. SKILLS SECTION */}
-      <section id="skills" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <section id="skills" className="py-16 sm:py-24 px-4 sm:px-6 w-full max-w-sm sm:max-w-md lg:max-w-5xl mx-auto">
         <SectionHeading number="03 // TOOLKIT" title="Technical & Design Skills" subtitle="Stack Strength" />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {portfolioData.skills.map((cat, idx) => (
             <motion.div 
               key={idx}
@@ -281,9 +310,9 @@ export default function App() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: idx * 0.1 }}
-              className="bg-[#0b0e1a]/80 border border-slate-900/80 p-6 rounded-xl"
+              className="bg-[#0b0e1a]/80 border border-slate-900/80 p-5 sm:p-6 rounded-xl"
             >
-              <h3 className="text-sm font-sans tracking-widest text-[#4da6ff] uppercase font-bold border-b border-slate-900 pb-3 mb-6">
+              <h3 className="text-xs sm:text-sm font-sans tracking-widest text-[#4da6ff] uppercase font-bold border-b border-slate-900 pb-3 mb-6">
                 {cat.category}
               </h3>
               
@@ -313,12 +342,12 @@ export default function App() {
       </section>
 
       {/* 5. EXPERIENCE SECTION */}
-      <section id="experience" className="py-24 bg-[#080b15]/40 border-y border-slate-900/50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12">
+      <section id="experience" className="py-16 sm:py-24 bg-[#080b15]/40 border-y border-slate-900/50 w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-sm sm:max-w-md lg:max-w-5xl mx-auto px-4 sm:px-6">
           <SectionHeading number="04 // HISTORY" title="Professional Experience" subtitle="Timeline Journey" />
 
           {/* Timeline container */}
-          <div className="max-w-3xl mx-auto relative border-l border-slate-800/80 pl-6 md:pl-10 ml-4 md:ml-auto">
+          <div className="w-full max-w-sm sm:max-w-md lg:max-w-3xl mx-auto relative border-l border-slate-800/80 pl-6 sm:pl-8 md:pl-10">
             {portfolioData.experience.map((exp, idx) => (
               <motion.div 
                 key={exp.id}
@@ -333,13 +362,13 @@ export default function App() {
                   <div className="w-1 h-1 rounded-full bg-[#4da6ff]" />
                 </div>
 
-                <div className="bg-[#0b0e1a]/80 border border-slate-900/60 p-6 rounded-xl hover:border-slate-800/60 transition-colors">
+                <div className="bg-[#0b0e1a]/80 border border-slate-900/60 p-4 sm:p-6 rounded-xl hover:border-slate-800/60 transition-colors">
                   <div className="flex flex-col md:flex-row md:justify-between md:items-baseline gap-2 mb-3">
                     <div>
-                      <h3 className="text-lg font-bold text-white tracking-tight">{exp.role}</h3>
+                      <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">{exp.role}</h3>
                       <span className="text-xs font-sans text-[#4da6ff]/80 font-medium">{exp.company}</span>
                     </div>
-                    <span className="text-[10px] font-sans tracking-wider text-slate-500 font-bold uppercase bg-slate-900 px-3 py-1 rounded-full border border-slate-800">
+                    <span className="text-[10px] font-sans tracking-wider text-slate-500 font-bold uppercase bg-slate-900 px-3 py-1 rounded-full border border-slate-800 self-start md:self-auto">
                       {exp.dates}
                     </span>
                   </div>
@@ -354,11 +383,11 @@ export default function App() {
       </section>
 
       {/* 6. PORTFOLIO / PROJECTS SECTION */}
-      <section id="portfolio" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <section id="portfolio" className="py-16 sm:py-24 px-4 sm:px-6 w-full max-w-sm sm:max-w-md lg:max-w-5xl mx-auto">
         <SectionHeading number="05 // SHOWCASE" title="Selected Projects" subtitle="Product Gallery" />
 
         {/* Filters bar */}
-        <div className="flex flex-wrap gap-2 mb-10 pb-4 border-b border-slate-900">
+        <div className="flex flex-wrap gap-2 mb-10 pb-4 border-b border-slate-900 justify-center sm:justify-start">
           {projectFilters.map((filter, idx) => (
             <button
               key={idx}
@@ -396,7 +425,7 @@ export default function App() {
               </div>
               <div className="flex justify-between items-baseline px-1">
                 <div>
-                  <h4 className="text-lg font-bold text-white tracking-tight group-hover:text-[#4da6ff] transition-colors">
+                  <h4 className="text-base sm:text-lg font-bold text-white tracking-tight group-hover:text-[#4da6ff] transition-colors">
                     {project.title}
                   </h4>
                   <span className="text-[10px] font-sans tracking-widest text-[#4da6ff]/80 uppercase font-bold mt-0.5 block">
@@ -418,134 +447,114 @@ export default function App() {
       </section>
 
       {/* 7. CONTACT SECTION */}
-      <section id="contact" className="py-24 bg-[#080b15]/40 border-t border-slate-900/50">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          
-          {/* Left contact card info */}
-          <div className="col-span-12 lg:col-span-5">
-            <SectionHeading number="06 // CONNECTION" title="Let's build together" subtitle="Get in Touch" />
-            
-            <p className="text-sm font-sans text-slate-400 leading-relaxed mb-8 max-w-md">
-              Have an idea, project, or need full-time design and engineering services? Send me a message and let's explore.
-            </p>
+      <section 
+        id="contact" 
+        className="w-full max-w-full overflow-x-hidden min-h-screen bg-[#0d0f12] py-8 sm:py-12 px-4 flex flex-col items-center justify-center border-t border-white/5 relative"
+        style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}
+      >
+        <div className="w-full max-w-sm sm:max-w-md mx-auto text-center mb-6">
+          <SectionHeading number="06 // CONNECTION" title="Let's build together" subtitle="Get in Touch" />
+        </div>
 
-            <div className="flex flex-col gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-lg bg-[#4da6ff]/5 border border-[#4da6ff]/10 flex items-center justify-center text-[#4da6ff]">
-                  <Mail size={16} />
-                </div>
-                <div>
-                  <div className="text-[9px] font-sans tracking-widest text-slate-500 uppercase font-bold">EMAIL ME DIRECTLY</div>
-                  <a href={`mailto:${portfolioData.contact.email}`} className="text-xs text-slate-200 hover:text-[#4da6ff] font-medium transition-colors">
-                    {portfolioData.contact.email}
-                  </a>
-                </div>
-              </div>
+        {/* Top Safe-Area / Location & Social Header */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto flex flex-col items-center justify-center gap-4 mb-6">
+          <span className="text-[10px] sm:text-xs font-mono tracking-widest uppercase text-stone-400">
+            {portfolioData.contact.location || "SAN FRANCISCO, CALIFORNIA"}
+          </span>
+          <div className="flex items-center justify-center gap-3">
+            {portfolioData.contact.socials.map((soc, idx) => {
+              const faClass = SOCIAL_FA_MAP[soc.icon] || "fa-solid fa-link";
+              return (
+                <a 
+                  key={idx} 
+                  href={soc.url}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-stone-300 hover:text-white transition"
+                >
+                  <i className={faClass}></i>
+                </a>
+              );
+            })}
+          </div>
+        </div>
 
-              <div className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-lg bg-[#4da6ff]/5 border border-[#4da6ff]/10 flex items-center justify-center text-[#4da6ff]">
-                  <MapPin size={16} />
-                </div>
-                <div>
-                  <div className="text-[9px] font-sans tracking-widest text-slate-500 uppercase font-bold">LOCATION</div>
-                  <span className="text-xs text-slate-200 font-medium">
-                    {portfolioData.contact.location}
-                  </span>
-                </div>
-              </div>
+        {/* Fluid, Centered Contact Form Card */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 pb-12 flex flex-col items-center justify-center">
+          <form onSubmit={handleFormSubmit} className="w-full bg-[#11141a] border border-white/5 rounded-2xl p-5 sm:p-6 shadow-xl flex flex-col gap-4">
+            {/* Blue Top Accent Glow Line */}
+            <div className="w-full h-1 bg-blue-500 rounded-full shadow-[0_0_12px_rgba(59,130,246,0.6)] mb-2" />
+
+            {/* Form Fields */}
+            <div className="w-full text-left">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1.5">
+                YOUR NAME
+              </label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                placeholder="Enter name"
+                className="w-full box-border rounded-lg bg-[#181d26] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition"
+              />
+              {formErrors.name && <span className="text-[10px] font-sans text-rose-400 mt-1 block">{formErrors.name}</span>}
             </div>
 
-            {/* Social Icons links */}
-            <div className="flex gap-4 mt-10">
-              {portfolioData.contact.socials.map((soc, idx) => {
-                const faClass = SOCIAL_FA_MAP[soc.icon] || "fa-solid fa-link";
-                return (
-                  <a
-                    key={idx}
-                    href={soc.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full border border-slate-800 hover:border-slate-700 bg-slate-900/40 text-slate-400 hover:text-white flex items-center justify-center hover:scale-105 transition-all text-sm"
-                  >
-                    <i className={faClass}></i>
-                  </a>
-                );
-              })}
+            <div className="w-full text-left">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1.5">
+                EMAIL ADDRESS
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                placeholder="Enter email"
+                className="w-full box-border rounded-lg bg-[#181d26] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition"
+              />
+              {formErrors.email && <span className="text-[10px] font-sans text-rose-400 mt-1 block">{formErrors.email}</span>}
             </div>
-          </div>
 
-          {/* Right contact form */}
-          <div className="col-span-12 lg:col-span-7 bg-[#0b0e1a]/80 border border-slate-900/60 p-4 sm:p-6 md:p-8 rounded-2xl relative overflow-hidden w-full max-w-full box-border">
-            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-[#4da6ff] to-transparent" />
-            
-            <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 w-full max-w-full box-border">
-              
-              {/* Name */}
-              <div className="flex flex-col w-full max-w-full box-border">
-                <label className="text-[10px] font-sans tracking-widest text-slate-500 uppercase font-bold mb-2">YOUR NAME</label>
-                <input 
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  placeholder="Enter name"
-                  className="w-full max-w-full box-border bg-[#05070f] border border-slate-800/80 focus:border-[#4da6ff]/50 px-4 py-3 rounded-lg text-sm text-slate-200 placeholder-slate-600 outline-none transition-colors"
-                />
-                {formErrors.name && <span className="text-[10px] font-sans text-rose-400 mt-1.5">{formErrors.name}</span>}
-              </div>
+            <div className="w-full text-left">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1.5">
+                YOUR MESSAGE
+              </label>
+              <textarea
+                rows={4}
+                name="message"
+                value={formData.message}
+                onChange={handleInputChange}
+                placeholder="Describe your project"
+                className="w-full box-border rounded-lg bg-[#181d26] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition resize-none"
+              />
+              {formErrors.message && <span className="text-[10px] font-sans text-rose-400 mt-1 block">{formErrors.message}</span>}
+            </div>
 
-              {/* Email */}
-              <div className="flex flex-col w-full max-w-full box-border">
-                <label className="text-[10px] font-sans tracking-widest text-slate-500 uppercase font-bold mb-2">EMAIL ADDRESS</label>
-                <input 
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  placeholder="Enter email"
-                  className="w-full max-w-full box-border bg-[#05070f] border border-slate-800/80 focus:border-[#4da6ff]/50 px-4 py-3 rounded-lg text-sm text-slate-200 placeholder-slate-600 outline-none transition-colors"
-                />
-                {formErrors.email && <span className="text-[10px] font-sans text-rose-400 mt-1.5">{formErrors.email}</span>}
-              </div>
-
-              {/* Message */}
-              <div className="flex flex-col w-full max-w-full box-border">
-                <label className="text-[10px] font-sans tracking-widest text-slate-500 uppercase font-bold mb-2">YOUR MESSAGE</label>
-                <textarea 
-                  name="message"
-                  value={formData.message}
-                  onChange={handleInputChange}
-                  placeholder="Describe your project"
-                  rows={4}
-                  className="w-full max-w-full box-border bg-[#05070f] border border-slate-800/80 focus:border-[#4da6ff]/50 px-4 py-3 rounded-lg text-sm text-slate-200 placeholder-slate-600 outline-none transition-colors resize-none"
-                />
-                {formErrors.message && <span className="text-[10px] font-sans text-rose-400 mt-1.5">{formErrors.message}</span>}
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={formStatus === 'loading'}
-                className="glow-btn w-full max-w-full box-border py-3.5 px-4 rounded-lg bg-[#4da6ff] disabled:bg-slate-800 text-slate-950 font-bold text-xs tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-[#3393f2]"
-              >
-                {formStatus === 'loading' ? (
-                  <span>Sending Message...</span>
-                ) : formStatus === 'success' ? (
-                  <span>Message Sent Successfully!</span>
-                ) : (
-                  <>
-                    Send Message <Send size={12} />
-                  </>
-                )}
-              </button>
-            </form>
-          </div>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={formStatus === 'loading'}
+              className="w-full py-3.5 bg-blue-500 hover:bg-blue-600 disabled:bg-slate-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg shadow-[0_0_15px_rgba(59,130,246,0.4)] transition flex items-center justify-center gap-2 mt-1"
+            >
+              {formStatus === 'loading' ? (
+                <span>Sending Message...</span>
+              ) : formStatus === 'success' ? (
+                <span>Message Sent Successfully!</span>
+              ) : (
+                <>
+                  <span>SEND MESSAGE</span>
+                  <Send size={12} />
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#05070f] text-slate-500 py-10 px-6 border-t border-slate-900">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-sans tracking-widest uppercase font-bold">
+      <footer className="bg-[#05070f] text-slate-500 py-10 px-4 sm:px-6 border-t border-slate-900 w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-sm sm:max-w-md lg:max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-sans tracking-widest uppercase font-bold text-center md:text-left">
           <span>© {new Date().getFullYear()} AIDEN DRAKE. ALL RIGHTS RESERVED.</span>
           <span>DARK SINGLE PAGE ARCHITECTURE</span>
         </div>
@@ -557,6 +566,22 @@ export default function App() {
         project={selectedProject}
         onClose={() => setIsModalOpen(false)}
       />
+
+      {/* Dedicated Client Sign In / Account Modal */}
+      <SignIn
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        authReason={authReason}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <PortfolioMain />
+    </AuthProvider>
   );
 }

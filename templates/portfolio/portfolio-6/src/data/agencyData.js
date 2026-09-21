@@ -96,6 +96,27 @@ export const agencyData = {
     ]
   },
   
+  projects: [
+    {
+      id: "proj-1",
+      title: "HYPERSCALE IAC PIPELINE",
+      category: "Cloud Infrastructure & GitOps",
+      desc: "Multi-region AWS & Kubernetes cluster orchestration system automated with Terraform declarations and self-healing CI/CD pipelines.",
+      imageSrc: "https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=1000&q=80",
+      alt: "Hyperscale IaC Pipeline",
+      tags: ["Terraform", "Kubernetes", "AWS"]
+    },
+    {
+      id: "proj-2",
+      title: "REAL-TIME TELEMETRY ENGINE",
+      category: "High-Throughput Analytics",
+      desc: "Distributed event streaming platform processing 8.2M events/sec with sub-millisecond query latencies and interactive analytics views.",
+      imageSrc: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80",
+      alt: "Real-Time Telemetry Engine",
+      tags: ["Kafka", "ClickHouse", "React"]
+    }
+  ],
+  
   services: [
     {
       icon: "Cpu",
@@ -131,17 +152,20 @@ export const agencyData = {
       {
         name: "Marcus Vance",
         role: "Lead Software Architect",
-        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80"
+        photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80",
+        imageSrc: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=250&q=80"
       },
       {
         name: "Evelyn Oswald",
         role: "DevOps Lead",
-        photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"
+        photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80",
+        imageSrc: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=250&q=80"
       },
       {
         name: "Jared Vance",
         role: "Visual Systems Director",
-        photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=250&q=80"
+        photo: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=250&q=80",
+        imageSrc: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=250&q=80"
       }
     ]
   },

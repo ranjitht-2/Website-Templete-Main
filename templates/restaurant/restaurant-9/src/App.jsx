@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './styles/fastfood.css';
 import Footer from './components/Footer';
 import ScrollReveal from './components/ScrollReveal';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import SignIn from './components/SignIn';
 
 export const menuData = {
   starters: [
@@ -38,7 +40,13 @@ export const menuData = {
   ]
 };
 
-export default function App() {
+function MainApp() {
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'signin'
+  const [authRedirectTarget, setAuthRedirectTarget] = useState('home');
+  const [authReason, setAuthReason] = useState('');
+
   const [activeCategory, setActiveCategory] = useState('starters');
   const [orderCategory, setOrderCategory] = useState('starters');
   const [cart, setCart] = useState({});
@@ -46,27 +54,96 @@ export default function App() {
   const [orderType, setOrderType] = useState('delivery'); // pickup/delivery
   const [showCheckout, setShowCheckout] = useState(false);
   const [showCateringModal, setShowCateringModal] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const [booking, setBooking] = useState({ name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'royal-court', request: '' });
-  const [checkoutForm, setCheckoutForm] = useState({ name: '', phone: '', address: '', payment: 'upi' });
-  const [cateringForm, setCateringForm] = useState({ name: '', email: '', phone: '', eventType: 'diwali', details: '' });
+  const [booking, setBooking] = useState(() => {
+    const saved = sessionStorage.getItem('restaurant_9_pending_booking');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return { name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'royal-court', request: '' };
+  });
+  const [checkoutForm, setCheckoutForm] = useState(() => {
+    const saved = sessionStorage.getItem('restaurant_9_pending_checkout');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return { name: '', phone: '', address: '', payment: 'upi' };
+  });
+  const [cateringForm, setCateringForm] = useState(() => {
+    const saved = sessionStorage.getItem('restaurant_9_pending_catering');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return { name: '', email: '', phone: '', eventType: 'diwali', details: '' };
+  });
+
+  // Autofill forms on auth change
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      setBooking(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+      setCheckoutForm(prev => ({
+        ...prev,
+        name: prev.name || user.name || ''
+      }));
+      setCateringForm(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   const specialOffers = [
     { title: 'TANDOORI PLATTER PAIRING', offer: 'FREE LASSI', desc: 'Order any Royal Kebab Platter or Biryani Combo and receive two glasses of Peshawari Sweet Lassi completely FREE! Valid daily.' },
     { title: 'DIWALI FESTIVAL BANQUETS', offer: '15% DISCOUNT', desc: 'Book corporate Diwali dinner platters or catering setups and receive a flat 15% discount. Contact Maître D’.' }
   ];
 
+  const navigateToView = (view, target = null) => {
+    setCurrentView(view);
+    setMobileMenuOpen(false);
+    if (view === 'home' && target && target !== 'home') {
+      setTimeout(() => {
+        const el = document.getElementById(target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   // 2. Booking, Catering & Order Handlers
   const handleBookingSubmit = (e) => {
     e.preventDefault();
-    alert(`Royal Seat Confirmed! Table reservation secured for ${booking.name} on ${booking.date} at ${booking.time} for ${booking.guests} guests. Preference: ${booking.preference.toUpperCase()}. Confirmation details sent to ${booking.phone}`);
-    setBooking({ name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'royal-court', request: '' });
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_9_pending_booking', JSON.stringify(booking));
+      setAuthRedirectTarget('booking');
+      setAuthReason('Please sign in or create a Royal Patron account to secure your Table Reservation.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Royal Seat Confirmed! Table reservation secured for ${booking.name || user.name} on ${booking.date} at ${booking.time} for ${booking.guests} guests. Preference: ${booking.preference.toUpperCase()}. Booked under Patron Account: ${user.name} (${user.email})`);
+    sessionStorage.removeItem('restaurant_9_pending_booking');
+    setBooking({ name: user ? user.name : '', phone: '', email: user ? user.email : '', date: '', time: '', guests: '2', preference: 'royal-court', request: '' });
   };
 
   const handleCateringSubmit = (e) => {
     e.preventDefault();
-    alert(`Enquiry Submitted! Our Royal banquets coordinator will contact you at ${cateringForm.phone} to finalize the arrangements.`);
-    setCateringForm({ name: '', email: '', phone: '', eventType: 'diwali', details: '' });
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_9_pending_catering', JSON.stringify(cateringForm));
+      setShowCateringModal(false);
+      setAuthRedirectTarget('catering');
+      setAuthReason('Please sign in to submit a Royal Banquets & Catering inquiry.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Enquiry Submitted! Our Royal banquets coordinator will contact you at ${cateringForm.phone} to finalize the arrangements. Request logged for Patron: ${user.name}`);
+    sessionStorage.removeItem('restaurant_9_pending_catering');
+    setCateringForm({ name: user ? user.name : '', email: user ? user.email : '', phone: '', eventType: 'diwali', details: '' });
     setShowCateringModal(false);
   };
 
@@ -96,7 +173,17 @@ export default function App() {
 
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
-    alert(`Royal Feast Dispatched! Your order is confirmed for ${checkoutForm.name}. Total billed: ₹${getCartTotal()}. Payment via: ${checkoutForm.payment.toUpperCase()}`);
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_9_pending_checkout', JSON.stringify(checkoutForm));
+      setShowCheckout(false);
+      setIsCartOpen(false);
+      setAuthRedirectTarget('ordering');
+      setAuthReason('Please sign in to complete your royal dining order checkout.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Royal Feast Dispatched! Your order is confirmed for ${checkoutForm.name}. Total billed: ₹${getCartTotal()}. Payment via: ${checkoutForm.payment.toUpperCase()}. Patron Account: ${user.email}`);
+    sessionStorage.removeItem('restaurant_9_pending_checkout');
     setCart({});
     setShowCheckout(false);
     setIsCartOpen(false);
@@ -105,23 +192,87 @@ export default function App() {
   return (
     <div className="fastfood-container" id="home">
       {/* 1. Header Navigation Bar */}
-      <nav className="casual-navbar" style={{ background: '#221511', borderBottom: '1px solid rgba(212,175,55,0.2)' }}>
-        <a href="#home" className="fastfood-font-impact" style={{ color: '#d4af37', textDecoration: 'none', fontSize: '1.6rem' }}>The Royal Tandoor</a>
-        <ul className="casual-nav-links">
-          <li><a href="#home" className="fastfood-nav-link">Home</a></li>
-          <li><a href="#offers" className="fastfood-nav-link">Offers</a></li>
-          <li><a href="#menu" className="fastfood-nav-link">Menu</a></li>
-          <li><a href="#ordering" className="fastfood-nav-link">Order Online</a></li>
-          <li><a href="#booking" className="fastfood-nav-link">Book Seat</a></li>
-          <li><a href="#about" className="fastfood-nav-link">About</a></li>
-          <li><a href="#catering" className="fastfood-nav-link">Catering</a></li>
-          <li><a href="#contact" className="fastfood-nav-link">Location</a></li>
-        </ul>
-        <button className="fastfood-btn-red" style={{ padding: '8px 18px', fontSize: '0.8rem' }} onClick={() => setIsCartOpen(true)}>
-          🛒 Cart ({getCartCount()})
-        </button>
+      <nav className="casual-navbar">
+        <div className="casual-navbar-container">
+          <a 
+            href="#home" 
+            onClick={(e) => { e.preventDefault(); navigateToView('home'); }} 
+            className="fastfood-font-impact fastfood-brand-logo"
+          >
+            The Royal Tandoor
+          </a>
+          <ul className={`casual-nav-links ${mobileMenuOpen ? 'open' : ''}`}>
+            <li><a href="#home" className="fastfood-nav-link" onClick={() => navigateToView('home')}>Home</a></li>
+            <li><a href="#offers" className="fastfood-nav-link" onClick={() => navigateToView('home', 'offers')}>Offers</a></li>
+            <li><a href="#menu" className="fastfood-nav-link" onClick={() => navigateToView('home', 'menu')}>Menu</a></li>
+            <li><a href="#ordering" className="fastfood-nav-link" onClick={() => navigateToView('home', 'ordering')}>Order Online</a></li>
+            <li><a href="#booking" className="fastfood-nav-link" onClick={() => navigateToView('home', 'booking')}>Book Seat</a></li>
+            <li><a href="#about" className="fastfood-nav-link" onClick={() => navigateToView('home', 'about')}>About</a></li>
+            <li><a href="#catering" className="fastfood-nav-link" onClick={() => navigateToView('home', 'catering')}>Catering</a></li>
+            <li><a href="#contact" className="fastfood-nav-link" onClick={() => navigateToView('home', 'contact')}>Location</a></li>
+          </ul>
+          <div className="casual-nav-actions">
+            {isAuthenticated && user ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthRedirectTarget('home');
+                    setAuthReason('');
+                    navigateToView('signin');
+                  }}
+                  className="fastfood-nav-user-badge"
+                  title={`Signed in as ${user.name} (${user.role})`}
+                >
+                  👑 {user.name.split(' ')[0]}
+                </button>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="fastfood-nav-logout-btn"
+                  title="Sign Out"
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setAuthRedirectTarget('home');
+                  setAuthReason('');
+                  navigateToView('signin');
+                }}
+                className="fastfood-nav-signin-btn"
+              >
+                Sign In
+              </button>
+            )}
+
+            <button className="fastfood-btn-red fastfood-nav-cart-btn" onClick={() => setIsCartOpen(true)}>
+              <span className="fastfood-cart-text">🛒 Cart ({getCartCount()})</span>
+              <span className="fastfood-cart-compact">🛒 {getCartCount()}</span>
+            </button>
+            <button
+              type="button"
+              className="casual-nav-toggle"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? '✕' : '☰'}
+            </button>
+          </div>
+        </div>
       </nav>
 
+      {currentView === 'signin' ? (
+        <SignIn
+          onNavigateBack={(target) => navigateToView('home', target)}
+          redirectTarget={authRedirectTarget}
+          authReason={authReason}
+        />
+      ) : (
+        <>
       {/* 1. Home / Hero Section */}
       <section className="fastfood-hero">
         <div className="fastfood-hero-grid">
@@ -140,7 +291,7 @@ export default function App() {
               </p>
             </ScrollReveal>
             <ScrollReveal animation="fade-in-up" delay={450}>
-              <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap' }}>
+              <div className="fastfood-hero-cta">
                 <a href="#menu" className="fastfood-btn-red" style={{ textDecoration: 'none' }}>Royal Menu</a>
                 <a href="#booking" className="fastfood-btn-yellow" style={{ textDecoration: 'none' }}>Book Seat</a>
                 <a href="#ordering" className="fastfood-btn-red" style={{ textDecoration: 'none', background: 'white', color: '#221511', borderColor: 'white' }}>Order Online</a>
@@ -325,7 +476,7 @@ export default function App() {
 
             <div className="fastfood-ticket-body">
               <form onSubmit={handleBookingSubmit}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+                <div className="fastfood-booking-form-grid">
                   <div className="fastfood-form-group">
                     <span style={{ fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: '#6b1124' }}>Full Name</span>
                     <input type="text" required className="fastfood-form-control" value={booking.name} onChange={(e) => setBooking({...booking, name: e.target.value})} placeholder="Arjun Sharma" />
@@ -371,24 +522,24 @@ export default function App() {
       </section>
 
       {/* 3. About Us Section */}
-      <section className="fastfood-section-padding" id="about" style={{ background: '#fdfbf7' }}>
+      <section className="fastfood-section-padding" id="about" style={{ background: '#fdfbf7', overflow: 'hidden' }}>
         <div className="casual-about-split">
           <ScrollReveal animation="fade-in-left">
             <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="Regal Mughlai grill kitchen preparation" className="casual-about-img" />
           </ScrollReveal>
           
           <ScrollReveal animation="fade-in-right" delay={150}>
-            <div>
+            <div className="casual-about-text">
               <span className="fastfood-font-impact" style={{ color: '#d4af37', fontSize: '0.85rem', letterSpacing: '2px', display: 'block', marginBottom: '10px' }}>
                 Our Regal Heritage
               </span>
-              <h2 className="fastfood-font-impact" style={{ fontSize: '2.5rem', color: '#221511', margin: '0 0 20px 0' }}>
+              <h2 className="fastfood-font-impact casual-about-title">
                 Imperial Mughlai Masterpieces
               </h2>
-              <p style={{ lineHeight: 1.8, fontSize: '0.95rem', color: '#5c4e48', marginBottom: '15px' }}>
+              <p className="casual-about-desc">
                 The Royal Tandoor has preserved the ancient culinary lineages of imperial kitchens. We cook slow and char skewered meats in heavy clay ovens fueled by wood coals.
               </p>
-              <p style={{ lineHeight: 1.8, fontSize: '0.95rem', color: '#5c4e48' }}>
+              <p className="casual-about-desc" style={{ marginBottom: 0 }}>
                 Every spice blend is hand-pounded inside our own spice cellars. Our butter chicken utilizes pure cream and organic butter, and our saffron biryanis capture genuine aroma notes.
               </p>
             </div>
@@ -470,19 +621,54 @@ export default function App() {
 
         <div className="casual-gallery-mosaic">
           <div className="casual-gallery-item-mosaic casual-gallery-tall">
-            <img src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=500&q=80" alt="Paneer Tikka" />
+            <img 
+              src="https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=500&q=80" 
+              alt="Paneer Tikka" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./images/restaurants/fallback-food.webp";
+              }}
+            />
           </div>
           <div className="casual-gallery-item-mosaic casual-gallery-wide">
-            <img src="https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=500&q=80" alt="Butter Chicken" />
+            <img 
+              src="https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=500&q=80" 
+              alt="Butter Chicken" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./images/restaurants/fallback-food.webp";
+              }}
+            />
           </div>
           <div className="casual-gallery-item-mosaic">
-            <img src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=500&q=80" alt="Rasmalai" />
+            <img 
+              src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=500&q=80" 
+              alt="Rasmalai" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./images/restaurants/fallback-food.webp";
+              }}
+            />
           </div>
           <div className="casual-gallery-item-mosaic">
-            <img src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=500&q=80" alt="Lassi pour" />
+            <img 
+              src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=500&q=80" 
+              alt="Lassi pour" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./images/restaurants/fallback-food.webp";
+              }}
+            />
           </div>
           <div className="casual-gallery-item-mosaic casual-gallery-wide">
-            <img src="https://images.unsplash.com/photo-1585938338392-50a59970d2ee?auto=format&fit=crop&w=500&q=80" alt="Royal interior" />
+            <img 
+              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80" 
+              alt="Royal interior" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "./images/restaurants/fallback-food.webp";
+              }}
+            />
           </div>
         </div>
       </section>
@@ -673,6 +859,8 @@ export default function App() {
           </div>
         </div>
       )}
+        </>
+      )}
 
       {/* 12. Footer Section */}
       <Footer
@@ -682,6 +870,14 @@ export default function App() {
         dark={true}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }
 

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const Events: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [inquirySuccess, setInquirySuccess] = useState(false);
   const [inquiryLoading, setInquiryLoading] = useState(false);
 
@@ -11,6 +15,12 @@ export const Events: React.FC = () => {
       form.reportValidity();
       return;
     }
+
+    if (!isAuthenticated) {
+      navigate('/signin?redirect=/events&reason=Please+sign+in+to+submit+a+private+event+or+package+booking');
+      return;
+    }
+
     setInquiryLoading(true);
     setTimeout(() => {
       setInquiryLoading(false);

@@ -152,31 +152,37 @@
 
 /* Reservation Form */
 .casual-booking-box {
-  background-color: #f5f5f4;
+  background-color: #fdfbf7;
   border-radius: 20px;
-  padding: 40px;
-  max-width: 800px;
+  padding: 30px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  border: 1px solid #e7e5e4;
+  border: 1px solid rgba(194,65,12,0.1);
+  box-sizing: border-box;
 }
 
 .casual-form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 25px;
-}
-
-@media (max-width: 768px) {
-  .casual-form-grid {
-    grid-template-columns: 1fr;
-  }
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .casual-form-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.casual-form-group-full {
+  grid-column: span 2;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .casual-form-label {
@@ -186,6 +192,9 @@
 }
 
 .casual-form-control {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid #d6d3d1;
@@ -199,6 +208,22 @@
 
 .casual-form-control:focus {
   border-color: #c2410c;
+}
+
+@media (max-width: 768px) {
+  .casual-booking-box {
+    padding: 20px 16px;
+    border-radius: 14px;
+  }
+
+  .casual-form-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .casual-form-group-full {
+    grid-column: span 1;
+  }
 }
 
 /* About Block */
@@ -275,14 +300,18 @@
 .casual-navbar {
   background-color: rgba(250, 250, 249, 0.95);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid #e7e5e4;
-  padding: 16px 40px;
+  padding: 14px 32px;
   position: sticky;
   top: 0;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .casual-nav-logo {
@@ -291,14 +320,17 @@
   font-weight: 800;
   color: #1c1917;
   text-decoration: none;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .casual-nav-links {
   display: flex;
-  gap: 24px;
+  gap: 20px;
   list-style: none;
   margin: 0;
   padding: 0;
+  align-items: center;
 }
 
 .casual-nav-link {
@@ -308,10 +340,95 @@
   text-decoration: none;
   transition: color 0.2s;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .casual-nav-link:hover, .casual-nav-link.active {
   color: #c2410c;
+}
+
+.casual-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.casual-nav-toggle {
+  display: none;
+  background: transparent;
+  border: 1px solid #d6d3d1;
+  border-radius: 8px;
+  padding: 6px;
+  color: #1c1917;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.casual-nav-toggle:hover {
+  background-color: #f5f5f4;
+  border-color: #a8a29e;
+}
+
+@media (max-width: 1023px) {
+  .casual-navbar {
+    padding: 12px 16px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+
+  .casual-nav-logo {
+    font-size: 1.25rem;
+  }
+
+  .casual-nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    flex-direction: column;
+    padding: 20px 24px;
+    gap: 16px;
+    border-bottom: 1px solid #e7e5e4;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    align-items: flex-start;
+  }
+
+  .casual-nav-links.open {
+    display: flex;
+  }
+
+  .casual-nav-toggle {
+    display: flex;
+  }
+}
+
+@media (max-width: 480px) {
+  .casual-navbar {
+    padding: 10px 12px;
+    padding-top: max(10px, env(safe-area-inset-top));
+  }
+
+  .casual-nav-logo {
+    font-size: 1.15rem;
+  }
+
+  .casual-nav-actions {
+    gap: 6px;
+  }
+
+  .casual-nav-actions button.casual-btn-primary {
+    padding: 6px 10px !important;
+    font-size: 0.78rem !important;
+  }
 }
 
 /* Events Card - Timeline Alternating Layout */
@@ -426,8 +543,9 @@
 .casual-booking-split {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
-  gap: 50px;
+  gap: 40px;
   max-width: 1100px;
+  width: 100%;
   margin: 0 auto;
   background: white;
   border-radius: 24px;
@@ -435,18 +553,38 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.02);
   border: 1px solid #e7e5e4;
   align-items: center;
+  box-sizing: border-box;
+}
+
+.casual-booking-info-box {
+  padding-right: 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1023px) {
+  .casual-booking-split {
+    grid-template-columns: 1fr;
+    padding: 28px 20px;
+    gap: 30px;
+  }
+
+  .casual-booking-info-box {
+    padding-right: 0;
+  }
 }
 
 @media (max-width: 768px) {
   .casual-booking-split {
     grid-template-columns: 1fr;
-    padding: 24px;
-    gap: 30px;
+    padding: 20px 16px;
+    gap: 24px;
+    border-radius: 16px;
   }
-}
 
-.casual-booking-info-box {
-  padding-right: 20px;
+  .casual-booking-info-box {
+    padding-right: 0;
+  }
 }
 
 .casual-hours-item {

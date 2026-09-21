@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Cpu, 
@@ -23,6 +23,8 @@ import { agencyData } from './data/agencyData';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import ScrollToTop, { ScrollToTopButton } from './components/ScrollToTop';
+import SignIn from './components/SignIn';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Helper for page transitions
 function PageWrapper({ children }) {
@@ -32,7 +34,7 @@ function PageWrapper({ children }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.35 }}
-      className="w-full min-h-[70vh]"
+      className="w-full max-w-full overflow-x-hidden min-h-[70vh]"
     >
       {children}
     </motion.div>
@@ -296,6 +298,69 @@ function HomePage() {
 
         </div>
       </section>
+
+      {/* Featured Projects Showcase Section */}
+      <section className="py-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto border-t border-zinc-900/60">
+        <SectionHeading 
+          eyebrow="ENGINEERING SHOWCASE" 
+          title="Featured Deployments" 
+          desc="Battle-tested architectures engineered for hyper-growth enterprise scale." 
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+          {agencyData.projects && agencyData.projects.map((project) => (
+            <div 
+              key={project.id}
+              className="bg-[#101010]/80 border border-zinc-900 hover:border-[#3ecf6e]/30 p-6 sm:p-8 flex flex-col justify-between transition-all group rounded-none"
+            >
+              <div>
+                {/* Responsive Image Container */}
+                <div className="w-full aspect-[16/10] sm:aspect-[16/9] bg-[#141414] border border-white/10 rounded-2xl overflow-hidden relative mb-5">
+                  <img
+                    src={project.imageSrc}
+                    alt={project.alt || project.title}
+                    className="w-full h-full object-cover rounded-xl block transition-transform duration-700 group-hover:scale-105"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://images.unsplash.com/photo-1618401471353-b98afee0b2eb?auto=format&fit=crop&w=1000&q=80';
+                    }}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-[10px] font-mono tracking-widest text-[#3ecf6e] uppercase font-bold">
+                    {project.category}
+                  </span>
+                </div>
+
+                <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight mb-3 group-hover:text-[#3ecf6e] transition-colors">
+                  {project.title}
+                </h3>
+
+                <p className="text-xs sm:text-sm text-zinc-400 font-sans leading-relaxed text-justify mb-6">
+                  {project.desc}
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-zinc-900 font-sans">
+                <div className="flex flex-wrap gap-2">
+                  {project.tags && project.tags.map((tag, tIdx) => (
+                    <span key={tIdx} className="px-2.5 py-1 bg-zinc-900 border border-zinc-800 text-[9px] font-mono uppercase text-zinc-400">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <Link
+                  to="/contact"
+                  className="text-xs uppercase font-extrabold text-[#3ecf6e] hover:text-white flex items-center gap-1.5 transition-colors"
+                >
+                  Inspect Case Study <ArrowRight size={13} />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </PageWrapper>
   );
 }
@@ -345,14 +410,13 @@ function ServicesPage() {
 function AboutPage() {
   return (
     <PageWrapper>
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
+      <section className="py-16 md:py-24 px-4 sm:px-6 md:px-12 max-w-7xl mx-auto w-full max-w-full overflow-x-hidden">
         <SectionHeading eyebrow="OUR STORY" title="About Synthetix" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
-          
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start mb-16">
           {/* Corporate narrative story timeline */}
-          <div className="col-span-12 lg:col-span-6 flex flex-col gap-8 text-left">
-            <h3 className="text-2xl text-white uppercase font-black tracking-tight leading-snug">
+          <div className="col-span-12 flex flex-col gap-8 text-left max-w-3xl">
+            <h3 className="text-2xl sm:text-3xl text-white uppercase font-black tracking-tight leading-snug">
               Constructing Scale Platforms Since 2026.
             </h3>
             <p className="text-sm text-zinc-400 font-sans leading-relaxed text-justify">
@@ -369,33 +433,39 @@ function AboutPage() {
               ))}
             </div>
           </div>
-
-          {/* Team Grid */}
-          <div className="col-span-12 lg:col-span-6 flex flex-col">
-            <h3 className="text-xl text-white uppercase font-black border-b border-zinc-900 pb-3 mb-8 text-left">
-              Executive Engineers
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 font-sans">
-              {agencyData.about.team.map((member, idx) => (
-                <div key={idx} className="bg-zinc-900/40 border border-zinc-900 p-4 flex flex-col items-center sm:items-start text-center sm:text-left gap-4 w-full max-w-full">
-                  <div className="w-full max-w-[240px] sm:max-w-none aspect-square overflow-hidden bg-zinc-900 border border-zinc-800 mx-auto sm:mx-0">
-                    <img 
-                      src={member.photo} 
-                      alt={member.name} 
-                      className="w-full h-full object-cover filter grayscale"
-                    />
-                  </div>
-                  <div className="text-center sm:text-left font-sans w-full">
-                    <h4 className="text-xs text-white font-bold uppercase">{member.name}</h4>
-                    <span className="text-[9px] text-[#3ecf6e] uppercase tracking-wide font-medium mt-0.5 block">{member.role}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
+
+        {/* Centered Executive Engineers Section */}
+        <div className="w-full max-w-5xl mx-auto px-4 sm:px-6 py-10 flex flex-col items-center">
+          <h2 className="text-base sm:text-lg font-bold tracking-widest uppercase text-white mb-8 self-start sm:self-center">
+            EXECUTIVE ENGINEERS
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full justify-items-center">
+            {agencyData.about.team.map((member, idx) => (
+              <div 
+                key={idx} 
+                className="w-full max-w-sm sm:max-w-md mx-auto bg-[#141414] border border-white/10 rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center text-center font-sans"
+              >
+                <div className="w-48 h-60 sm:w-56 sm:h-68 rounded-xl overflow-hidden mb-4 mx-auto shadow-md">
+                  <img
+                    src={member.imageSrc || member.photo}
+                    alt={member.name}
+                    className="w-full h-full object-cover block"
+                  />
+                </div>
+                <div className="flex flex-col items-center justify-center">
+                  <h3 className="text-sm sm:text-base font-bold uppercase tracking-wider text-white">
+                    {member.name}
+                  </h3>
+                  <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-emerald-400 mt-1">
+                    {member.role}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </section>
     </PageWrapper>
   );
@@ -495,9 +565,26 @@ function NewsPage() {
 
 // 5. CONTACT PAGE
 function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const { user, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({ 
+    name: user?.name || '', 
+    email: user?.email || '', 
+    message: '' 
+  });
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState('idle'); // idle | loading | success
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -521,6 +608,19 @@ function ContactPage() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    // Check Authentication - Protected Action
+    if (!isAuthenticated) {
+      navigate('/signin', { 
+        state: { 
+          from: '/contact', 
+          redirectTarget: '/contact', 
+          authReason: 'Please sign in or create an engineering node account to establish a project node and submit system parameters.' 
+        } 
+      });
+      return;
+    }
+
     const errors = validateForm();
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors);
@@ -530,111 +630,148 @@ function ContactPage() {
     setFormStatus('loading');
     setTimeout(() => {
       setFormStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setFormStatus('idle'), 3000);
+      setFormData({ name: user?.name || '', email: user?.email || '', message: '' });
+      setTimeout(() => setFormStatus('idle'), 4000);
     }, 1500);
   };
 
   return (
     <PageWrapper>
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-        
-        {/* Info detail block */}
-        <div className="col-span-12 lg:col-span-5 flex flex-col justify-between">
-          <div>
-            <SectionHeading eyebrow="PARTNER LINK" title="Start your project node" />
-            <p className="text-xs md:text-sm text-zinc-500 font-sans leading-relaxed mb-8 max-w-md text-justify">
-              Contact our engineering team to design custom cloud infrastructures, front-end software views, or automated deployment scripts.
-            </p>
+      <section className="py-12 sm:py-16 md:py-24 px-4 sm:px-6 md:px-12 w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center justify-items-center">
+          
+          {/* Info detail block */}
+          <div className="w-full max-w-md lg:max-w-none flex flex-col justify-between">
+            <div>
+              <SectionHeading eyebrow="PARTNER LINK" title="Start your project node" />
+              <p className="text-xs md:text-sm text-zinc-400 font-sans leading-relaxed mb-8 max-w-md text-justify">
+                Contact our engineering team to design custom cloud infrastructures, front-end software views, or automated deployment scripts.
+              </p>
 
-            <div className="flex flex-col gap-6 font-sans">
-              <div className="flex items-center gap-4">
-                <div className="w-9 h-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[#3ecf6e]">
-                  <Mail size={16} />
+              <div className="flex flex-col gap-6 font-sans">
+                <div className="flex items-center gap-4">
+                  <div className="w-9 h-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[#3ecf6e] shrink-0">
+                    <Mail size={16} />
+                  </div>
+                  <div>
+                    <div className="text-[9px] font-sans tracking-widest text-zinc-500 uppercase font-black">EMAIL INBOX</div>
+                    <a href={`mailto:${agencyData.brand.email}`} className="text-xs text-white hover:text-[#3ecf6e] font-bold transition-colors">
+                      {agencyData.brand.email}
+                    </a>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-[9px] font-sans tracking-widest text-zinc-600 uppercase font-black">EMAIL INBOX</div>
-                  <a href={`mailto:${agencyData.brand.email}`} className="text-xs text-white hover:text-[#3ecf6e] font-bold transition-colors">
-                    {agencyData.brand.email}
-                  </a>
-                </div>
-              </div>
 
-              <div className="flex items-center gap-4">
-                <div className="w-9 h-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[#3ecf6e]">
-                  <MapPin size={16} />
-                </div>
-                <div>
-                  <div className="text-[9px] font-sans tracking-widest text-zinc-600 uppercase font-black">OFFICE NODE</div>
-                  <span className="text-xs text-white/80 font-bold">
-                    {agencyData.brand.location}
-                  </span>
+                <div className="flex items-center gap-4">
+                  <div className="w-9 h-9 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[#3ecf6e] shrink-0">
+                    <MapPin size={16} />
+                  </div>
+                  <div>
+                    <div className="text-[9px] font-sans tracking-widest text-zinc-500 uppercase font-black">OFFICE NODE</div>
+                    <span className="text-xs text-white/80 font-bold">
+                      {agencyData.brand.location}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Form panel */}
-        <div className="col-span-12 lg:col-span-7 bg-zinc-950/80 border border-zinc-900 p-8 relative">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-[#3ecf6e]" />
-          
-          <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 font-sans">
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-600 uppercase font-black mb-2">FULL NAME</label>
-              <input 
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter name"
-                className="w-full bg-[#0a0a0a] border border-zinc-900 focus:border-[#3ecf6e] px-4 py-3 text-sm text-white placeholder-zinc-800 outline-none transition-colors"
-              />
-              {formErrors.name && <span className="text-[10px] text-rose-400 mt-1.5 font-bold">{formErrors.name}</span>}
+          {/* Form wrapper */}
+          <div className="w-full max-w-sm sm:max-w-md mx-auto flex flex-col items-center justify-center">
+            <div className="w-full bg-[#111111]/90 border border-white/10 rounded-2xl p-6 sm:p-8 relative overflow-hidden box-border">
+              <form onSubmit={handleFormSubmit} className="w-full flex flex-col gap-4 font-sans">
+                {/* Top accent line */}
+                <div className="w-full h-px bg-emerald-500/60 mb-2" />
+
+                {/* Authentication Status Badge */}
+                {!isAuthenticated ? (
+                  <div className="bg-black/60 border border-[#3ecf6e]/30 rounded-lg p-3 text-[11px] font-mono text-zinc-400 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5 text-zinc-300">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Unauthenticated Client
+                    </span>
+                    <Link to="/signin" state={{ from: '/contact', redirectTarget: '/contact' }} className="text-[#3ecf6e] hover:underline font-bold uppercase text-[10px]">
+                      Sign In →
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-3 text-[11px] font-mono text-emerald-400 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#3ecf6e] animate-pulse"></span>
+                    <span>Node Connected: <strong>{user?.name}</strong></span>
+                  </div>
+                )}
+
+                {/* Fields */}
+                <div className="w-full">
+                  <label className="text-[10px] uppercase font-mono tracking-widest text-stone-400 block mb-1.5">
+                    FULL NAME
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter name"
+                    className="w-full box-border rounded-lg bg-[#111111] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition placeholder-zinc-700"
+                  />
+                  {formErrors.name && <span className="text-[10px] text-rose-400 mt-1.5 font-bold block">{formErrors.name}</span>}
+                </div>
+
+                <div className="w-full">
+                  <label className="text-[10px] uppercase font-mono tracking-widest text-stone-400 block mb-1.5">
+                    BUSINESS EMAIL
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="growth@enterprise.com"
+                    className="w-full box-border rounded-lg bg-[#111111] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition placeholder-zinc-700 font-mono"
+                  />
+                  {formErrors.email && <span className="text-[10px] text-rose-400 mt-1.5 font-bold block">{formErrors.email}</span>}
+                </div>
+
+                <div className="w-full">
+                  <label className="text-[10px] uppercase font-mono tracking-widest text-stone-400 block mb-1.5">
+                    SYSTEM PARAMETERS
+                  </label>
+                  <textarea
+                    rows={4}
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="Describe your serverless or dashboard specifications"
+                    className="w-full box-border rounded-lg bg-[#111111] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition resize-none placeholder-zinc-700"
+                  />
+                  {formErrors.message && <span className="text-[10px] text-rose-400 mt-1.5 font-bold block">{formErrors.message}</span>}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={formStatus === 'loading'}
+                  className="w-full py-3.5 bg-[#22c55e] text-black font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-[#16a34a] transition flex items-center justify-center gap-2 mt-2 cursor-pointer disabled:opacity-50 border-none"
+                >
+                  {formStatus === 'loading' ? (
+                    <span>Registering Node...</span>
+                  ) : formStatus === 'success' ? (
+                    <span className="flex items-center gap-1.5"><CheckCircle2 size={13} /> Connection Established!</span>
+                  ) : !isAuthenticated ? (
+                    <>
+                      <span>SIGN IN & ESTABLISH NODE</span>
+                      <span>→</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>ESTABLISH NODE</span>
+                      <span>→</span>
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
+          </div>
 
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-600 uppercase font-black mb-2">BUSINESS EMAIL</label>
-              <input 
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="growth@enterprise.com"
-                className="w-full bg-[#0a0a0a] border border-zinc-900 focus:border-[#3ecf6e] px-4 py-3 text-sm text-white placeholder-zinc-800 outline-none transition-colors"
-              />
-              {formErrors.email && <span className="text-[10px] text-rose-400 mt-1.5 font-bold">{formErrors.email}</span>}
-            </div>
-
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-600 uppercase font-black mb-2">SYSTEM PARAMETERS</label>
-              <textarea 
-                name="message"
-                value={formData.message}
-                onChange={handleInputChange}
-                placeholder="Describe your serverless or dashboard specifications"
-                rows={4}
-                className="w-full bg-[#0a0a0a] border border-zinc-900 focus:border-[#3ecf6e] px-4 py-3 text-sm text-white placeholder-zinc-800 outline-none transition-colors resize-none"
-              />
-              {formErrors.message && <span className="text-[10px] text-rose-400 mt-1.5 font-bold">{formErrors.message}</span>}
-            </div>
-
-            <button
-              type="submit"
-              disabled={formStatus === 'loading'}
-              className="w-full py-4 bg-[#3ecf6e] disabled:bg-zinc-800 text-black font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:bg-[#34b65f] transition-all"
-            >
-              {formStatus === 'loading' ? (
-                <span>Registering Node...</span>
-              ) : formStatus === 'success' ? (
-                <span className="flex items-center gap-1.5"><CheckCircle2 size={13} /> Connection Established!</span>
-              ) : (
-                <>
-                  Establish Node <Send size={13} />
-                </>
-              )}
-            </button>
-          </form>
         </div>
       </section>
     </PageWrapper>
@@ -643,11 +780,11 @@ function ContactPage() {
 
 // ---------------- MAIN CONTAINER ----------------
 
-export default function App() {
+function SynthetixApp() {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-zinc-300 flex flex-col justify-between selection:bg-[#3ecf6e] selection:text-black">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#0a0a0a] text-zinc-300 flex flex-col justify-between selection:bg-[#3ecf6e] selection:text-black">
       
       {/* Reset Scroll position on route changes */}
       <ScrollToTop />
@@ -656,7 +793,7 @@ export default function App() {
       <NavBar />
 
       {/* ROUTE DEFINITIONS */}
-      <main className="flex-grow">
+      <main className="flex-grow w-full max-w-full overflow-x-hidden">
         <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route path="/" element={<HomePage />} />
@@ -666,6 +803,7 @@ export default function App() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/news" element={<NewsPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/signin" element={<SignIn />} />
           </Routes>
         </AnimatePresence>
       </main>
@@ -676,5 +814,13 @@ export default function App() {
       {/* Scroll to Top floating action */}
       <ScrollToTopButton />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <SynthetixApp />
+    </AuthProvider>
   );
 }

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Reservation({ onReserve }) {
+  const { user, isAuthenticated } = useAuth();
   const [date, setDate] = useState('');
   const [time, setTime] = useState('8:30 PM');
   const [guests, setGuests] = useState('2');
@@ -9,6 +11,17 @@ export default function Reservation({ onReserve }) {
   useEffect(() => {
     const todayStr = new Date().toISOString().split('T')[0];
     setMinDate(todayStr);
+
+    const saved = sessionStorage.getItem('restaurant_3_pending_reservation');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.rawDate) setDate(parsed.rawDate);
+        if (parsed.time) setTime(parsed.time);
+        if (parsed.guests) setGuests(parsed.guests);
+        return;
+      } catch (err) {}
+    }
 
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -37,6 +50,12 @@ export default function Reservation({ onReserve }) {
           <span className="accent-line" style={{ backgroundColor: 'var(--color-sand)' }}></span>BOOK A TABLE
         </span>
         <h2 className="reservation-heading">MEET US<br />AT THE TABLE.</h2>
+
+        {isAuthenticated && (
+          <div style={{ marginBottom: '1.5rem', color: 'rgba(255, 253, 248, 0.85)', fontSize: '0.9rem', letterSpacing: '0.1em' }}>
+            👑 Reserving as registered patron: <strong>{user.name}</strong> ({user.role})
+          </div>
+        )}
 
         <form className="reservation-form" id="reservation-form" onSubmit={handleSubmit}>
           <div className="form-group">

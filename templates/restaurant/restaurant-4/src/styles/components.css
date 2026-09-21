@@ -27,10 +27,21 @@
   background: rgba(251, 249, 243, 0.85);
   backdrop-filter: blur(16px);
   border: 1px solid rgba(38, 53, 43, 0.12);
-  padding: 0.6rem 1.2rem;
+  padding: 0.75rem 1.5rem;
   border-radius: 100px;
   box-shadow: 0 10px 30px rgba(38, 53, 43, 0.06);
   transition: all 0.3s var(--ease-out-expo);
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .pill-nav-wrapper {
+    padding: 0 0.75rem;
+    top: max(0.75rem, env(safe-area-inset-top));
+  }
+  .pill-nav-container {
+    padding: 0.5rem 1rem;
+  }
 }
 
 .pill-logo-mark {
@@ -46,6 +57,7 @@
   font-size: 1rem;
   font-weight: 400;
   transition: transform 0.3s ease;
+  flex-shrink: 0;
 }
 
 .pill-logo-mark:hover {
@@ -56,9 +68,22 @@
   font-family: var(--font-body);
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.25em;
+  letter-spacing: 0.15em;
   color: var(--color-forest);
   text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 0 0.5rem;
+  flex: 1;
+}
+
+@media (max-width: 480px) {
+  .pill-center-location {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
 }
 
 .btn-pill-menu {
@@ -74,6 +99,7 @@
   cursor: pointer;
   text-transform: uppercase;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .btn-pill-menu:hover {

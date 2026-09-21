@@ -8,18 +8,32 @@ export default function FullscreenNav({ isOpen, onClose }) {
     { id: 'nav-bg-restaurant', src: 'assets/images/story_portrait.jpg', alt: 'Restaurant preview' },
     { id: 'nav-bg-menu', src: 'assets/images/dish_seabass.jpg', alt: 'Menu preview' },
     { id: 'nav-bg-experience', src: 'assets/images/exp_terrace.jpg', alt: 'Experience preview' },
+    { id: 'nav-bg-reservation', src: 'assets/images/kitchen.jpg', alt: 'Reservation preview' },
     { id: 'nav-bg-journal', src: 'assets/images/story_landscape.jpg', alt: 'Journal preview' },
     { id: 'nav-bg-contact', src: 'assets/images/kitchen.jpg', alt: 'Contact preview' }
   ];
 
   const menuItems = [
-    { num: '01', label: 'HOME', href: '#hero', bg: 'nav-bg-home' },
-    { num: '02', label: 'RESTAURANT', href: '#story', bg: 'nav-bg-restaurant' },
-    { num: '03', label: 'MENU', href: '#menu', bg: 'nav-bg-menu' },
-    { num: '04', label: 'EXPERIENCE', href: '#experience', bg: 'nav-bg-experience' },
-    { num: '05', label: 'JOURNAL', href: '#journal', bg: 'nav-bg-journal' },
-    { num: '06', label: 'CONTACT', href: '#contact', bg: 'nav-bg-contact' }
+    { num: '01', label: 'HOME', href: '#hero', targetId: 'hero', bg: 'nav-bg-home' },
+    { num: '02', label: 'RESTAURANT', href: '#story', targetId: 'story', bg: 'nav-bg-restaurant' },
+    { num: '03', label: 'VIEW MENU', href: '#menu', targetId: 'menu', bg: 'nav-bg-menu' },
+    { num: '04', label: 'EXPERIENCE', href: '#experience', targetId: 'experience', bg: 'nav-bg-experience' },
+    { num: '05', label: 'RESERVE A TABLE', href: '#reservation', targetId: 'reservation', bg: 'nav-bg-reservation' },
+    { num: '06', label: 'JOURNAL', href: '#journal', targetId: 'journal', bg: 'nav-bg-journal' },
+    { num: '07', label: 'CONTACT', href: '#contact', targetId: 'contact', bg: 'nav-bg-contact' }
   ];
+
+  const handleNavClick = (e, targetId) => {
+    e.preventDefault();
+    onClose();
+    setTimeout(() => {
+      const element = document.getElementById(targetId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+        window.history.pushState(null, '', `#${targetId}`);
+      }
+    }, 150);
+  };
 
   return (
     <div
@@ -42,9 +56,9 @@ export default function FullscreenNav({ isOpen, onClose }) {
 
       <div className="fullscreen-nav-header">
         <span className="nav-brand">LUMIÈRE</span>
-        <button className="fullscreen-nav-close" onClick={onClose} data-cursor="CLOSE">
+        <button className="fullscreen-nav-close" onClick={onClose} data-cursor="CLOSE" aria-label="Close Navigation">
           <span>CLOSE</span>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
@@ -61,7 +75,7 @@ export default function FullscreenNav({ isOpen, onClose }) {
                 data-bg={item.bg}
                 data-cursor="VIEW"
                 onMouseEnter={() => setActiveBg(item.bg)}
-                onClick={onClose}
+                onClick={(e) => handleNavClick(e, item.targetId)}
               >
                 <span className="num">{item.num}</span> {item.label}
               </a>

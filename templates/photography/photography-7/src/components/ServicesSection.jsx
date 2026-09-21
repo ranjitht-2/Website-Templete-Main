@@ -1,7 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
-export default function App() {
+export default function ServicesSection({ onOpenSignIn }) {
+  const { isAuthenticated } = useAuth();
+
   const services = [
     {
       num: "01",
@@ -25,98 +28,61 @@ export default function App() {
     }
   ];
 
+  const handleServiceClick = (service) => {
+    if (!isAuthenticated) {
+      if (onOpenSignIn) {
+        onOpenSignIn(`Sign in to reserve a ${service.title} session with Lume Studio`, 'contact');
+      }
+    } else {
+      const el = document.getElementById('contact');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <section id="services" style={{
-      backgroundColor: '#ffffff',
-      padding: '140px 40px',
-      color: '#111827',
-      fontFamily: "'Poppins', sans-serif"
-    }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <section 
+      id="services" 
+      className="w-full max-w-full overflow-x-hidden bg-white py-20 sm:py-28 px-4 sm:px-8 text-neutral-900 font-['Poppins',sans-serif]"
+    >
+      <div className="max-w-6xl mx-auto">
         {/* Title */}
-        <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-          <span style={{
-            color: '#ff7a52', // Coral accent
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            display: 'block',
-            marginBottom: '10px'
-          }}>
+        <div className="text-center mb-12 sm:mb-16">
+          <span className="text-xs font-bold tracking-[3px] uppercase text-[#ff7a52] block mb-2.5">
             Our Expertise
           </span>
-          <h2 style={{
-            fontSize: 'calc(2rem + 1.2vw)',
-            fontWeight: '800',
-            letterSpacing: '-1.5px',
-            margin: 0,
-            fontFamily: "'Playfair Display', serif"
-          }}>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-neutral-900 font-['Playfair_Display',serif]">
             Creative Services
           </h2>
         </div>
 
         {/* 4-Column Card Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '30px'
-        }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {services.map((service, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.15, ease: [0.16, 1, 0.3, 1] }}
-              style={{
-                background: '#f9f9fb',
-                padding: '40px 30px',
-                borderRadius: '16px',
-                border: '1px solid rgba(0, 0, 0, 0.04)',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                cursor: 'pointer'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-4px)';
-                e.currentTarget.style.borderColor = 'rgba(255, 122, 82, 0.4)'; // Coral hover border
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(255, 122, 82, 0.05)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.borderColor = 'rgba(0, 0, 0, 0.04)';
-                e.currentTarget.style.boxShadow = 'none';
-              }}
+              transition={{ duration: 0.8, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+              onClick={() => handleServiceClick(service)}
+              className="bg-[#f9f9fb] p-8 rounded-2xl border border-black/5 hover:-translate-y-1 hover:border-[#ff7a52]/40 hover:shadow-lg hover:shadow-[#ff7a52]/5 transition-all cursor-pointer flex flex-col justify-between group"
             >
-              <span style={{
-                color: '#ff7a52', // Coral accent
-                fontSize: '1.8rem',
-                fontWeight: '800',
-                display: 'block',
-                marginBottom: '24px',
-                fontFamily: "'Playfair Display', serif",
-                opacity: 0.85
-              }}>
-                {service.num}
-              </span>
-              <h3 style={{
-                fontSize: '1.25rem',
-                fontWeight: '600',
-                marginBottom: '14px',
-                fontFamily: "'Playfair Display', serif"
-              }}>
-                {service.title}
-              </h3>
-              <p style={{
-                fontSize: '0.88rem',
-                lineHeight: '1.65',
-                color: '#374151',
-                fontWeight: '350',
-                margin: 0
-              }}>
-                {service.desc}
-              </p>
+              <div>
+                <span className="text-[#ff7a52] text-3xl font-extrabold block mb-6 font-['Playfair_Display',serif] opacity-85">
+                  {service.num}
+                </span>
+                <h3 className="text-xl font-semibold mb-3 font-['Playfair_Display',serif] text-neutral-900 group-hover:text-[#ff7a52] transition-colors">
+                  {service.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-neutral-700 font-light m-0 mb-6">
+                  {service.desc}
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-black/5 flex items-center justify-between text-xs font-semibold text-[#ff7a52]">
+                <span>{isAuthenticated ? 'Book Package' : 'Sign In to Book'}</span>
+                <i className="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+              </div>
             </motion.div>
           ))}
         </div>

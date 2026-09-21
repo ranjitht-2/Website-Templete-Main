@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function App() {
+export default function AboutSection() {
   const stats = [
     { value: "150+", label: "Shoots Completed" },
     { value: "8+", label: "Years Experience" },
@@ -9,43 +9,23 @@ export default function App() {
   ];
 
   return (
-    <section id="about" style={{
-      backgroundColor: '#faf9f6', // Light backdrop
-      padding: '140px 40px',
-      color: '#111827',
-      fontFamily: "'Poppins', sans-serif"
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-        gap: '80px',
-        alignItems: 'center'
-      }}>
+    <section 
+      id="about" 
+      className="w-full max-w-full overflow-x-hidden bg-[#faf9f6] py-20 sm:py-28 px-4 sm:px-8 text-neutral-900 font-['Poppins',sans-serif]"
+    >
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 sm:gap-16 items-center">
         {/* Left: Photographer Portrait */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-          style={{
-            position: 'relative',
-            borderRadius: '20px',
-            overflow: 'hidden',
-            aspectRatio: '3/4',
-            background: '#f3f4f6',
-            border: '1px solid rgba(0,0,0,0.03)'
-          }}
+          className="w-full max-w-sm sm:max-w-md mx-auto aspect-[3/4] rounded-2xl overflow-hidden bg-neutral-100 border border-black/5 shadow-sm"
         >
           <img 
             src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=800&q=80" 
             alt="Lume Photographer Portrait" 
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
+            className="w-full h-full object-cover block"
           />
         </motion.div>
 
@@ -55,64 +35,26 @@ export default function App() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-xl mx-auto"
         >
-          <span style={{
-            color: '#ff7a52', // Coral accent
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            display: 'block',
-            marginBottom: '15px'
-          }}>
+          <span className="text-[#ff7a52] text-xs font-bold tracking-[3px] uppercase block mb-3.5">
             Available for assignments worldwide
           </span>
-          <h2 style={{
-            fontSize: 'calc(2rem + 0.8vw)',
-            fontWeight: '800',
-            lineHeight: '1.25',
-            marginBottom: '24px',
-            letterSpacing: '-1px',
-            fontFamily: "'Playfair Display', serif"
-          }}>
+          <h2 className="text-3xl sm:text-4xl font-extrabold leading-tight mb-6 tracking-tight text-neutral-900 font-['Playfair_Display',serif]">
             Hello, I'm Lume. A fashion & lifestyle photographer based in New York.
           </h2>
-          <p style={{
-            fontSize: '0.98rem',
-            lineHeight: '1.8',
-            color: '#374151',
-            marginBottom: '40px',
-            fontWeight: '350'
-          }}>
+          <p className="text-sm sm:text-base leading-relaxed text-neutral-700 mb-8 font-light">
             My work explores the intersections of light, raw human emotion, and editorial composition. Rooted in cinematic storytelling, I help individuals, agencies, and international brands capture their vision with custom, bespoke visuals.
           </p>
 
           {/* Stats counters */}
-          <div style={{
-            display: 'flex',
-            gap: '40px',
-            borderTop: '1px solid rgba(0, 0, 0, 0.08)',
-            paddingTop: '40px'
-          }}>
+          <div className="flex flex-wrap gap-8 sm:gap-10 border-t border-black/10 pt-8">
             {stats.map((stat, idx) => (
               <div key={idx}>
-                <span style={{
-                  display: 'block',
-                  fontSize: '2rem',
-                  fontWeight: '800',
-                  color: '#ff7a52', // Coral accent
-                  fontFamily: "'Playfair Display', serif",
-                  marginBottom: '6px'
-                }}>
+                <span className="block text-3xl sm:text-4xl font-extrabold text-[#ff7a52] font-['Playfair_Display',serif] mb-1">
                   {stat.value}
                 </span>
-                <span style={{
-                  fontSize: '0.72rem',
-                  color: '#4b5563',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1px'
-                }}>
+                <span className="text-xs text-neutral-600 font-semibold uppercase tracking-wider">
                   {stat.label}
                 </span>
               </div>

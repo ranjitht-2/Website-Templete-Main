@@ -38,8 +38,11 @@ export default function ScrollReveal({ children, animation = 'fade-in-up', delay
       <style>{`
         .reveal-element {
           opacity: 0;
-          transition: opacity 1s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+          transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
           will-change: transform, opacity;
+          width: 100%;
+          max-width: 100%;
+          box-sizing: border-box;
         }
         
         .reveal-element.revealed {
@@ -48,23 +51,30 @@ export default function ScrollReveal({ children, animation = 'fade-in-up', delay
         }
 
         .reveal-element.fade-in-up {
-          transform: translateY(50px);
+          transform: translateY(40px);
         }
 
         .reveal-element.fade-in-down {
-          transform: translateY(-50px);
+          transform: translateY(-40px);
         }
 
         .reveal-element.fade-in-left {
-          transform: translateX(-50px);
+          transform: translateX(-30px);
         }
 
         .reveal-element.fade-in-right {
-          transform: translateX(50px);
+          transform: translateX(30px);
         }
 
         .reveal-element.zoom-in {
-          transform: scale(0.92);
+          transform: scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+          .reveal-element.fade-in-left,
+          .reveal-element.fade-in-right {
+            transform: translateY(25px);
+          }
         }
       `}</style>
       <div

@@ -1,17 +1,50 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
-export default function ReservationSection() {
+export default function ReservationSection({ onRequireAuth }) {
+  const { user, isAuthenticated } = useAuth();
   const todayStr = new Date().toISOString().split('T')[0];
   const [resDate, setResDate] = useState(todayStr);
-  const [resTime, setResTime] = useState('');
+  const [resTime, setResTime] = useState('19:30');
   const [resGuests, setResGuests] = useState('2');
   const [feedbackMsg, setFeedbackMsg] = useState('');
 
+  // Restore saved reservation data if returning from signin
+  useEffect(() => {
+    const saved = sessionStorage.getItem('restaurant_4_pending_reservation');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.resDate) setResDate(parsed.resDate);
+        if (parsed.resTime) setResTime(parsed.resTime);
+        if (parsed.resGuests) setResGuests(parsed.resGuests);
+        
+        if (isAuthenticated && user) {
+          setFeedbackMsg(
+            `Table reservation confirmed for ${parsed.resGuests || resGuests} guest(s) on ${parsed.resDate || resDate} at ${parsed.resTime || resTime}. Booked under Patron: ${user.name} (${user.email}).`
+          );
+          sessionStorage.removeItem('restaurant_4_pending_reservation');
+        }
+      } catch (err) {
+        console.error('Error parsing pending reservation:', err);
+      }
+    }
+  }, [isAuthenticated, user]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_4_pending_reservation', JSON.stringify({ resDate, resTime, resGuests }));
+      if (onRequireAuth) {
+        onRequireAuth('reservation', 'Please sign in or create an Ember House patron membership to confirm your table reservation.');
+      }
+      return;
+    }
+
     setFeedbackMsg(
-      `Table request received for ${resGuests} guest(s) on ${resDate} at ${resTime || 'selected time'}. Our concierge will confirm shortly.`
+      `Table reservation confirmed for ${resGuests} guest(s) on ${resDate} at ${resTime}. Booked under Patron: ${user.name} (${user.email}).`
     );
+    sessionStorage.removeItem('restaurant_4_pending_reservation');
   };
 
   return (
@@ -41,7 +74,6 @@ export default function ReservationSection() {
               value={resTime}
               onChange={(e) => setResTime(e.target.value)}
             >
-              <option value="">TIME</option>
               <option value="12:30">12:30</option>
               <option value="14:00">14:00</option>
               <option value="19:30">19:30</option>

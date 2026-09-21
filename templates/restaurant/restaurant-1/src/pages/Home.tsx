@@ -64,6 +64,60 @@ export const Home: React.FC = () => {
     return () => observer.disconnect();
   }, [stickyBg]);
 
+  useEffect(() => {
+    const attachDragScroll = (slider: HTMLElement | null) => {
+      if (!slider) return () => {};
+      let isDown = false;
+      let startX = 0;
+      let scrollLeft = 0;
+
+      const onMouseDown = (e: MouseEvent) => {
+        isDown = true;
+        slider.classList.add('active-dragging');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeft = slider.scrollLeft;
+      };
+
+      const onMouseLeave = () => {
+        isDown = false;
+        slider.classList.remove('active-dragging');
+      };
+
+      const onMouseUp = () => {
+        isDown = false;
+        slider.classList.remove('active-dragging');
+      };
+
+      const onMouseMove = (e: MouseEvent) => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        slider.scrollLeft = scrollLeft - walk;
+      };
+
+      slider.addEventListener('mousedown', onMouseDown);
+      slider.addEventListener('mouseleave', onMouseLeave);
+      slider.addEventListener('mouseup', onMouseUp);
+      slider.addEventListener('mousemove', onMouseMove);
+
+      return () => {
+        slider.removeEventListener('mousedown', onMouseDown);
+        slider.removeEventListener('mouseleave', onMouseLeave);
+        slider.removeEventListener('mouseup', onMouseUp);
+        slider.removeEventListener('mousemove', onMouseMove);
+      };
+    };
+
+    const cleanDishes = attachDragScroll(document.getElementById('dishesScrollContainer'));
+    const cleanJournal = attachDragScroll(document.getElementById('journalScrollContainer'));
+
+    return () => {
+      cleanDishes();
+      cleanJournal();
+    };
+  }, []);
+
   const openLightbox = (index: number) => {
     setLightboxIndex(index);
     setLightboxOpen(true);
@@ -90,7 +144,21 @@ export const Home: React.FC = () => {
 
         <div className="hero-footer-left">SCROLL TO EXPLORE &darr;</div>
         <div className="hero-footer-right">
-          <a href="#reservation" className="btn-ember-gold">Reserve</a>
+          <a
+            href="#reservation"
+            className="btn-ember-gold"
+            id="heroReserveBtn"
+            onClick={(e) => {
+              e.preventDefault();
+              const target = document.getElementById('reservation') || document.getElementById('find-table');
+              if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                window.history.pushState(null, '', '#reservation');
+              }
+            }}
+          >
+            RESERVE
+          </a>
         </div>
       </section>
 
@@ -327,7 +395,7 @@ export const Home: React.FC = () => {
             <div className="text-muted small">CLICK TO VIEW FULLSCREEN</div>
           </div>
 
-          <div className="journal-strip-flex">
+          <div className="journal-strip-flex" id="journalScrollContainer">
             {JOURNAL_ITEMS.map((item, idx) => (
               <div
                 key={idx}

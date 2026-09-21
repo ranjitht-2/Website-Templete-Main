@@ -12,12 +12,16 @@ import {
   Mail,
   Phone,
   MapPin,
-  Maximize2
+  Maximize2,
+  CheckCircle2,
+  Lock
 } from 'lucide-react';
 import { portfolioData, projectFilters, filterMapping, SOCIAL_FA_MAP } from './data/portfolioData';
 import NavBar from './components/NavBar';
 import GalleryModal from './components/GalleryModal';
 import ArticleModal from './components/ArticleModal';
+import SignIn from './components/SignIn';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Reusable Section Heading component
 function SectionHeading({ eyebrow, title, lightBg = true }) {
@@ -30,16 +34,16 @@ function SectionHeading({ eyebrow, title, lightBg = true }) {
       className="mb-16"
     >
       <span className={`text-xs font-sans tracking-widest uppercase font-black block mb-2 ${
-        lightBg ? 'text-[#e74c3c]' : 'text-white/80'
+        lightBg ? 'text-[#E6392F]' : 'text-white/80'
       }`}>
         {eyebrow}
       </span>
-      <h2 className={`text-3xl md:text-5xl font-black uppercase tracking-tight ${
+      <h2 className={`text-2xl sm:text-3xl md:text-5xl font-black uppercase tracking-tight break-words ${
         lightBg ? 'text-[#2b2b2b]' : 'text-white'
       }`}>
         {title}
       </h2>
-      <div className="w-16 h-1.5 bg-[#e74c3c] mt-4" />
+      <div className="w-16 h-1.5 bg-[#E6392F] mt-4" />
     </motion.div>
   );
 }
@@ -50,14 +54,24 @@ const ICON_MAP = {
   Cpu: Cpu
 };
 
-export default function App() {
+function PortfolioMain() {
+  const { isAuthenticated, user } = useAuth();
+
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [selectedProject, setSelectedProject] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Authentication Modal state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authReason, setAuthReason] = useState('');
+  const [pendingAction, setPendingAction] = useState(null);
+
   // Testimonial Carousel Index state
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+
+  // CV Download Notification state
+  const [cvDownloadStatus, setCvDownloadStatus] = useState('idle'); // idle | success
 
   // Contact Form states
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -84,6 +98,15 @@ export default function App() {
     return errors;
   };
 
+  const executeFormSubmit = () => {
+    setFormStatus('loading');
+    setTimeout(() => {
+      setFormStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setFormStatus('idle'), 4000);
+    }, 1200);
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const errors = validateForm();
@@ -92,12 +115,37 @@ export default function App() {
       return;
     }
 
-    setFormStatus('loading');
-    setTimeout(() => {
-      setFormStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setFormStatus('idle'), 3000);
-    }, 1500);
+    if (!isAuthenticated) {
+      setAuthReason('Client authentication required to submit project brief & design parameters.');
+      setPendingAction(() => () => executeFormSubmit());
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    executeFormSubmit();
+  };
+
+  const executeDownloadCV = () => {
+    setCvDownloadStatus('success');
+    setTimeout(() => setCvDownloadStatus('idle'), 4000);
+  };
+
+  const handleDownloadCV = () => {
+    if (!isAuthenticated) {
+      setAuthReason('Sign in to Sasha Grey client portal is required to access confidential CV & rate card.');
+      setPendingAction(() => () => executeDownloadCV());
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    executeDownloadCV();
+  };
+
+  const handleAuthSuccess = () => {
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
   };
 
   const handleProjectClick = (project) => {
@@ -118,13 +166,13 @@ export default function App() {
     : portfolioData.projects.filter(proj => proj.tag === filterMapping[selectedFilter]);
 
   return (
-    <div className="min-h-screen bg-[#f5f5fb] text-[#2b2b2b] selection:bg-[#e74c3c] selection:text-white">
+    <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-[#111111] text-white selection:bg-[#E6392F] selection:text-white">
       
       {/* STICKY TOP NAVBAR */}
-      <NavBar />
+      <NavBar onOpenAuth={() => { setAuthReason(''); setIsAuthModalOpen(true); }} />
 
       {/* 1. HERO SECTION (Dark Charcoal Background) */}
-      <section id="home" className="bg-[#2b2b2b] text-white min-h-[90vh] md:min-h-screen flex items-center p-6 md:p-12 relative overflow-hidden grid-overlay">
+      <section id="home" className="w-full max-w-full bg-[#111111] text-white min-h-[90vh] md:min-h-screen flex flex-col items-center justify-center py-12 px-4 relative overflow-hidden grid-overlay">
         
         {/* Left Side stacked social icons */}
         <div className="hidden md:flex flex-col gap-6 absolute left-10 top-1/2 -translate-y-1/2 z-10">
@@ -136,7 +184,7 @@ export default function App() {
                 href={soc.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white/40 hover:text-[#e74c3c] text-lg hover:scale-110 transition-all py-1"
+                className="text-white/40 hover:text-red-500 text-lg hover:scale-110 transition-all py-1"
               >
                 <i className={faClass}></i>
               </a>
@@ -145,176 +193,184 @@ export default function App() {
         </div>
 
         {/* Faint watermark background behind content */}
-        <div className="absolute right-0 top-1/4 select-none opacity-[0.02] text-8xl md:text-[14rem] font-black tracking-tighter text-white uppercase pointer-events-none">
+        <div className="absolute right-0 top-1/4 select-none opacity-[0.02] text-8xl md:text-[14rem] font-black tracking-tighter text-white uppercase pointer-events-none overflow-hidden max-w-full">
           {portfolioData.brand.watermark}
         </div>
 
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 pt-10 md:pt-0 pl-0 md:pl-16">
-          
-          {/* Hero Left Content */}
-          <div className="col-span-12 lg:col-span-7 flex flex-col items-start text-left">
-            <span className="text-[#e74c3c] text-xs font-sans tracking-[0.3em] uppercase font-black mb-3">
-              {portfolioData.hero.greeting}
-            </span>
-            <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tight text-white leading-none">
-              {portfolioData.hero.name}
-            </h1>
-            <h2 className="text-2xl md:text-4xl uppercase tracking-widest font-black mt-3 flex items-baseline gap-2">
-              <span className="text-white/50">{portfolioData.hero.rolePrefix}</span>
-              <span className="text-[#e74c3c]">{portfolioData.hero.roleSuffix}</span>
-            </h2>
-            <p className="mt-6 text-sm text-white/70 max-w-lg leading-relaxed">
-              {portfolioData.hero.subtext}
-            </p>
+        {/* Hero Content Column */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 py-8 flex flex-col items-center text-center relative z-10">
+          {/* Small Tagline */}
+          <span className="text-[11px] font-mono tracking-[0.3em] text-red-500 uppercase font-semibold mb-3">
+            {portfolioData.hero.greeting}
+          </span>
 
-            <div className="mt-8 flex flex-wrap items-center gap-6">
-              <a 
-                href={portfolioData.hero.cta.primary.href}
-                className="px-8 py-3.5 bg-[#e74c3c] hover:bg-[#c0392b] text-white font-black text-xs tracking-widest uppercase transition-all flex items-center gap-2 rounded-none"
-              >
-                {portfolioData.hero.cta.primary.label} <Send size={12} />
-              </a>
-              <a 
-                href={portfolioData.hero.cta.secondary.href}
-                className="text-xs font-sans tracking-widest uppercase font-black text-white hover:text-[#e74c3c] transition-colors border-b-2 border-white/10 hover:border-[#e74c3c] pb-1"
-              >
-                {portfolioData.hero.cta.secondary.label}
-              </a>
-            </div>
+          {/* Hero Headings */}
+          <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white leading-none">
+            {portfolioData.hero.name}
+          </h1>
+          <h2 className="text-xl sm:text-2xl font-black uppercase tracking-tight text-red-500 mt-1 mb-4">
+            {portfolioData.hero.rolePrefix} {portfolioData.hero.roleSuffix}
+          </h2>
 
-            {/* Email footer display */}
-            <div className="mt-16 text-[10px] font-sans tracking-widest uppercase font-black text-white/30">
-              EMAIL DIRECT // <a href={`mailto:${portfolioData.brand.email}`} className="text-white/60 hover:text-[#e74c3c] transition-colors">{portfolioData.brand.email}</a>
-            </div>
+          {/* Description */}
+          <p className="text-xs sm:text-sm text-stone-400 max-w-xs sm:max-w-sm mx-auto leading-relaxed mb-6">
+            {portfolioData.hero.subtext}
+          </p>
+
+          {/* CTA Button Group */}
+          <div className="flex items-center justify-center gap-3 w-full max-w-xs mx-auto">
+            <a
+              href="#contact"
+              className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-wider rounded-md text-center transition flex items-center justify-center gap-1.5"
+            >
+              <span>{portfolioData.hero.cta.primary.label}</span>
+              <span>↗</span>
+            </a>
+            <a
+              href="#about"
+              className="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white font-bold text-xs uppercase tracking-wider rounded-md text-center transition border border-white/10"
+            >
+              {portfolioData.hero.cta.secondary.label}
+            </a>
           </div>
 
-          {/* Hero Right: Portrait with Overlapping Geometric Shapes */}
-          <div className="col-span-12 lg:col-span-5 flex justify-center relative overflow-hidden sm:overflow-visible">
-            <div className="relative w-[250px] h-[320px] sm:w-[320px] sm:h-[410px] md:w-[350px] md:h-[450px] max-w-[calc(100vw-3.5rem)]">
-              
-              {/* Back outlined geometric square */}
-              <div className="absolute -top-3 -left-3 sm:-top-6 sm:-left-6 w-20 sm:w-32 h-20 sm:h-32 border-2 sm:border-4 border-white/10 pointer-events-none" />
-              
-              {/* Solid Accent Red Square (offset) */}
-              <div className="absolute -bottom-2 -right-2 sm:-bottom-4 sm:-right-4 w-24 sm:w-36 h-24 sm:h-36 bg-[#e74c3c] pointer-events-none z-0" />
-              
-              {/* Image Frame */}
-              <div className="w-full h-full relative z-10 overflow-hidden bg-zinc-800 border-2 sm:border-4 border-[#2b2b2b]">
-                <img 
-                  src={portfolioData.hero.portrait} 
-                  alt={portfolioData.hero.name} 
-                  className="w-full h-full object-cover filter grayscale"
-                />
-              </div>
+          {/* Email Direct */}
+          <span className="text-[10px] font-mono tracking-widest text-stone-500 uppercase mt-6 block">
+            EMAIL DIRECT // {portfolioData.brand.email}
+          </span>
+        </div>
 
-              {/* Front outlined box overlay */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4/5 h-4/5 border border-white/20 pointer-events-none z-20" />
-            </div>
+        {/* Center Showcase Image */}
+        <div className="w-full max-w-xs sm:max-w-sm mx-auto px-4 mt-6 flex justify-center items-center relative z-10">
+          <div className="w-full aspect-[4/3] rounded-xl overflow-hidden shadow-2xl bg-stone-900 border border-white/10 mx-auto">
+            <img
+              src={portfolioData.hero.portrait}
+              alt="Sasha Grey Showcase"
+              className="w-full h-full object-cover block mx-auto"
+            />
           </div>
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/30 text-xs font-sans tracking-widest uppercase font-black animate-bounce flex items-center gap-1">
+        <div className="mt-8 text-white/30 text-xs font-sans tracking-widest uppercase font-black animate-bounce flex items-center gap-1">
           SCROLL DOWN <ArrowRight size={10} className="rotate-90" />
         </div>
       </section>
 
       {/* 2. ABOUT SECTION (Light Background) */}
-      <section id="about" className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
-        <SectionHeading eyebrow={portfolioData.about.eyebrow} title={portfolioData.about.heading} />
-
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-          
-          {/* Double Offset Photos with Outline behind */}
-          <div className="col-span-12 lg:col-span-6 flex justify-center items-center relative h-[260px] xs:h-[320px] sm:h-[360px] md:h-[450px] w-full max-w-[270px] xs:max-w-[320px] sm:max-w-md mx-auto">
-            
-            {/* Outline Behind */}
-            <div className="absolute left-2 sm:left-6 top-4 sm:top-6 w-[120px] sm:w-[200px] h-[180px] sm:h-[280px] border-2 sm:border-4 border-[#e74c3c]/15 pointer-events-none" />
-            
-            {/* Small Photo */}
-            <div className="absolute left-4 sm:left-10 top-6 sm:top-10 w-[110px] sm:w-[180px] h-[160px] sm:h-[250px] overflow-hidden bg-zinc-300 z-10 shadow-lg border-2 border-white">
-              <img 
-                src={portfolioData.about.photoSmall} 
-                alt="Detail shoot" 
-                className="w-full h-full object-cover"
+      <section id="about" className="w-full max-w-full overflow-x-hidden bg-white text-[#2b2b2b] flex flex-col items-center justify-center py-12">
+        
+        {/* Photo Stack Container */}
+        <div className="w-full flex items-center justify-center pt-8 pb-6 px-4">
+          <div className="relative w-60 h-72 sm:w-68 sm:h-80 mx-auto flex items-center justify-center">
+            {/* Main Polaroid Card */}
+            <div className="relative z-10 w-48 sm:w-56 aspect-[3/4] bg-white p-2.5 shadow-xl rounded-sm -rotate-2 transform hover:rotate-0 transition duration-300 border border-stone-200">
+              <img
+                src={portfolioData.about.photoSmall}
+                alt="Creative Director Portrait"
+                className="w-full h-full object-cover block"
               />
             </div>
 
-            {/* Accent Red square overlap */}
-            <div className="absolute right-3 sm:right-12 bottom-3 sm:bottom-6 w-12 sm:w-20 h-12 sm:h-20 bg-[#e74c3c] z-20 pointer-events-none" />
-
-            {/* Large Photo offset */}
-            <div className="absolute right-4 sm:right-16 top-2 w-[130px] sm:w-[220px] h-[190px] sm:h-[310px] overflow-hidden bg-zinc-300 z-10 shadow-2xl border-2 sm:border-4 border-white">
-              <img 
-                src={portfolioData.about.photoLarge} 
-                alt="Studio setup" 
-                className="w-full h-full object-cover filter grayscale"
+            {/* Secondary Accent Card */}
+            <div className="absolute -right-2 top-3 z-0 w-36 sm:w-40 aspect-[3/4] bg-stone-200 p-2 shadow-md rounded-sm rotate-3 transform opacity-80">
+              <img
+                src={portfolioData.about.photoLarge}
+                alt="Design Studio Showcase"
+                className="w-full h-full object-cover grayscale block"
               />
             </div>
           </div>
+        </div>
 
-          {/* Bio text & credentials */}
-          <div className="col-span-12 lg:col-span-6 flex flex-col items-start">
-            <span className="text-xs font-sans tracking-widest text-[#e74c3c] uppercase font-black mb-1">
-              CURRENT FOCUS
-            </span>
-            <span className="text-[#2b2b2b] text-sm font-sans font-bold flex items-center gap-1.5 mb-6">
-              <MapPin size={14} className="text-[#e74c3c]" /> {portfolioData.about.location}
-            </span>
+        {/* Centered Text & Bio Section */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto px-6 pb-12 flex flex-col items-center text-center">
+          {/* Badge / Subtitle */}
+          <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-red-600 font-semibold mb-2">
+            CURRENT FOCUS
+          </span>
 
-            <div className="flex flex-col gap-6 text-sm text-[#2b2b2b]/75 leading-relaxed text-justify">
-              <p>{portfolioData.about.storyParagraph1}</p>
-              <p>{portfolioData.about.storyParagraph2}</p>
-            </div>
+          {/* Location / Status */}
+          <div className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-900 mb-4">
+            <span className="text-red-500 text-sm">📍</span>
+            <span>{portfolioData.about.location || "Based in London, UK — Working Worldwide"}</span>
+          </div>
 
-            <button className="mt-8 px-8 py-3.5 bg-[#2b2b2b] hover:bg-[#e74c3c] text-white font-black text-xs tracking-widest uppercase transition-all flex items-center gap-2 rounded-none">
+          {/* Paragraphs */}
+          <div className="space-y-4 text-xs sm:text-sm text-stone-600 leading-relaxed max-w-xs sm:max-w-sm mx-auto">
+            <p>
+              {portfolioData.about.storyParagraph1}
+            </p>
+            <p>
+              {portfolioData.about.storyParagraph2}
+            </p>
+          </div>
+
+          {/* Protected Action: Download CV */}
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <button 
+              onClick={handleDownloadCV}
+              className="px-8 py-3.5 bg-[#2b2b2b] hover:bg-red-600 text-white font-black text-xs tracking-widest uppercase transition-all flex items-center gap-2 rounded-md cursor-pointer border-none"
+            >
               Download CV <Download size={13} />
             </button>
+
+            {cvDownloadStatus === 'success' && (
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-1.5 text-xs font-mono font-bold text-emerald-600 mt-2"
+              >
+                <CheckCircle2 size={14} />
+                <span>Executive CV & Rate Card unlocked for {user?.name || 'Verified Client'}</span>
+              </motion.div>
+            )}
           </div>
         </div>
       </section>
 
       {/* 3. SKILLS SECTION (Vibrant Red Accent Background) */}
-      <section id="skills" className="bg-[#e74c3c] text-white py-24 px-6 md:px-12 relative overflow-hidden">
-        
+      <section 
+        id="skills" 
+        style={{ paddingTop: 'max(2.5rem, env(safe-area-inset-top))' }}
+        className="w-full max-w-full bg-[#E6392F] text-white overflow-hidden py-10 px-5 sm:px-8 box-border relative"
+      >
         {/* Geometric outline overlay pattern */}
         <div className="absolute inset-0 select-none opacity-5 geometric-pattern pointer-events-none" />
 
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
-          
-          {/* Intro text */}
-          <div className="col-span-12 lg:col-span-5 flex flex-col items-start pr-0 lg:pr-8">
-            <span className="text-white/80 text-xs font-sans tracking-widest uppercase font-black mb-2">
-              {portfolioData.skills.eyebrow}
-            </span>
-            <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight">
-              {portfolioData.skills.heading}
-            </h2>
-            <div className="w-12 h-1.5 bg-white mt-4 mb-6" />
-            <p className="text-sm text-white/80 leading-relaxed text-justify">
-              {portfolioData.skills.desc}
-            </p>
-          </div>
+        <div className="w-full max-w-sm sm:max-w-md mx-auto flex flex-col items-start justify-center relative z-10">
+          <span className="text-[11px] font-mono tracking-[0.25em] text-white/80 uppercase font-semibold block mb-2">
+            {portfolioData.skills.eyebrow || 'MY SKILLS'}
+          </span>
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight break-words">
+            VISUAL APTITUDE
+            <br />
+            DESIGN SYSTEMS
+          </h2>
+          <div className="w-12 h-1 bg-white mt-3 mb-4 rounded-full" />
+          <p className="text-xs sm:text-sm text-white/90 max-w-sm leading-relaxed mb-8">
+            {portfolioData.skills.desc || "A breakdown of my technical capabilities and creative direction disciplines."}
+          </p>
 
-          {/* Animated Horizontal Progress Bars */}
-          <div className="col-span-12 lg:col-span-7 flex flex-col gap-6 w-full">
-            {portfolioData.skills.items.map((skill, idx) => (
-              <div key={idx} className="flex flex-col w-full">
-                <div className="flex justify-between items-baseline mb-2">
-                  <span className="text-xs font-sans font-black uppercase tracking-wider text-white">
+          {/* Skill Bars List */}
+          <div className="w-full flex flex-col gap-5">
+            {portfolioData.skills.items.map((skill, index) => (
+              <div key={index} className="w-full flex flex-col gap-2">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-xs sm:text-sm font-bold tracking-wider uppercase text-white">
                     {skill.name}
                   </span>
-                  <span className="text-xs font-sans font-black text-white/90">
+                  <span className="text-xs font-mono font-bold text-white/90">
                     {skill.level}%
                   </span>
                 </div>
-                <div className="w-full h-2.5 bg-[#2b2b2b]/30 rounded-none overflow-hidden">
+                <div className="w-full h-2.5 bg-white/20 rounded-full overflow-hidden">
                   <motion.div 
                     initial={{ width: 0 }}
                     whileInView={{ width: `${skill.level}%` }}
                     viewport={{ once: true }}
                     transition={{ duration: 1.2, ease: "easeOut" }}
-                    className="h-full bg-white rounded-none"
+                    className="h-full bg-white rounded-full"
                   />
                 </div>
               </div>
@@ -339,7 +395,7 @@ export default function App() {
                 transition={{ duration: 0.5 }}
                 className="group bg-white hover:bg-[#2b2b2b] border border-zinc-200 hover:border-[#2b2b2b] p-8 transition-all duration-300 relative border-offset hover:shadow-2xl"
               >
-                <div className="w-12 h-12 bg-[#e74c3c] text-white flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
+                <div className="w-12 h-12 bg-[#E6392F] text-white flex items-center justify-center mb-6 group-hover:scale-105 transition-transform">
                   <IconComponent size={20} />
                 </div>
 
@@ -369,7 +425,7 @@ export default function App() {
                 onClick={() => setSelectedFilter(filter)}
                 className={`px-5 py-2 text-[10px] font-sans tracking-widest uppercase font-black transition-all ${
                   selectedFilter === filter
-                    ? 'bg-[#e74c3c] text-white'
+                    ? 'bg-[#E6392F] text-white'
                     : 'bg-transparent text-white/50 hover:text-white hover:border-white/20'
                 }`}
               >
@@ -384,7 +440,7 @@ export default function App() {
               <div
                 key={project.id}
                 onClick={() => handleProjectClick(project)}
-                className="group cursor-pointer bg-zinc-850 p-4 border border-white/5 hover:border-[#e74c3c] transition-all flex flex-col gap-4 relative overflow-hidden"
+                className="group cursor-pointer bg-zinc-850 p-4 border border-white/5 hover:border-[#E6392F] transition-all flex flex-col gap-4 relative overflow-hidden"
               >
                 <div className="relative w-full aspect-[16/10] overflow-hidden bg-zinc-800">
                   <img 
@@ -392,7 +448,7 @@ export default function App() {
                     alt={project.title} 
                     className="w-full h-full object-cover filter brightness-85 group-hover:scale-101 group-hover:brightness-100 transition-all duration-[800ms]"
                   />
-                  <div className="absolute inset-0 bg-[#e74c3c]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="absolute inset-0 bg-[#E6392F]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                     <div className="bg-white text-[#2b2b2b] px-4 py-2 text-[10px] font-sans tracking-widest uppercase flex items-center gap-1.5 font-black rounded-none shadow-md">
                       <Maximize2 size={11} /> Project Details
                     </div>
@@ -401,10 +457,10 @@ export default function App() {
 
                 <div className="flex justify-between items-baseline mt-1 px-1">
                   <div>
-                    <h4 className="text-xl font-black uppercase text-white group-hover:text-[#e74c3c] transition-colors leading-tight">
+                    <h4 className="text-xl font-black uppercase text-white group-hover:text-[#E6392F] transition-colors leading-tight">
                       {project.title}
                     </h4>
-                    <span className="text-[10px] font-sans tracking-widest text-[#e74c3c] uppercase font-black mt-1 block">
+                    <span className="text-[10px] font-sans tracking-widest text-[#E6392F] uppercase font-black mt-1 block">
                       {project.category}
                     </span>
                   </div>
@@ -429,7 +485,7 @@ export default function App() {
 
         <div className="max-w-3xl mx-auto relative bg-white border border-zinc-200 p-8 md:p-12 border-offset">
           
-          <div className="text-5xl font-serif text-[#e74c3c] font-black absolute top-4 left-6 select-none opacity-20 pointer-events-none">
+          <div className="text-5xl font-serif text-[#E6392F] font-black absolute top-4 left-6 select-none opacity-20 pointer-events-none">
             “
           </div>
 
@@ -451,13 +507,13 @@ export default function App() {
                   <img 
                     src={portfolioData.testimonials[activeTestimonial].photo} 
                     alt={portfolioData.testimonials[activeTestimonial].name} 
-                    className="w-12 h-12 rounded-full object-cover border-2 border-[#e74c3c] flex-shrink-0"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-[#E6392F] flex-shrink-0"
                   />
                   <div>
                     <h4 className="text-sm font-black uppercase text-[#2b2b2b]">
                       {portfolioData.testimonials[activeTestimonial].name}
                     </h4>
-                    <span className="text-[10px] font-sans tracking-widest text-[#e74c3c] uppercase font-black mt-0.5 block">
+                    <span className="text-[10px] font-sans tracking-widest text-[#E6392F] uppercase font-black mt-0.5 block">
                       {portfolioData.testimonials[activeTestimonial].role}
                     </span>
                   </div>
@@ -470,13 +526,13 @@ export default function App() {
           <div className="flex justify-end gap-3 mt-8 border-t border-zinc-100 pt-6">
             <button 
               onClick={handlePrevTestimonial}
-              className="p-2 border border-zinc-200 hover:bg-[#e74c3c] hover:border-[#e74c3c] hover:text-white transition-colors text-[#2b2b2b] focus:outline-none"
+              className="p-2 border border-zinc-200 hover:bg-[#E6392F] hover:border-[#E6392F] hover:text-white transition-colors text-[#2b2b2b] focus:outline-none"
             >
               <ChevronLeft size={16} />
             </button>
             <button 
               onClick={handleNextTestimonial}
-              className="p-2 border border-zinc-200 hover:bg-[#e74c3c] hover:border-[#e74c3c] hover:text-white transition-colors text-[#2b2b2b] focus:outline-none"
+              className="p-2 border border-zinc-200 hover:bg-[#E6392F] hover:border-[#E6392F] hover:text-white transition-colors text-[#2b2b2b] focus:outline-none"
             >
               <ChevronRight size={16} />
             </button>
@@ -509,10 +565,10 @@ export default function App() {
                 {/* Content */}
                 <div className="col-span-12 md:col-span-7 p-6 flex flex-col justify-between">
                   <div>
-                    <span className="text-[9px] font-sans tracking-widest text-[#e74c3c] uppercase font-black block mb-2">
+                    <span className="text-[9px] font-sans tracking-widest text-[#E6392F] uppercase font-black block mb-2">
                       {post.date}
                     </span>
-                    <h3 className="text-lg font-black uppercase text-[#2b2b2b] group-hover:text-[#e74c3c] transition-colors leading-tight mb-3">
+                    <h3 className="text-lg font-black uppercase text-[#2b2b2b] group-hover:text-[#E6392F] transition-colors leading-tight mb-3">
                       {post.title}
                     </h3>
                     <p className="text-xs text-[#2b2b2b]/70 font-sans leading-relaxed">
@@ -526,7 +582,7 @@ export default function App() {
                       e.stopPropagation();
                       setSelectedArticle(post);
                     }}
-                    className="text-[10px] font-sans tracking-widest uppercase font-black text-[#2b2b2b] group-hover:text-[#e74c3c] transition-colors flex items-center gap-1.5 mt-6 border-b border-transparent hover:border-[#e74c3c] w-fit pb-0.5"
+                    className="text-[10px] font-sans tracking-widest uppercase font-black text-[#2b2b2b] group-hover:text-[#E6392F] transition-colors flex items-center gap-1.5 mt-6 border-b border-transparent hover:border-[#E6392F] w-fit pb-0.5"
                   >
                     Read Article <ArrowRight size={10} />
                   </button>
@@ -538,125 +594,91 @@ export default function App() {
       </section>
 
       {/* 8. CONTACT SECTION */}
-      <section id="contact" className="py-24 bg-[#2b2b2b] text-white">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-          
-          {/* Left contact card info */}
-          <div className="col-span-12 lg:col-span-5 flex flex-col justify-between">
-            <div>
-              <SectionHeading eyebrow="Direct Connection" title="Let's build together" lightBg={false} />
-              
-              <p className="text-sm text-white/70 leading-relaxed mb-8 max-w-sm">
-                Have a campaign, brand blueprint, or visual catalog that needs structural creative strategy? Drop me a line.
-              </p>
+      <section 
+        id="contact" 
+        style={{ paddingTop: 'max(2.5rem, env(safe-area-inset-top))' }}
+        className="w-full max-w-full overflow-x-hidden bg-[#111111] text-white flex flex-col items-center justify-center py-12 px-4 box-border"
+      >
+        {/* Contact Intro Header */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto text-center mb-6 px-2">
+          <span className="text-[11px] font-mono tracking-[0.25em] text-[#E6392F] uppercase font-semibold block mb-2">
+            DIRECT CONNECTION
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-white leading-tight">
+            LET'S BUILD TOGETHER
+          </h2>
+          <p className="text-xs sm:text-sm text-stone-400 mt-3 leading-relaxed">
+            Have a campaign, brand blueprint, or visual catalog that needs structural creative strategy? Drop me a line.
+          </p>
+        </div>
 
-              <div className="flex flex-col gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white/5 border border-white/10 flex items-center justify-center text-[#e74c3c]">
-                    <Mail size={16} />
-                  </div>
-                  <div>
-                    <div className="text-[9px] font-sans tracking-widest text-white/30 uppercase font-black">EMAIL DIRECT</div>
-                    <a href={`mailto:${portfolioData.brand.email}`} className="text-xs text-white hover:text-[#e74c3c] font-bold transition-colors">
-                      {portfolioData.brand.email}
-                    </a>
-                  </div>
-                </div>
+        {/* Centered Form Card Container */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 pb-8 flex flex-col items-center justify-center box-border">
+          <div className="w-full bg-[#1c1c1e] border border-white/5 rounded-2xl p-5 sm:p-6 shadow-xl box-border">
+            <form onSubmit={handleFormSubmit} className="w-full flex flex-col gap-4 box-border">
+              {/* Top Red Accent Line */}
+              <div className="w-full h-1 bg-[#E6392F] rounded-full mb-2" />
 
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white/5 border border-white/10 flex items-center justify-center text-[#e74c3c]">
-                    <MapPin size={16} />
-                  </div>
-                  <div>
-                    <div className="text-[9px] font-sans tracking-widest text-white/30 uppercase font-black">LOCATION</div>
-                    <span className="text-xs text-white/80 font-semibold">
-                      {portfolioData.contact.location}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Links footer */}
-            <div className="flex gap-4 mt-12 md:mt-0">
-              {portfolioData.contact.socials.map((soc, idx) => {
-                const faClass = SOCIAL_FA_MAP[soc.name] || "fa-solid fa-link";
-                return (
-                  <a
-                    key={idx}
-                    href={soc.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 bg-white/5 border border-white/10 hover:border-[#e74c3c] hover:bg-[#e74c3c] text-white flex items-center justify-center transition-all text-sm"
-                  >
-                    <i className={faClass}></i>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Right contact form card */}
-          <div className="col-span-12 lg:col-span-7 bg-[#232323] border border-white/5 p-4 sm:p-6 md:p-8 relative w-full max-w-full box-border">
-            <div className="absolute top-0 left-0 w-full h-[4px] bg-[#e74c3c]" />
-            
-            <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 w-full max-w-full box-border">
-              
-              {/* Name */}
-              <div className="flex flex-col w-full max-w-full box-border">
-                <label className="text-[9px] font-sans tracking-widest text-white/40 uppercase font-black mb-2">YOUR NAME</label>
-                <input 
+              {/* Form Fields */}
+              <div className="w-full text-left">
+                <label className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1.5">
+                  YOUR NAME
+                </label>
+                <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter name"
-                  className="w-full max-w-full box-border bg-[#2b2b2b] border border-white/5 focus:border-[#e74c3c] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-colors rounded-none"
+                  className="w-full box-border rounded-lg bg-[#2c2c2e] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#E6392F] transition"
                 />
-                {formErrors.name && <span className="text-[10px] font-sans text-rose-400 mt-1.5 font-semibold">{formErrors.name}</span>}
+                {formErrors.name && <span className="text-[10px] font-sans text-rose-400 mt-1.5 font-semibold block">{formErrors.name}</span>}
               </div>
 
-              {/* Email */}
-              <div className="flex flex-col w-full max-w-full box-border">
-                <label className="text-[9px] font-sans tracking-widest text-white/40 uppercase font-black mb-2">EMAIL ADDRESS</label>
-                <input 
+              <div className="w-full text-left">
+                <label className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1.5">
+                  EMAIL ADDRESS
+                </label>
+                <input
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter email"
-                  className="w-full max-w-full box-border bg-[#2b2b2b] border border-white/5 focus:border-[#e74c3c] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-colors rounded-none"
+                  className="w-full box-border rounded-lg bg-[#2c2c2e] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#E6392F] transition"
                 />
-                {formErrors.email && <span className="text-[10px] font-sans text-rose-400 mt-1.5 font-semibold">{formErrors.email}</span>}
+                {formErrors.email && <span className="text-[10px] font-sans text-rose-400 mt-1.5 font-semibold block">{formErrors.email}</span>}
               </div>
 
-              {/* Message */}
-              <div className="flex flex-col w-full max-w-full box-border">
-                <label className="text-[9px] font-sans tracking-widest text-white/40 uppercase font-black mb-2">YOUR MESSAGE</label>
-                <textarea 
+              <div className="w-full text-left">
+                <label className="text-[10px] font-mono uppercase tracking-widest text-stone-400 block mb-1.5">
+                  YOUR MESSAGE
+                </label>
+                <textarea
+                  rows={4}
                   name="message"
                   value={formData.message}
                   onChange={handleInputChange}
                   placeholder="Describe your design parameters"
-                  rows={4}
-                  className="w-full max-w-full box-border bg-[#2b2b2b] border border-white/5 focus:border-[#e74c3c] px-4 py-3 text-sm text-white placeholder-white/20 outline-none transition-colors resize-none rounded-none"
+                  className="w-full box-border rounded-lg bg-[#2c2c2e] border border-white/10 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#E6392F] transition resize-none"
                 />
-                {formErrors.message && <span className="text-[10px] font-sans text-rose-400 mt-1.5 font-semibold">{formErrors.message}</span>}
+                {formErrors.message && <span className="text-[10px] font-sans text-rose-400 mt-1.5 font-semibold block">{formErrors.message}</span>}
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={formStatus === 'loading'}
-                className="w-full max-w-full box-border py-4 px-4 bg-[#e74c3c] disabled:bg-zinc-800 text-white font-black text-xs tracking-widest uppercase flex items-center justify-center gap-2 hover:bg-[#c0392b] transition-colors rounded-none"
+                className="w-full py-3.5 bg-[#E6392F] hover:bg-red-700 disabled:bg-zinc-800 text-white font-bold text-xs uppercase tracking-widest rounded-lg transition flex items-center justify-center gap-2 mt-1 cursor-pointer border-none"
               >
                 {formStatus === 'loading' ? (
-                  <span>Sending Message...</span>
+                  <span>SENDING BRIEF...</span>
                 ) : formStatus === 'success' ? (
-                  <span>Message Sent Successfully!</span>
+                  <span>BRIEF SUBMITTED SUCCESSFULLY!</span>
                 ) : (
                   <>
-                    Send Message <Send size={12} />
+                    <span>SEND MESSAGE</span>
+                    <span>✈</span>
                   </>
                 )}
               </button>
@@ -666,10 +688,10 @@ export default function App() {
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-[#232323] text-white/30 py-10 px-6 border-t border-white/5">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-[9px] font-sans tracking-widest uppercase font-black">
+      <footer className="w-full max-w-full bg-[#111111] text-white/40 py-8 px-4 border-t border-white/5 flex flex-col items-center justify-center text-center box-border">
+        <div className="w-full max-w-sm sm:max-w-md mx-auto flex flex-col gap-2 text-[10px] font-mono tracking-widest uppercase">
           <span>© {new Date().getFullYear()} SASHA GREY. ALL RIGHTS RESERVED.</span>
-          <span>HIGH-CONTRAST GEOMETRIC TEMPLATE</span>
+          <span className="text-stone-600">HIGH-CONTRAST GEOMETRIC TEMPLATE</span>
         </div>
       </footer>
 
@@ -686,6 +708,22 @@ export default function App() {
         article={selectedArticle}
         onClose={() => setSelectedArticle(null)}
       />
+
+      {/* Dedicated Sign In & Client Portal Modal */}
+      <SignIn
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        authReason={authReason}
+        onAuthSuccess={handleAuthSuccess}
+      />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <PortfolioMain />
+    </AuthProvider>
   );
 }

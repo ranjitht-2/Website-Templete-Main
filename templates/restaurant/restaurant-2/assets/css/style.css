@@ -10,36 +10,54 @@
    ========================================================================== */
 :root {
   /* Brand Palette - Sophisticated Dark Theme */
-  --color-primary: #EFE8DC;        /* Warm Alabaster / Bone Linen (High contrast headings) */
-  --color-primary-dark: #20211D;   /* Obsidian Forest / Charcoal Olive */
-  --color-secondary: #EFE8DC;      /* Warm Alabaster / Bone Linen */
-  --color-accent: #B27645;         /* Ember Terracotta / Spiced Bronze */
-  --color-accent-hover: #C88651;   /* Brightened Terracotta Bronze Hover */
-  --color-accent-subtle: rgba(178, 118, 69, 0.15); /* Soft Warm Terracotta Glow */
-  --color-text: #E4DDD2;           /* Soft Warm Bone Body Text */
-  --color-muted: #9E988D;          /* Warm Olive Stone Muted Text */
+  --color-primary: #EFE8DC;
+  /* Warm Alabaster / Bone Linen (High contrast headings) */
+  --color-primary-dark: #20211D;
+  /* Obsidian Forest / Charcoal Olive */
+  --color-secondary: #EFE8DC;
+  /* Warm Alabaster / Bone Linen */
+  --color-accent: #B27645;
+  /* Ember Terracotta / Spiced Bronze */
+  --color-accent-hover: #C88651;
+  /* Brightened Terracotta Bronze Hover */
+  --color-accent-subtle: rgba(178, 118, 69, 0.15);
+  /* Soft Warm Terracotta Glow */
+  --color-text: #E4DDD2;
+  /* Soft Warm Bone Body Text */
+  --color-muted: #9E988D;
+  /* Warm Olive Stone Muted Text */
   --color-white: #FFFFFF;
-  --color-surface: #181915;        /* Deep Obsidian Surface Background */
-  --color-surface-subtle: #20211D; /* Charcoal Olive Subtle Background */
-  --color-dark-surface: #12130F;   /* Deepest Obsidian Surface */
-  --color-dark-card: #22241F;      /* Dark Charcoal Card Background */
-  --color-border: rgba(239, 232, 220, 0.12); /* Soft Linen Border */
-  --color-border-subtle: rgba(239, 232, 220, 0.08); /* Extra Soft Linen Border */
-  --color-dark-border: #33362E;    /* Dark Theme Border */
+  --color-surface: #181915;
+  /* Deep Obsidian Surface Background */
+  --color-surface-subtle: #20211D;
+  /* Charcoal Olive Subtle Background */
+  --color-dark-surface: #12130F;
+  /* Deepest Obsidian Surface */
+  --color-dark-card: #22241F;
+  /* Dark Charcoal Card Background */
+  --color-border: rgba(239, 232, 220, 0.12);
+  /* Soft Linen Border */
+  --color-border-subtle: rgba(239, 232, 220, 0.08);
+  /* Extra Soft Linen Border */
+  --color-dark-border: #33362E;
+  /* Dark Theme Border */
 
   /* Typography */
   --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-body: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  
+
   /* Font Sizes - Fluid Responsive Scale */
   --text-hero: clamp(2.8rem, 6.5vw, 6.5rem);
   --text-h1: clamp(2.4rem, 5vw, 4.5rem);
   --text-h2: clamp(2rem, 4vw, 3.25rem);
   --text-h3: clamp(1.5rem, 2.5vw, 2.25rem);
   --text-h4: clamp(1.2rem, 1.8vw, 1.5rem);
-  --text-body: 1.0625rem; /* 17px */
-  --text-sm: 0.9375rem;   /* 15px */
-  --text-xs: 0.8125rem;   /* 13px */
+  --text-body: 1.0625rem;
+  /* 17px */
+  --text-sm: 0.9375rem;
+  /* 15px */
+  --text-xs: 0.8125rem;
+  /* 13px */
 
   /* Elevation & Shadows */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
@@ -72,7 +90,9 @@
 /* ==========================================================================
    2. RESET & BASE STYLES
    ========================================================================== */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -97,7 +117,12 @@ body {
 }
 
 /* Headings */
-h1, h2, h3, h4, h5, h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
 .font-heading {
   font-family: var(--font-heading);
   color: var(--color-primary);
@@ -106,10 +131,21 @@ h1, h2, h3, h4, h5, h6,
   letter-spacing: -0.015em;
 }
 
-h1 { font-size: var(--text-h1); }
-h2 { font-size: var(--text-h2); }
-h3 { font-size: var(--text-h3); }
-h4 { font-size: var(--text-h4); }
+h1 {
+  font-size: var(--text-h1);
+}
+
+h2 {
+  font-size: var(--text-h2);
+}
+
+h3 {
+  font-size: var(--text-h3);
+}
+
+h4 {
+  font-size: var(--text-h4);
+}
 
 p {
   margin-bottom: 1.25rem;
@@ -147,20 +183,69 @@ img {
 /* ==========================================================================
    3. UTILITY & TYPOGRAPHY HELPERS
    ========================================================================== */
-.text-accent { color: var(--color-accent) !important; }
-.text-primary-dark { color: var(--color-primary) !important; }
-.text-muted-custom { color: var(--color-muted) !important; }
-.text-bone { color: var(--color-secondary) !important; }
+.text-accent {
+  color: var(--color-accent) !important;
+}
 
-.bg-surface { background-color: var(--color-surface) !important; }
-.bg-surface-subtle { background-color: var(--color-surface-subtle) !important; }
-.bg-primary-dark { background-color: var(--color-primary) !important; }
-.bg-dark-surface { background-color: var(--color-dark-surface) !important; }
-.bg-secondary-bone { background-color: var(--color-secondary) !important; }
-.bg-accent { background-color: var(--color-accent) !important; }
+.text-primary-dark {
+  color: #1c1917 !important;
+}
 
-.border-bone { border-color: var(--color-border) !important; }
-.border-dark-subtle { border-color: var(--color-dark-border) !important; }
+.text-heading-dark {
+  color: #1c1917 !important;
+}
+
+.text-body-dark {
+  color: #292524 !important;
+}
+
+.text-muted-dark {
+  color: #57534e !important;
+}
+
+.text-muted-custom {
+  color: var(--color-muted) !important;
+}
+
+.text-bone {
+  color: var(--color-secondary) !important;
+}
+
+.bg-surface {
+  background-color: var(--color-surface) !important;
+}
+
+.bg-surface-subtle {
+  background-color: var(--color-surface-subtle) !important;
+}
+
+.bg-primary-dark {
+  background-color: #20211D !important;
+}
+
+.bg-dark-surface {
+  background-color: var(--color-dark-surface) !important;
+}
+
+.bg-secondary-bone {
+  background-color: #EFE8DC !important;
+}
+
+.bg-light-cream {
+  background-color: #F7F4EE !important;
+}
+
+.bg-accent {
+  background-color: var(--color-accent) !important;
+}
+
+.border-bone {
+  border-color: var(--color-border) !important;
+}
+
+.border-dark-subtle {
+  border-color: var(--color-dark-border) !important;
+}
 
 .eyebrow {
   display: inline-flex;
@@ -727,11 +812,9 @@ img {
 .hero-media-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.12) 0%,
-    rgba(0, 0, 0, 0.28) 100%
-  );
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.12) 0%,
+      rgba(0, 0, 0, 0.28) 100%);
   pointer-events: none;
 }
 
@@ -809,9 +892,20 @@ img {
 }
 
 @keyframes scrollLinePulse {
-  0% { transform: scaleY(0.4); opacity: 0.4; }
-  50% { transform: scaleY(1); opacity: 1; }
-  100% { transform: scaleY(0.4); opacity: 0.4; }
+  0% {
+    transform: scaleY(0.4);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scaleY(0.4);
+    opacity: 0.4;
+  }
 }
 
 /* Mobile Responsiveness for Redesigned Hero */
@@ -889,10 +983,25 @@ img {
 }
 
 @keyframes scrollPulse {
-  0% { transform: scaleY(0); transform-origin: top; }
-  50% { transform: scaleY(1); transform-origin: top; }
-  50.1% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
+  0% {
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+
+  50% {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+
+  50.1% {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+
+  100% {
+    transform: scaleY(0);
+    transform-origin: bottom;
+  }
 }
 
 /* Page Header for subpages */
@@ -1412,7 +1521,7 @@ img {
 .signature-mini-title {
   font-size: 1.15rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-white);
   margin-bottom: 0.25rem;
 }
 
@@ -1850,12 +1959,28 @@ img {
 }
 
 /* Asymmetric grid sizes */
-.gallery-item-span-4 { grid-column: span 4; aspect-ratio: 4/3; }
-.gallery-item-span-6 { grid-column: span 6; aspect-ratio: 16/10; }
-.gallery-item-span-8 { grid-column: span 8; aspect-ratio: 16/9; }
-.gallery-item-tall   { grid-column: span 4; aspect-ratio: 3/4; }
+.gallery-item-span-4 {
+  grid-column: span 4;
+  aspect-ratio: 4/3;
+}
+
+.gallery-item-span-6 {
+  grid-column: span 6;
+  aspect-ratio: 16/10;
+}
+
+.gallery-item-span-8 {
+  grid-column: span 8;
+  aspect-ratio: 16/9;
+}
+
+.gallery-item-tall {
+  grid-column: span 4;
+  aspect-ratio: 3/4;
+}
 
 @media (max-width: 991px) {
+
   .gallery-item-span-4,
   .gallery-item-span-6,
   .gallery-item-span-8,
@@ -1866,6 +1991,7 @@ img {
 }
 
 @media (max-width: 575px) {
+
   .gallery-item-span-4,
   .gallery-item-span-6,
   .gallery-item-span-8,
@@ -2054,25 +2180,28 @@ img {
 
 .form-control-custom,
 .form-select-custom {
-  background-color: #1A1C17 !important;
-  border: 1.5px solid var(--color-dark-border) !important;
-  color: var(--color-secondary) !important;
+  background-color: #181915 !important;
+  border: 1.5px solid #3f3f46 !important;
+  color: #f8fafc !important;
   padding: 0.85rem 1.15rem !important;
-  border-radius: var(--radius-sm) !important;
+  border-radius: var(--radius-sm, 6px) !important;
   font-size: 0.9375rem !important;
+  font-family: var(--font-body) !important;
   transition: var(--transition-fast) !important;
 }
 
 .form-control-custom:focus,
 .form-select-custom:focus {
   border-color: var(--color-accent) !important;
-  box-shadow: 0 0 0 3px rgba(178, 118, 69, 0.2) !important;
-  background-color: #161713 !important;
+  box-shadow: 0 0 0 3px rgba(178, 118, 69, 0.25) !important;
+  background-color: #12130f !important;
+  color: #ffffff !important;
   outline: none !important;
 }
 
 .form-control-custom::placeholder {
-  color: #6C685F;
+  color: #a1a1aa !important;
+  opacity: 1 !important;
 }
 
 .form-label-custom {
@@ -2080,7 +2209,7 @@ img {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-secondary);
+  color: #d4d4d8 !important;
   margin-bottom: 0.5rem;
 }
 
@@ -2124,8 +2253,15 @@ img {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ==========================================================================
@@ -2555,6 +2691,7 @@ img {
 }
 
 @media (hover: none) or (pointer: coarse) {
+
   .custom-cursor-dot,
   .custom-cursor-ring {
     display: none !important;
@@ -2683,12 +2820,29 @@ img {
   transform: translateY(0) !important;
 }
 
-.stagger-container .stagger-item:nth-child(1) { transition-delay: 0ms; }
-.stagger-container .stagger-item:nth-child(2) { transition-delay: 100ms; }
-.stagger-container .stagger-item:nth-child(3) { transition-delay: 200ms; }
-.stagger-container .stagger-item:nth-child(4) { transition-delay: 300ms; }
-.stagger-container .stagger-item:nth-child(5) { transition-delay: 400ms; }
-.stagger-container .stagger-item:nth-child(6) { transition-delay: 500ms; }
+.stagger-container .stagger-item:nth-child(1) {
+  transition-delay: 0ms;
+}
+
+.stagger-container .stagger-item:nth-child(2) {
+  transition-delay: 100ms;
+}
+
+.stagger-container .stagger-item:nth-child(3) {
+  transition-delay: 200ms;
+}
+
+.stagger-container .stagger-item:nth-child(4) {
+  transition-delay: 300ms;
+}
+
+.stagger-container .stagger-item:nth-child(5) {
+  transition-delay: 400ms;
+}
+
+.stagger-container .stagger-item:nth-child(6) {
+  transition-delay: 500ms;
+}
 
 /* ==========================================================================
    23. PAGE LOAD & HERO FLOW ANIMATIONS
@@ -3014,11 +3168,25 @@ img {
   transform: scale(1);
 }
 
-.testimonial-slide.active .star-rating i:nth-child(1) { transition-delay: 100ms; }
-.testimonial-slide.active .star-rating i:nth-child(2) { transition-delay: 160ms; }
-.testimonial-slide.active .star-rating i:nth-child(3) { transition-delay: 220ms; }
-.testimonial-slide.active .star-rating i:nth-child(4) { transition-delay: 280ms; }
-.testimonial-slide.active .star-rating i:nth-child(5) { transition-delay: 340ms; }
+.testimonial-slide.active .star-rating i:nth-child(1) {
+  transition-delay: 100ms;
+}
+
+.testimonial-slide.active .star-rating i:nth-child(2) {
+  transition-delay: 160ms;
+}
+
+.testimonial-slide.active .star-rating i:nth-child(3) {
+  transition-delay: 220ms;
+}
+
+.testimonial-slide.active .star-rating i:nth-child(4) {
+  transition-delay: 280ms;
+}
+
+.testimonial-slide.active .star-rating i:nth-child(5) {
+  transition-delay: 340ms;
+}
 
 /* ==========================================================================
    30. GALLERY & LIGHTBOX TRANSITIONS
@@ -3046,34 +3214,49 @@ img {
 /* ==========================================================================
    31. RESERVATION & FORM INPUT FOCUS HIGHLIGHTS
    ========================================================================== */
-.reservation-card-wrapper {
-  transition: transform 600ms var(--ease-editorial), box-shadow 600ms var(--ease-editorial);
+/* Reservation Section Styles & Heading Contrast */
+.reservation-section .section-title,
+#reservation .section-title,
+.section-title.text-heading-dark {
+  color: #1c1917 !important;
+}
+
+.reservation-section .lead,
+#reservation .lead {
+  color: #292524 !important;
 }
 
 .form-control,
 .form-select,
 .form-control-custom,
 .form-select-custom,
-textarea {
-  background-color: var(--color-dark-surface) !important;
-  color: var(--color-primary) !important;
-  border: 1px solid var(--color-dark-border) !important;
-  border-radius: var(--radius-md) !important;
-  padding: 0.75rem 1rem;
+textarea,
+textarea.form-control,
+textarea.form-control-custom {
+  background-color: #181915 !important;
+  color: #f8fafc !important;
+  border: 1.5px solid #3f3f46 !important;
+  border-radius: var(--radius-sm, 6px) !important;
+  padding: 0.85rem 1.15rem;
   font-family: var(--font-body);
   font-size: var(--text-sm);
   transition: border-color 350ms var(--ease-editorial), box-shadow 350ms var(--ease-editorial), transform 350ms var(--ease-editorial), background-color 350ms ease !important;
 }
 
 .form-control::placeholder,
-textarea::placeholder {
-  color: var(--color-muted) !important;
-  opacity: 0.7;
+.form-control-custom::placeholder,
+textarea::placeholder,
+textarea.form-control-custom::placeholder {
+  color: #a1a1aa !important;
+  opacity: 1 !important;
 }
 
-.form-select option {
-  background-color: var(--color-dark-surface) !important;
-  color: var(--color-primary) !important;
+.form-select option,
+.form-select-custom option,
+.form-select optgroup,
+.form-select-custom optgroup {
+  background-color: #181915 !important;
+  color: #f8fafc !important;
 }
 
 .form-control:focus,
@@ -3082,21 +3265,22 @@ textarea::placeholder {
 .form-select-custom:focus,
 textarea:focus {
   border-color: var(--color-accent) !important;
-  box-shadow: 0 0 0 3px rgba(178, 118, 69, 0.22) !important;
+  box-shadow: 0 0 0 3px rgba(178, 118, 69, 0.25) !important;
   transform: translateY(-2px);
-  background-color: var(--color-surface-subtle) !important;
+  background-color: #12130f !important;
+  color: #ffffff !important;
   outline: none !important;
 }
 
 .form-label-custom,
 .form-label {
   display: block;
-  font-size: var(--text-xs);
+  font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-muted);
-  margin-bottom: 0.4rem;
+  color: #d4d4d8 !important;
+  margin-bottom: 0.45rem;
 }
 
 .input-group-text {
@@ -3126,7 +3310,139 @@ textarea:focus {
 }
 
 /* ==========================================================================
-   32. BUTTON & ICON MICRO-INTERACTIONS
+   32. GLOBAL CONTEXTUAL CONTRAST & SCOPED TYPOGRAPHY ARCHITECTURE
+   ========================================================================== */
+
+/* Universal Light-Themed Containers (cards, callouts, cream surfaces) */
+.light-card,
+.card-light,
+.bg-light,
+.bg-light-cream,
+.bg-secondary-bone,
+.bg-stone-100,
+.bg-\[\#f5f0eb\],
+.bg-\[\#efe8dc\],
+.reservation-section,
+.light-surface,
+[data-theme="light"] {
+  color: #1c1917 !important;
+}
+
+/* Headings in Light-Themed Containers */
+.light-card h1,
+.light-card h2,
+.light-card h3,
+.light-card h4,
+.light-card h5,
+.light-card h6,
+.card-light h1,
+.card-light h2,
+.card-light h3,
+.card-light h4,
+.card-light h5,
+.card-light h6,
+.bg-light h1,
+.bg-light h2,
+.bg-light h3,
+.bg-light h4,
+.bg-light h5,
+.bg-light h6,
+.bg-light-cream h1,
+.bg-light-cream h2,
+.bg-light-cream h3,
+.bg-light-cream h4,
+.bg-light-cream h5,
+.bg-light-cream h6,
+.bg-secondary-bone h1,
+.bg-secondary-bone h2,
+.bg-secondary-bone h3,
+.bg-secondary-bone h4,
+.bg-secondary-bone h5,
+.bg-secondary-bone h6,
+.bg-stone-100 h1,
+.bg-stone-100 h2,
+.bg-stone-100 h3,
+.bg-stone-100 h4,
+.bg-stone-100 h5,
+.bg-stone-100 h6,
+.bg-\[\#f5f0eb\] h1,
+.bg-\[\#f5f0eb\] h2,
+.bg-\[\#f5f0eb\] h3,
+.bg-\[\#f5f0eb\] h4,
+.bg-\[\#f5f0eb\] h5,
+.bg-\[\#f5f0eb\] h6,
+.bg-\[\#efe8dc\] h1,
+.bg-\[\#efe8dc\] h2,
+.bg-\[\#efe8dc\] h3,
+.bg-\[\#efe8dc\] h4,
+.bg-\[\#efe8dc\] h5,
+.bg-\[\#efe8dc\] h6,
+.reservation-section>.container-xl>.row>div:first-child h1,
+.reservation-section>.container-xl>.row>div:first-child h2,
+.reservation-section>.container-xl>.row>div:first-child h3,
+.reservation-section>.container-xl>.row>div:first-child h4,
+.reservation-section .section-title,
+.light-card .font-heading,
+.card-light .font-heading,
+.bg-secondary-bone .font-heading,
+.text-heading-dark {
+  color: #1c1917 !important;
+}
+
+/* Paragraphs & Descriptions in Light-Themed Containers */
+.light-card p,
+.card-light p,
+.bg-light p,
+.bg-light-cream p,
+.bg-secondary-bone p,
+.bg-stone-100 p,
+.bg-\[\#f5f0eb\] p,
+.bg-\[\#efe8dc\] p,
+.reservation-section>.container-xl>.row>div:first-child p.lead,
+.text-body-dark {
+  color: #292524 !important;
+}
+
+.light-card .text-muted,
+.card-light .text-muted,
+.bg-light .text-muted,
+.bg-light-cream .text-muted,
+.bg-secondary-bone .text-muted,
+.text-muted-dark {
+  color: #57534e !important;
+}
+
+/* Dark Sub-Cards inside Light Sections (e.g., Reservation notes & Booking form card) */
+.reservation-card-wrap,
+.reservation-section .bg-dark-surface,
+.dark-card,
+.bg-dark-card {
+  background-color: #22241F !important;
+  color: #EFE8DC !important;
+}
+
+.reservation-card-wrap h1,
+.reservation-card-wrap h2,
+.reservation-card-wrap h3,
+.reservation-card-wrap h4,
+.reservation-card-wrap h5,
+.reservation-card-wrap h6,
+.reservation-section .bg-dark-surface h1,
+.reservation-section .bg-dark-surface h2,
+.reservation-section .bg-dark-surface h3,
+.reservation-section .bg-dark-surface h4,
+.reservation-section .bg-dark-surface h5,
+.reservation-section .bg-dark-surface h6 {
+  color: #FFFFFF !important;
+}
+
+.reservation-card-wrap p,
+.reservation-section .bg-dark-surface p {
+  color: #E4DDD2 !important;
+}
+
+/* ==========================================================================
+   33. BUTTON & ICON MICRO-INTERACTIONS
    ========================================================================== */
 .btn-custom {
   transition: transform 350ms var(--ease-editorial), background-color 350ms ease, border-color 350ms ease, box-shadow 350ms ease;
@@ -3164,6 +3480,7 @@ textarea:focus {
    33. ACCESSIBILITY — REDUCED MOTION OVERRIDES
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -3191,4 +3508,3 @@ textarea:focus {
     display: none !important;
   }
 }
-
