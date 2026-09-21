@@ -1,215 +1,175 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
-export default function App() {
+export default function ContactSection({ onOpenSignIn }) {
+  const { isAuthenticated, user } = useAuth();
+
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState('');
 
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [user]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      onOpenSignIn('Authentication required: Please sign in or register to submit an assignment inquiry.', 'contact');
+      return;
+    }
+
     if (!formData.name || !formData.email || !formData.message) {
       setStatus('error');
       return;
     }
+
+    // Save inquiry to localStorage mock ledger
+    try {
+      const existing = JSON.parse(localStorage.getItem('kairo_photography6_inquiries') || '[]');
+      const newInquiry = {
+        id: 'inq_' + Date.now(),
+        userId: user.id,
+        userName: user.name,
+        userEmail: user.email,
+        contactName: formData.name,
+        message: formData.message,
+        createdAt: new Date().toISOString()
+      };
+      existing.push(newInquiry);
+      localStorage.setItem('kairo_photography6_inquiries', JSON.stringify(existing));
+    } catch (err) {
+      console.error('Failed to log inquiry in photography-6:', err);
+    }
+
     setStatus('success');
-    setFormData({ name: '', email: '', message: '' });
+    setFormData(prev => ({ ...prev, message: '' }));
   };
 
   return (
-    <section id="contact" style={{
-      backgroundColor: '#121212',
-      padding: '120px 40px',
-      color: '#ffffff',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      boxSizing: 'border-box'
-    }}>
-      <div style={{
-        maxWidth: '1000px',
-        width: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '60px'
-      }}>
-        {/* Left Side Details Details */}
+    <section 
+      id="contact" 
+      className="w-full max-w-full box-border px-4 sm:px-6 lg:px-12 py-20 lg:py-28 bg-[#121212] text-white flex justify-center items-center overflow-hidden"
+    >
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        
+        {/* Left Side Details */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, cubicBezier: [0.16, 1, 0.3, 1] }}
+          className="text-left space-y-6"
         >
-          <span style={{
-            color: '#ff4a3b',
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            fontFamily: "'Inter', sans-serif"
-          }}>
+          <span className="text-[#ff4a3b] text-xs font-bold tracking-[3px] uppercase block font-sans">
             Contact
           </span>
-          <h2 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: 'calc(2rem + 1vw)',
-            fontWeight: '400',
-            margin: '12px 0 24px 0',
-            letterSpacing: '-0.5px'
-          }}>
+          <h2 
+            className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-tight"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
             Initiate a Creative Project
           </h2>
-          <p style={{
-            fontSize: '0.95rem',
-            lineHeight: '1.8',
-            opacity: 0.6,
-            fontFamily: "'Inter', sans-serif",
-            margin: '0 0 40px 0',
-            fontWeight: '300'
-          }}>
+          <p className="text-sm sm:text-base leading-relaxed text-stone-400 font-sans font-light">
             For assignments, representation, image licensing, or general inquiries, please fill out the form or reach out directly via email.
           </p>
 
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px',
-            fontFamily: "'Inter', sans-serif"
-          }}>
+          <div className="flex flex-col gap-5 pt-2 font-sans">
             <div>
-              <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', opacity: 0.4, letterSpacing: '1px' }}>Studio Email</span>
-              <p style={{ margin: '4px 0 0 0', fontSize: '1.05rem', fontWeight: '500' }}>inquiries@tomkeene.com</p>
+              <span className="text-[10px] uppercase opacity-40 tracking-wider block">Studio Email</span>
+              <p className="m-0 text-base font-medium text-stone-200 mt-1">inquiries@tomkeene.com</p>
             </div>
             <div>
-              <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', opacity: 0.4, letterSpacing: '1px' }}>Representation</span>
-              <p style={{ margin: '4px 0 0 0', fontSize: '1.05rem', fontWeight: '500' }}>represent@keene-agency.com</p>
+              <span className="text-[10px] uppercase opacity-40 tracking-wider block">Representation</span>
+              <p className="m-0 text-base font-medium text-stone-200 mt-1">represent@keene-agency.com</p>
             </div>
           </div>
         </motion.div>
 
-        {/* Right Side Form Form */}
+        {/* Right Side Fluid Centered Form Container */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, delay: 0.2, cubicBezier: [0.16, 1, 0.3, 1] }}
+          className="w-full max-w-md mx-auto flex flex-col items-center justify-center"
         >
-          <form onSubmit={handleSubmit} style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '24px'
-          }}>
+          <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5 text-left">
+            
+            {isAuthenticated && user && (
+              <div className="bg-[#ff4a3b]/10 border border-[#ff4a3b]/30 p-3 rounded-2xl text-xs flex items-center justify-between text-stone-200 font-sans">
+                <span>Client Verified: <strong>{user.name}</strong></span>
+                <span className="font-mono text-[9px] uppercase bg-[#ff4a3b]/20 px-2 py-0.5 rounded text-[#ff4a3b] font-bold">Ledger Active</span>
+              </div>
+            )}
+
             {/* Input Name */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.8 }}>Name</label>
+            <div className="flex flex-col gap-2 w-full text-left">
+              <label className="text-xs font-semibold tracking-wider uppercase text-stone-300">Name *</label>
               <input 
                 type="text" 
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Enter your name"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  color: '#ffffff',
-                  fontSize: '0.9rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#ff4a3b'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+                required
+                className="w-full box-border rounded-xl bg-[#18181b] border border-stone-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#ff4a3b] transition-colors placeholder-stone-500"
               />
             </div>
 
             {/* Input Email */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.8 }}>Email Address</label>
+            <div className="flex flex-col gap-2 w-full text-left">
+              <label className="text-xs font-semibold tracking-wider uppercase text-stone-300">Email Address *</label>
               <input 
                 type="email" 
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 placeholder="Enter your email address"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  color: '#ffffff',
-                  fontSize: '0.9rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#ff4a3b'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+                required
+                className="w-full box-border rounded-xl bg-[#18181b] border border-stone-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#ff4a3b] transition-colors placeholder-stone-500"
               />
             </div>
 
             {/* Input Message */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '0.75rem', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase', opacity: 0.8 }}>Project Details</label>
+            <div className="flex flex-col gap-2 w-full text-left">
+              <label className="text-xs font-semibold tracking-wider uppercase text-stone-300">Project Details *</label>
               <textarea 
-                rows="5"
+                rows="4"
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 placeholder="Describe your project, dates, and concepts..."
-                style={{
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  padding: '16px',
-                  borderRadius: '8px',
-                  color: '#ffffff',
-                  fontSize: '0.9rem',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  resize: 'vertical'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#ff4a3b'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+                required
+                className="w-full box-border rounded-xl bg-[#18181b] border border-stone-800 text-white px-4 py-3 text-sm focus:outline-none focus:border-[#ff4a3b] transition-colors resize-none placeholder-stone-500"
               />
             </div>
 
             {/* Submit Button */}
             <button 
               type="submit"
-              style={{
-                background: '#ffffff',
-                color: '#0a0a0a',
-                border: 'none',
-                padding: '16px',
-                borderRadius: '99px',
-                fontSize: '0.85rem',
-                fontWeight: '700',
-                letterSpacing: '1.5px',
-                textTransform: 'uppercase',
-                cursor: 'pointer',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
-              }}
-              onMouseEnter={(e) => {
-                e.target.style.background = '#ff4a3b';
-                e.target.style.color = '#ffffff';
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = '#ffffff';
-                e.target.style.color = '#0a0a0a';
-              }}
+              className="w-full py-3.5 bg-white text-black font-semibold text-xs uppercase tracking-widest rounded-xl hover:bg-stone-200 transition text-center cursor-pointer border-none shadow-md mt-1"
             >
               Submit Inquiry
             </button>
 
             {/* Status alerts */}
             {status === 'success' && (
-              <p style={{ color: '#4ade80', fontSize: '0.85rem', margin: 0, textAlign: 'center' }}>
-                Thank you! Your inquiry was sent successfully.
+              <p className="text-center w-full mt-3 text-emerald-400 text-xs px-2 break-words leading-normal font-sans">
+                Thank you, {user ? user.name : formData.name}! Your inquiry was sent and recorded in our client ledger.
               </p>
             )}
             {status === 'error' && (
-              <p style={{ color: '#f87171', fontSize: '0.85rem', margin: 0, textAlign: 'center' }}>
-                Please fill out all fields.
+              <p className="text-center w-full mt-3 text-rose-400 text-xs px-2 break-words leading-normal font-sans">
+                Please fill out all required fields.
               </p>
             )}
           </form>
         </motion.div>
+
       </div>
     </section>
   );

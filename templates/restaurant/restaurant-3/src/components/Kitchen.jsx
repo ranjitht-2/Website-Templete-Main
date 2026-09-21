@@ -2,9 +2,9 @@ import React from 'react';
 
 export default function Kitchen() {
   return (
-    <section className="kitchen-section">
+    <section className="kitchen-section" id="kitchen">
       <div className="kitchen-grid">
-        <div>
+        <div className="kitchen-content-wrapper">
           <span className="section-label"><span className="accent-line"></span>OUR PHILOSOPHY</span>
           <h2 className="kitchen-heading">FRESHNESS<br />NEEDS NO<br />EXPLANATION.</h2>
 

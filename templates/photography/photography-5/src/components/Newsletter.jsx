@@ -1,14 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 import { siteConfig } from '../data/config';
 
-export default function App() {
+export default function Newsletter({ onOpenSignIn }) {
+  const { user, isAuthenticated } = useAuth();
   const [email, setEmail] = useState('');
   const [agreed, setAgreed] = useState(false);
   const [status, setStatus] = useState('idle'); // idle | loading | success | error
 
+  useEffect(() => {
+    if (user && user.email) {
+      setEmail(user.email);
+    }
+  }, [user]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      if (onOpenSignIn) {
+        onOpenSignIn('Sign in or register to acquire archival prints and receive studio dispatches', 'artist');
+      }
+      return;
+    }
+
     if (!email || !agreed) {
       setStatus('error');
       setTimeout(() => setStatus('idle'), 3000);
@@ -17,9 +33,8 @@ export default function App() {
     setStatus('loading');
     setTimeout(() => {
       setStatus('success');
-      setEmail('');
       setAgreed(false);
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -39,7 +54,23 @@ export default function App() {
           <div className="w-full lg:w-1/2">
             <form onSubmit={handleSubmit} className="space-y-6">
               
-              {/* Input wrapper with premium bottom border focus animation */}
+              {!isAuthenticated && (
+                <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs flex items-center justify-between text-neutral-300">
+                  <span className="flex items-center gap-2">
+                    <i className="fa-solid fa-lock text-[#6b1d2f]"></i>
+                    <span>Patron authentication required</span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onOpenSignIn && onOpenSignIn('Sign in to acquire prints', 'artist')}
+                    className="text-xs font-bold text-[#f5f4f1] underline cursor-pointer bg-transparent border-none"
+                  >
+                    Sign In
+                  </button>
+                </div>
+              )}
+
+              {/* Input wrapper with bottom border focus animation */}
               <div className="relative group">
                 <input
                   type="email"
@@ -47,6 +78,7 @@ export default function App() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={siteConfig.newsletter.placeholder}
                   className="w-full bg-transparent border-b border-white/20 pb-4 text-[#f5f4f1] text-sm tracking-widest placeholder-neutral-500 focus:outline-none focus:border-white transition-colors duration-500 font-sans"
+                  required
                 />
                 <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#6b1d2f] group-focus-within:w-full transition-all duration-500" />
               </div>
@@ -80,13 +112,13 @@ export default function App() {
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className={`px-8 py-3 rounded-full border text-xs uppercase tracking-[0.2em] font-sans transition-all duration-500 ${
+                  className={`px-8 py-3 rounded-full border text-xs uppercase tracking-[0.2em] font-sans transition-all duration-500 cursor-pointer ${
                     status === 'loading'
                       ? 'border-neutral-700 text-neutral-500 bg-neutral-900 cursor-not-allowed'
                       : 'border-[#f5f4f1] text-[#0a0a0a] bg-[#f5f4f1] hover:bg-transparent hover:text-[#f5f4f1]'
                   }`}
                 >
-                  {status === 'loading' ? 'Sending...' : siteConfig.newsletter.buttonText}
+                  {status === 'loading' ? 'Sending...' : (isAuthenticated ? siteConfig.newsletter.buttonText : 'Sign In & Subscribe')}
                 </button>
 
                 {/* Status Micro-feedback */}
@@ -98,7 +130,7 @@ export default function App() {
                       exit={{ opacity: 0, x: 10 }}
                       className="text-xs text-green-400 font-sans tracking-wide"
                     >
-                      <i className="fa-solid fa-circle-check mr-2"></i> Subscribed successfully
+                      <i className="fa-solid fa-circle-check mr-2"></i> Archival dispatch subscribed
                     </motion.span>
                   )}
                   {status === 'error' && (

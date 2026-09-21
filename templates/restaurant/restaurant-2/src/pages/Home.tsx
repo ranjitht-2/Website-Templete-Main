@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Dish } from '../types';
 import { SignatureDishModal } from '../components/SignatureDishModal';
+import { useAuth } from '../context/AuthContext';
 
 export const Home: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
+
   // Testimonial Carousel State
   const [currentTestimonialIndex, setCurrentTestimonialIndex] = useState(0);
 
@@ -58,9 +62,47 @@ export const Home: React.FC = () => {
     }
   };
 
-  // Reservation Form Handling
+  // Reservation Form Handling & State Retention
   const [resFormSuccess, setResFormSuccess] = useState<string | null>(null);
   const [resFormLoading, setResFormLoading] = useState(false);
+
+  // Form input states with sessionStorage restoration & user defaults
+  const [resName, setResName] = useState('');
+  const [resEmail, setResEmail] = useState('');
+  const [resPhone, setResPhone] = useState('');
+  const [resGuests, setResGuests] = useState('2 Guests');
+  const [resDate, setResDate] = useState(() => new Date().toISOString().split('T')[0]);
+  const [resTime, setResTime] = useState('07:30 PM');
+  const [resSeating, setResSeating] = useState('Main Dining Room (Open Hearth)');
+  const [resRequests, setResRequests] = useState('');
+
+  // Load saved pending reservation data and populate user info if available
+  useEffect(() => {
+    const saved = sessionStorage.getItem('restaurant_2_pending_reservation');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.guest_name) setResName(parsed.guest_name);
+        if (parsed.guest_email) setResEmail(parsed.guest_email);
+        if (parsed.guest_phone) setResPhone(parsed.guest_phone);
+        if (parsed.guests_count) setResGuests(parsed.guests_count);
+        if (parsed.reservation_date) setResDate(parsed.reservation_date);
+        if (parsed.reservation_time) setResTime(parsed.reservation_time);
+        if (parsed.seating_area) setResSeating(parsed.seating_area);
+        if (parsed.special_requests) setResRequests(parsed.special_requests);
+      } catch (err) {
+        console.error('Error parsing pending reservation:', err);
+      }
+    }
+  }, []);
+
+  // Autofill name and email when user logs in
+  useEffect(() => {
+    if (user) {
+      if (!resName) setResName(user.name || '');
+      if (!resEmail) setResEmail(user.email || '');
+    }
+  }, [user]);
 
   const handleReservationSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -69,16 +111,36 @@ export const Home: React.FC = () => {
       form.reportValidity();
       return;
     }
+
     const formData = new FormData(form);
-    const name = (formData.get('guest_name') as string) || 'Guest';
-    const date = (formData.get('reservation_date') as string) || 'Today';
-    const time = (formData.get('reservation_time') as string) || '7:30 PM';
-    const guests = (formData.get('guests_count') as string) || '2';
+    const reservationData = {
+      guest_name: (formData.get('guest_name') as string) || resName || user?.name || '',
+      guest_email: (formData.get('guest_email') as string) || resEmail || user?.email || '',
+      guest_phone: (formData.get('guest_phone') as string) || resPhone || '',
+      guests_count: (formData.get('guests_count') as string) || resGuests || '2 Guests',
+      reservation_date: (formData.get('reservation_date') as string) || resDate || new Date().toISOString().split('T')[0],
+      reservation_time: (formData.get('reservation_time') as string) || resTime || '07:30 PM',
+      seating_area: (formData.get('seating_area') as string) || resSeating || 'Main Dining Room (Open Hearth)',
+      special_requests: (formData.get('special_requests') as string) || resRequests || ''
+    };
+
+    if (!isAuthenticated) {
+      // Retain form details in sessionStorage before redirecting to Sign In
+      sessionStorage.setItem('restaurant_2_pending_reservation', JSON.stringify(reservationData));
+      navigate('/signin?redirect=/#reservation&reason=Please+sign+in+to+confirm+your+table+reservation');
+      return;
+    }
+
+    const name = reservationData.guest_name || (user ? user.name : 'Guest');
+    const date = reservationData.reservation_date;
+    const time = reservationData.reservation_time;
+    const guests = reservationData.guests_count;
 
     setResFormLoading(true);
     setTimeout(() => {
       setResFormLoading(false);
-      setResFormSuccess(`Thank you, ${name}! Your reservation for ${guests} on ${date} at ${time} has been received. A confirmation has been sent to your email.`);
+      setResFormSuccess(`Thank you, ${name}! Your reservation for ${guests} on ${date} at ${time} has been confirmed. A confirmation receipt has been sent to ${user?.email || reservationData.guest_email || 'your email'}.`);
+      sessionStorage.removeItem('restaurant_2_pending_reservation');
       form.reset();
     }, 1000);
   };
@@ -206,11 +268,11 @@ export const Home: React.FC = () => {
       <section id="hero" className="hero-section">
         <div className="container-xl hero-container">
           <div className="row align-items-center g-4 g-lg-5">
-            
+
             {/* Left Column: Text & CTAs & Compact Reservation */}
             <div className="col-lg-5 col-xl-5">
               <div className="hero-text-content">
-                
+
                 <div className="hero-eyebrow reveal-up">
                   <span className="hero-eyebrow-pill"><i className="bi bi-fire text-accent"></i> FROM FIRE TO TABLE</span>
                 </div>
@@ -283,7 +345,7 @@ export const Home: React.FC = () => {
               <div className="hero-media-wrapper image-reveal">
                 <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1600&q=90" alt="Wood-Fired Hearth Cooking & Fresh Ingredients" className="hero-media-img" loading="eager" fetchPriority="high" />
                 <div className="hero-media-overlay"></div>
-                
+
                 {/* Floating Artisan Badge Overlay */}
                 <div className="hero-image-badge">
                   <div className="badge-icon"><i className="bi bi-fire"></i></div>
@@ -309,19 +371,19 @@ export const Home: React.FC = () => {
       <section id="about" className="section-spacing bg-surface">
         <div className="container-xl">
           <div className="row align-items-center g-4 g-lg-5">
-            
+
             {/* Left Side: Editorial Image Composition */}
             <div className="col-lg-6">
               <div className="about-editorial-wrap reveal-right">
-                
+
                 <div className="about-main-img-box image-reveal">
                   <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1000&q=85" alt="Ember and Olive Artisan Kitchen" className="about-img-primary" loading="eager" fetchPriority="high" />
                 </div>
-                
+
                 <div className="about-secondary-img-box image-reveal image-reveal-left">
                   <img src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=650&q=85" alt="Wood-fired Charred Heirloom Dish" className="about-img-secondary" loading="eager" />
                 </div>
-                
+
                 <div className="about-heritage-card scale-reveal">
                   <div className="heritage-year">2012</div>
                   <div className="heritage-divider"></div>
@@ -334,7 +396,7 @@ export const Home: React.FC = () => {
             {/* Right Side: Story Content & Typography */}
             <div className="col-lg-6">
               <div className="about-story-content ps-lg-3 reveal-left">
-                
+
                 <div className="eyebrow">OUR CULINARY ETHOS</div>
                 <h2 className="section-title text-reveal">
                   <span className="text-reveal-mask">
@@ -344,11 +406,11 @@ export const Home: React.FC = () => {
                     <span className="text-reveal-inner">Fired by Passion</span>
                   </span>
                 </h2>
-                
+
                 <p className="about-lead-paragraph">
                   At Ember & Olive, we believe that extraordinary food begins with an uncompromising reverence for the harvest and the transformative alchemy of fire.
                 </p>
-                
+
                 <p className="about-secondary-paragraph">
                   Founded in 2012, our dining room was built on a simple philosophy: honor local organic farmers, butcher whole animals with craft, and let ancestral wood-fired techniques draw out the profound, natural flavors of each seasonal ingredient.
                 </p>
@@ -394,7 +456,7 @@ export const Home: React.FC = () => {
       {/* 4. FEATURED SIGNATURE DISHES */}
       <section id="signature" className="section-spacing bg-surface-subtle border-top border-bottom border-bone">
         <div className="container-xl">
-          
+
           <div className="text-center max-w-700 mx-auto mb-5 reveal-up">
             <div className="eyebrow center-eyebrow">CHEF'S SPOTLIGHT</div>
             <h2 className="section-title text-reveal">
@@ -408,7 +470,7 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="row g-4 align-items-stretch">
-            
+
             {/* Large Primary Feature Dish */}
             <div className="col-lg-6">
               <div className="signature-hero-card reveal-fade-right">
@@ -426,9 +488,9 @@ export const Home: React.FC = () => {
                   </p>
                   <div className="d-flex justify-content-between align-items-center mt-auto pt-3 border-top border-dark-subtle">
                     <span className="small text-accent"><i className="bi bi-droplet me-1"></i> Smoked Butter & Charred Herb Jus</span>
-                    <button 
-                      type="button" 
-                      className="btn-text-link btn-discover-dish text-bone" 
+                    <button
+                      type="button"
+                      className="btn-text-link btn-discover-dish text-bone"
                       onClick={() => openDishModal({
                         title: "Wood-Fired Wild Prawns",
                         price: "₹620",
@@ -448,7 +510,7 @@ export const Home: React.FC = () => {
 
             {/* 3 Secondary Signature Dishes */}
             <div className="col-lg-6 d-flex flex-column gap-3">
-              
+
               {/* Mini Card 1 */}
               <div className="signature-mini-card reveal-fade-left">
                 <div className="signature-mini-img-wrap">
@@ -456,13 +518,13 @@ export const Home: React.FC = () => {
                 </div>
                 <div className="flex-grow-1">
                   <div className="d-flex justify-content-between align-items-baseline">
-                    <h4 className="signature-mini-title text-primary-dark">Oak-Smoked Duck Breast</h4>
+                    <h4 className="signature-mini-title text-white">Oak-Smoked Duck Breast</h4>
                     <span className="signature-mini-price">₹790</span>
                   </div>
                   <p className="small text-muted-custom mb-2">Parsnip silk puree, spiced sour cherry reduction, roasted shallots, crispy thyme.</p>
-                  <button 
-                    type="button" 
-                    className="btn-text-link p-0 border-0 bg-transparent btn-discover-dish" 
+                  <button
+                    type="button"
+                    className="btn-text-link p-0 border-0 bg-transparent btn-discover-dish"
                     onClick={() => openDishModal({
                       title: "Oak-Smoked Duck Breast",
                       price: "₹790",
@@ -484,13 +546,13 @@ export const Home: React.FC = () => {
                 </div>
                 <div className="flex-grow-1">
                   <div className="d-flex justify-content-between align-items-baseline">
-                    <h4 className="signature-mini-title text-primary-dark">Charred Artisan Burrata</h4>
+                    <h4 className="signature-mini-title text-white">Charred Artisan Burrata</h4>
                     <span className="signature-mini-price">₹480</span>
                   </div>
                   <p className="small text-muted-custom mb-2">Heritage heirloom tomatoes, balsamic pearls, cold-pressed olive drizzle, sourdough crisp.</p>
-                  <button 
-                    type="button" 
-                    className="btn-text-link p-0 border-0 bg-transparent btn-discover-dish" 
+                  <button
+                    type="button"
+                    className="btn-text-link p-0 border-0 bg-transparent btn-discover-dish"
                     onClick={() => openDishModal({
                       title: "Charred Artisan Burrata",
                       price: "₹480",
@@ -512,13 +574,13 @@ export const Home: React.FC = () => {
                 </div>
                 <div className="flex-grow-1">
                   <div className="d-flex justify-content-between align-items-baseline">
-                    <h4 className="signature-mini-title text-primary-dark">Wood-Roasted Sea Bass</h4>
+                    <h4 className="signature-mini-title text-white">Wood-Roasted Sea Bass</h4>
                     <span className="signature-mini-price">₹850</span>
                   </div>
                   <p className="small text-muted-custom mb-2">Crushed fingerling potatoes, saffron velouté, charred baby fennel, herb oil.</p>
-                  <button 
-                    type="button" 
-                    className="btn-text-link p-0 border-0 bg-transparent btn-discover-dish" 
+                  <button
+                    type="button"
+                    className="btn-text-link p-0 border-0 bg-transparent btn-discover-dish"
                     onClick={() => openDishModal({
                       title: "Wood-Roasted Sea Bass",
                       price: "₹850",
@@ -543,7 +605,7 @@ export const Home: React.FC = () => {
       {/* 5. FULL CATEGORIZED SEASONAL MENU */}
       <section id="menu" className="section-spacing bg-surface">
         <div className="container-xl">
-          
+
           <div className="text-center max-w-700 mx-auto mb-4 reveal-fade-up">
             <div className="eyebrow center-eyebrow">OUR CULINARY REPERTOIRE</div>
             <h2 className="section-title">Seasonal Autumn / Winter Menu</h2>
@@ -607,7 +669,7 @@ export const Home: React.FC = () => {
       {/* 6. EXECUTIVE CHEF & CULINARY MASTERS */}
       <section id="chef" className="section-spacing bg-surface-subtle border-top border-bone">
         <div className="container-xl">
-          
+
           <div className="row align-items-center g-5 mb-5 pb-4">
             <div className="col-lg-5">
               <div className="chef-portrait-wrap reveal-fade-right">
@@ -623,7 +685,7 @@ export const Home: React.FC = () => {
               <div className="ps-lg-4 reveal-fade-left">
                 <div className="eyebrow">THE CULINARY VISION</div>
                 <h2 className="section-title">Meet Executive Chef Arjun Mehta</h2>
-                
+
                 <p className="lead mb-3">
                   With over eighteen years of culinary exploration across coastal India, the Mediterranean, and wood-fired kitchens in Northern Europe, Chef Arjun brings a deeply evocative culinary voice to Ember & Olive.
                 </p>
@@ -723,7 +785,7 @@ export const Home: React.FC = () => {
       {/* 7. EVENTS & CELEBRATION PACKAGES */}
       <section id="events" className="section-spacing bg-surface">
         <div className="container-xl">
-          
+
           <div className="text-center max-w-700 mx-auto mb-5 reveal-fade-up">
             <div className="eyebrow center-eyebrow">EXCLUSIVE EXPERIENCES</div>
             <h2 className="section-title">Private Dining & Seasonal Gatherings</h2>
@@ -803,7 +865,7 @@ export const Home: React.FC = () => {
       {/* 8. EDITORIAL TESTIMONIALS CAROUSEL */}
       <section id="testimonials" className="testimonial-section-wrap section-spacing">
         <div className="container-xl position-relative" style={{ zIndex: 2 }}>
-          
+
           <div className="text-center max-w-700 mx-auto mb-5 reveal-fade-up">
             <div className="eyebrow center-eyebrow text-accent">WORDS FROM OUR GUESTS</div>
             <h2 className="section-title text-white">An Unforgettable Culinary Journey</h2>
@@ -811,8 +873,8 @@ export const Home: React.FC = () => {
 
           <div className="testimonial-carousel-container">
             {testimonials.map((t, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className={`testimonial-slide ${idx === currentTestimonialIndex ? 'active' : ''}`}
                 style={{ display: idx === currentTestimonialIndex ? 'block' : 'none' }}
               >
@@ -827,9 +889,9 @@ export const Home: React.FC = () => {
           </div>
 
           <div className="testimonial-nav-btns">
-            <button 
-              type="button" 
-              className="testimonial-ctrl-btn testimonial-prev" 
+            <button
+              type="button"
+              className="testimonial-ctrl-btn testimonial-prev"
               aria-label="Previous testimonial"
               onClick={() => setCurrentTestimonialIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)}
             >
@@ -845,9 +907,9 @@ export const Home: React.FC = () => {
                 />
               ))}
             </div>
-            <button 
-              type="button" 
-              className="testimonial-ctrl-btn testimonial-next" 
+            <button
+              type="button"
+              className="testimonial-ctrl-btn testimonial-next"
               aria-label="Next testimonial"
               onClick={() => setCurrentTestimonialIndex((prev) => (prev + 1) % testimonials.length)}
             >
@@ -861,7 +923,7 @@ export const Home: React.FC = () => {
       {/* 9. ASYMMETRIC MASONRY GALLERY */}
       <section id="gallery" className="section-spacing bg-surface">
         <div className="container-xl">
-          
+
           <div className="text-center max-w-700 mx-auto mb-5 reveal-fade-up">
             <div className="eyebrow center-eyebrow">ATMOSPHERE & CRAFT</div>
             <h2 className="section-title">Visual Glimpses of Ember & Olive</h2>
@@ -942,14 +1004,14 @@ export const Home: React.FC = () => {
       <section id="reservation" className="reservation-section section-spacing">
         <div className="reservation-bg-art"></div>
         <div className="container-xl position-relative" style={{ zIndex: 2 }}>
-          
+
           <div className="row align-items-center g-5">
-            
+
             <div className="col-lg-5">
               <div className="reveal-fade-right">
                 <div className="eyebrow text-accent">TABLE BOOKINGS</div>
-                <h2 className="section-title text-white">Your Table Is Waiting</h2>
-                <p className="lead text-bone opacity-85 mb-4">
+                <h2 className="section-title text-heading-dark" style={{ color: '#1c1917' }}>Your Table Is Waiting</h2>
+                <p className="lead mb-4" style={{ color: '#292524' }}>
                   We look forward to hosting you for an evening of shared plates, artisanal hearth cooking, and world-class hospitality.
                 </p>
 
@@ -960,11 +1022,11 @@ export const Home: React.FC = () => {
                   <p className="small text-bone opacity-75 mb-0">• Corkage fee: ₹1,500 per 750ml bottle.</p>
                 </div>
 
-                <div className="d-flex align-items-center gap-3 text-bone opacity-80">
-                  <div className="contact-info-icon"><i className="bi bi-telephone"></i></div>
+                <div className="d-flex align-items-center gap-3">
+                  <div className="contact-info-icon"><i className="bi bi-telephone text-accent"></i></div>
                   <div>
-                    <span className="small text-accent text-uppercase letter-spacing-1 d-block">Direct Concierge</span>
-                    <strong>+91 98765 43210</strong>
+                    <span className="small text-accent text-uppercase letter-spacing-1 d-block fw-bold">Direct Concierge</span>
+                    <strong style={{ color: '#1c1917' }}>+91 98765 43210</strong>
                   </div>
                 </div>
 
@@ -973,7 +1035,7 @@ export const Home: React.FC = () => {
 
             <div className="col-lg-7">
               <div className="reservation-card-wrap reveal-fade-left">
-                
+
                 {resFormSuccess && (
                   <div className="form-feedback-alert show alert-success-custom mb-4">
                     <div className="d-flex align-items-center gap-2">
@@ -984,26 +1046,60 @@ export const Home: React.FC = () => {
                 )}
 
                 <form className="reservation-form-interactive" id="homeReservationForm" onSubmit={handleReservationSubmit}>
-                  
+
                   <div className="row g-3">
                     <div className="col-md-6">
                       <label htmlFor="resName" className="form-label-custom">Full Name *</label>
-                      <input type="text" className="form-control form-control-custom" id="resName" name="guest_name" placeholder="Arjun Sharma" required />
+                      <input 
+                        type="text" 
+                        className="form-control form-control-custom" 
+                        id="resName" 
+                        name="guest_name" 
+                        placeholder="Arjun Sharma" 
+                        required 
+                        value={resName} 
+                        onChange={(e) => setResName(e.target.value)} 
+                      />
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="resEmail" className="form-label-custom">Email Address *</label>
-                      <input type="email" className="form-control form-control-custom" id="resEmail" name="guest_email" placeholder="arjun@example.com" required />
+                      <input 
+                        type="email" 
+                        className="form-control form-control-custom" 
+                        id="resEmail" 
+                        name="guest_email" 
+                        placeholder="arjun@example.com" 
+                        required 
+                        value={resEmail} 
+                        onChange={(e) => setResEmail(e.target.value)} 
+                      />
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="resPhone" className="form-label-custom">Phone Number *</label>
-                      <input type="tel" className="form-control form-control-custom" id="resPhone" name="guest_phone" placeholder="+91 98765 43210" required />
+                      <input 
+                        type="tel" 
+                        className="form-control form-control-custom" 
+                        id="resPhone" 
+                        name="guest_phone" 
+                        placeholder="+91 98765 43210" 
+                        required 
+                        value={resPhone} 
+                        onChange={(e) => setResPhone(e.target.value)} 
+                      />
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="resGuests" className="form-label-custom">Number of Guests *</label>
-                      <select className="form-select form-select-custom" id="resGuests" name="guests_count" required defaultValue="2 Guests">
+                      <select 
+                        className="form-select form-select-custom" 
+                        id="resGuests" 
+                        name="guests_count" 
+                        required 
+                        value={resGuests} 
+                        onChange={(e) => setResGuests(e.target.value)}
+                      >
                         <option value="1 Guest">1 Guest (Solo Dining)</option>
                         <option value="2 Guests">2 Guests (Couples Table)</option>
                         <option value="3 Guests">3 Guests</option>
@@ -1016,12 +1112,27 @@ export const Home: React.FC = () => {
 
                     <div className="col-md-6">
                       <label htmlFor="resDate" className="form-label-custom">Date *</label>
-                      <input type="date" className="form-control form-control-custom" id="resDate" name="reservation_date" required defaultValue={new Date().toISOString().split('T')[0]} />
+                      <input 
+                        type="date" 
+                        className="form-control form-control-custom" 
+                        id="resDate" 
+                        name="reservation_date" 
+                        required 
+                        value={resDate} 
+                        onChange={(e) => setResDate(e.target.value)} 
+                      />
                     </div>
 
                     <div className="col-md-6">
                       <label htmlFor="resTime" className="form-label-custom">Preferred Time *</label>
-                      <select className="form-select form-select-custom" id="resTime" name="reservation_time" required defaultValue="07:30 PM">
+                      <select 
+                        className="form-select form-select-custom" 
+                        id="resTime" 
+                        name="reservation_time" 
+                        required 
+                        value={resTime} 
+                        onChange={(e) => setResTime(e.target.value)}
+                      >
                         <optgroup label="Lunch">
                           <option value="12:00 PM">12:00 PM</option>
                           <option value="12:30 PM">12:30 PM</option>
@@ -1043,7 +1154,13 @@ export const Home: React.FC = () => {
 
                     <div className="col-12">
                       <label htmlFor="resSeating" className="form-label-custom">Seating Area Preference</label>
-                      <select className="form-select form-select-custom" id="resSeating" name="seating_area">
+                      <select 
+                        className="form-select form-select-custom" 
+                        id="resSeating" 
+                        name="seating_area" 
+                        value={resSeating} 
+                        onChange={(e) => setResSeating(e.target.value)}
+                      >
                         <option value="Main Dining Room (Open Hearth)">Main Dining Room (Open Hearth View)</option>
                         <option value="Terrace Garden Pergola">Terrace Garden Pergola (Alfresco)</option>
                         <option value="Wine Cellar Vault">Wine Cellar Vault (Intimate & Quiet)</option>
@@ -1053,7 +1170,15 @@ export const Home: React.FC = () => {
 
                     <div className="col-12">
                       <label htmlFor="resRequests" className="form-label-custom">Special Requests / Dietary Restrictions</label>
-                      <textarea className="form-control form-control-custom" id="resRequests" name="special_requests" rows={3} placeholder="Dietary restrictions (e.g. gluten allergy, vegan), birthday anniversary notes, or accessibility needs..."></textarea>
+                      <textarea 
+                        className="form-control form-control-custom" 
+                        id="resRequests" 
+                        name="special_requests" 
+                        rows={3} 
+                        placeholder="Dietary restrictions (e.g. gluten allergy, vegan), birthday anniversary notes, or accessibility needs..." 
+                        value={resRequests} 
+                        onChange={(e) => setResRequests(e.target.value)}
+                      ></textarea>
                     </div>
 
                     <div className="col-12 mt-4">
@@ -1089,7 +1214,7 @@ export const Home: React.FC = () => {
       {/* 11. LOCATION & OPENING HOURS */}
       <section id="contact" className="section-spacing bg-surface">
         <div className="container-xl">
-          
+
           <div className="text-center max-w-700 mx-auto mb-5 reveal-fade-up">
             <div className="eyebrow center-eyebrow">VISIT EMBER & OLIVE</div>
             <h2 className="section-title">Location & Opening Hours</h2>
@@ -1101,7 +1226,7 @@ export const Home: React.FC = () => {
           <div className="row g-4 align-items-stretch">
             <div className="col-lg-5">
               <div className="contact-info-card reveal-fade-right">
-                
+
                 <div className="contact-info-item">
                   <div className="contact-info-icon"><i className="bi bi-geo-alt-fill"></i></div>
                   <div>
@@ -1123,7 +1248,7 @@ export const Home: React.FC = () => {
                   <div className="contact-info-icon"><i className="bi bi-envelope-fill"></i></div>
                   <div>
                     <h4 className="contact-info-title">Email Inquiries</h4>
-                    <p className="contact-info-desc">hello@emberandolive.example<br />events@emberandolive.example</p>
+                    <p className="contact-info-desc" style={{ wordBreak: 'break-all', overflowWrap: 'anywhere' }}>hello@emberandolive.example<br />events@emberandolive.example</p>
                   </div>
                 </div>
 
@@ -1142,10 +1267,10 @@ export const Home: React.FC = () => {
 
             <div className="col-lg-7">
               <div className="map-placeholder-box reveal-fade-left">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.9943360447385!2d80.2520!3d13.0368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAyJzEyLjUiTiA4MMKwMTUnMDcuMiJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.9943360447385!2d80.2520!3d13.0368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAyJzEyLjUiTiA4MMKwMTUnMDcuMiJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
                   title="Ember and Olive Restaurant Location Map"
-                  loading="lazy" 
+                  loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>

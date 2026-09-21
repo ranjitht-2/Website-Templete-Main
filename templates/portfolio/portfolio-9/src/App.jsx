@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronDown, 
@@ -13,11 +13,24 @@ import {
   Briefcase,
   GraduationCap,
   CheckCircle2,
-  Send
+  Send,
+  Lock,
+  UserCheck,
+  Camera
 } from 'lucide-react';
 import { photographyData, galleryFilters, galleryFilterMapping } from './data/photographyData';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
+import { useAuth } from './context/AuthContext';
+import SignIn from './components/SignIn';
+
+// Auth Modal Context for triggering login/signup from any protected action
+export const AuthModalContext = createContext({
+  openAuthModal: () => {},
+  closeAuthModal: () => {}
+});
+
+export const useAuthModal = () => useContext(AuthModalContext);
 
 // Scroll reset logic
 function ScrollToTopInside() {
@@ -56,7 +69,7 @@ function ScrollToTopButton() {
   return (
     <button
       onClick={scrollToTop}
-      className="fixed bottom-6 right-6 z-40 w-10 h-10 rounded-full bg-[#d4af37] hover:bg-[#b8952c] text-black flex items-center justify-center shadow-lg transition-colors border border-white/5 cursor-pointer focus:outline-none"
+      className="fixed bottom-4 right-4 z-40 w-10 h-10 rounded-full bg-[#d4af37] hover:bg-[#b8952c] text-black flex items-center justify-center shadow-lg transition-colors border border-black/10 cursor-pointer focus:outline-none"
     >
       <ArrowUp size={16} />
     </button>
@@ -260,82 +273,111 @@ function AboutPage() {
 function ResumePage() {
   return (
     <PageWrapper>
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
-        <SectionHeading eyebrow="TIMELINES" title="Resume & Skills" />
+      <section 
+        style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}
+        className="w-full max-w-full overflow-x-hidden bg-white pt-8 sm:pt-12 px-4 sm:px-6 pb-16"
+      >
+        {/* Top Safe-Area Padding & Heading Clearance */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto text-center pt-8 pb-6">
+          <h1 className="text-xl sm:text-2xl font-serif font-bold uppercase tracking-widest text-black">
+            RESUME &amp; SKILLS
+          </h1>
+          <div className="w-8 h-0.5 bg-black mx-auto mt-2 rounded-full" />
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 lg:gap-20 items-start mb-20">
+        {/* Fluid, Centered Resume Card Container */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 sm:px-6 pb-12 flex flex-col gap-8">
           
-          {/* Experience */}
-          <div className="col-span-12 md:col-span-5 text-left flex flex-col gap-8 font-sans">
-            <h3 className="text-xl font-serif-heading font-black uppercase tracking-tight border-b border-zinc-200 pb-3 flex items-center gap-2">
-              <Briefcase size={16} /> Work History
-            </h3>
-            <div className="flex flex-col gap-8">
+          {/* Work History */}
+          <div className="w-full flex flex-col font-sans">
+            <div className="flex items-center gap-2 border-b border-black/10 pb-2 mb-4">
+              <span className="text-sm">🏛</span>
+              <h2 className="text-xs sm:text-sm font-serif font-bold uppercase tracking-wider text-stone-900">
+                WORK HISTORY
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-2">
               {photographyData.resume.work.map((wk, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <div className="flex justify-between items-baseline gap-2">
-                    <h4 className="text-sm font-bold text-black uppercase">{wk.role}</h4>
-                    <span className="text-[10px] font-sans font-medium text-zinc-400">{wk.dates}</span>
+                <div key={idx} className="flex flex-col gap-1 mb-5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-tight text-stone-900">
+                      {wk.role}
+                    </h3>
+                    <span className="text-[10px] font-mono text-stone-500 shrink-0">
+                      {wk.dates}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-sans text-zinc-400 font-bold uppercase mt-0.5 tracking-wider">{wk.company}</span>
-                  <p className="text-xs text-zinc-500 font-sans mt-2.5 text-justify leading-relaxed">{wk.description}</p>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400">
+                    {wk.company}
+                  </span>
+                  <p className="text-xs text-stone-600 leading-relaxed mt-1">
+                    {wk.description}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Education */}
-          <div className="col-span-12 md:col-span-5 text-left flex flex-col gap-8 font-sans">
-            <h3 className="text-xl font-serif-heading font-black uppercase tracking-tight border-b border-zinc-200 pb-3 flex items-center gap-2">
-              <GraduationCap size={18} /> Education
-            </h3>
-            <div className="flex flex-col gap-8">
+          <div className="w-full flex flex-col font-sans">
+            <div className="flex items-center gap-2 border-b border-black/10 pb-2 mb-4">
+              <span className="text-sm">🎓</span>
+              <h2 className="text-xs sm:text-sm font-serif font-bold uppercase tracking-wider text-stone-900">
+                EDUCATION
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-2">
               {photographyData.resume.education.map((edu, idx) => (
-                <div key={idx} className="flex flex-col">
-                  <div className="flex justify-between items-baseline gap-2">
-                    <h4 className="text-sm font-bold text-black uppercase">{edu.degree}</h4>
-                    <span className="text-[10px] font-sans font-medium text-zinc-400">{edu.dates}</span>
+                <div key={idx} className="flex flex-col gap-1 mb-5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-tight text-stone-900">
+                      {edu.degree}
+                    </h3>
+                    <span className="text-[10px] font-mono text-stone-500 shrink-0">
+                      {edu.dates}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-sans text-zinc-400 font-bold uppercase mt-0.5 tracking-wider">{edu.institution}</span>
-                  <p className="text-xs text-zinc-500 font-sans mt-2.5 text-justify leading-relaxed">{edu.description}</p>
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-stone-400">
+                    {edu.institution}
+                  </span>
+                  <p className="text-xs text-stone-600 leading-relaxed mt-1">
+                    {edu.description}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Circular Photo */}
-          <div className="col-span-12 md:col-span-2 flex justify-center md:justify-end">
-            <img 
-              src={photographyData.resume.circularPhoto} 
-              alt="Sasha Grey Thumbnail" 
-              className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full object-cover filter grayscale border-2 border-zinc-200 shadow-lg flex-shrink-0"
-            />
+          {/* Technical Proficiency */}
+          <div className="w-full flex flex-col font-sans border-t border-black/10 pt-6">
+            <div className="flex items-center gap-2 border-b border-black/10 pb-2 mb-4">
+              <span className="text-sm">⚡</span>
+              <h2 className="text-xs sm:text-sm font-serif font-bold uppercase tracking-wider text-stone-900">
+                TECHNICAL PROFICIENCY
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-4">
+              {photographyData.resume.skills.map((skill, idx) => (
+                <div key={idx} className="flex flex-col font-sans">
+                  <div className="flex justify-between text-xs font-bold text-stone-900 mb-1.5 uppercase tracking-wide">
+                    <span>{skill.label}</span>
+                    <span className="font-mono text-stone-500">{skill.value}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-stone-100 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-black rounded-full"
+                      style={{ width: `${skill.value}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
         </div>
-
-        {/* Skill Progress Bars */}
-        <div className="border-t border-zinc-100 pt-16 font-sans">
-          <SectionHeading eyebrow="PROFICIENCY" title="Equipment & Software" />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl text-left">
-            {photographyData.resume.skills.map((skill, idx) => (
-              <div key={idx} className="flex flex-col font-sans">
-                <div className="flex justify-between text-xs font-bold text-black mb-2 uppercase tracking-wide">
-                  <span>{skill.label}</span>
-                  <span>{skill.value}%</span>
-                </div>
-                <div className="w-full h-1 bg-zinc-100 rounded-none overflow-hidden">
-                  <div 
-                    className="h-full bg-black"
-                    style={{ width: `${skill.value}%` }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
       </section>
     </PageWrapper>
   );
@@ -343,6 +385,23 @@ function ResumePage() {
 
 // 4. SERVICES PAGE
 function ServicesPage() {
+  const { isAuthenticated } = useAuth();
+  const { openAuthModal } = useAuthModal();
+  const navigate = useNavigate();
+
+  const handleBookSession = (srv) => {
+    if (!isAuthenticated) {
+      openAuthModal(
+        `Sign in or register an editorial client profile to book and schedule the ${srv.name} session.`,
+        () => {
+          navigate('/contact');
+        }
+      );
+    } else {
+      navigate('/contact');
+    }
+  };
+
   return (
     <PageWrapper>
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
@@ -367,12 +426,13 @@ function ServicesPage() {
                 <p className="text-xs text-zinc-500 font-sans leading-relaxed text-justify">{srv.desc}</p>
               </div>
               <div className="mt-4 border-t border-zinc-100 pt-4">
-                <Link 
-                  to="/contact"
-                  className="text-[10px] tracking-widest uppercase font-black text-black hover:text-[#d4af37] transition-colors flex items-center gap-1 font-sans"
+                <button 
+                  onClick={() => handleBookSession(srv)}
+                  className="w-full py-2.5 bg-black hover:bg-stone-800 text-white text-[10px] tracking-widest uppercase font-black transition-colors flex items-center justify-center gap-1.5 font-sans cursor-pointer border-none rounded-sm"
                 >
-                  Book Session <ArrowRight size={12} />
-                </Link>
+                  <span>Book Session</span>
+                  <ArrowRight size={12} />
+                </button>
               </div>
             </div>
           ))}
@@ -386,10 +446,28 @@ function ServicesPage() {
 function PortfolioPage() {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [lightboxIndex, setLightboxIndex] = useState(null);
+  const { isAuthenticated } = useAuth();
+  const { openAuthModal } = useAuthModal();
+  const navigate = useNavigate();
 
   const filteredImages = selectedFilter === 'All'
     ? photographyData.portfolio
     : photographyData.portfolio.filter(item => item.tag === galleryFilterMapping[selectedFilter]);
+
+  const handleInquirePlate = (img) => {
+    if (!isAuthenticated) {
+      openAuthModal(
+        `Sign in to request full-resolution exhibition plates and print rights for ${img.title}.`,
+        () => {
+          setLightboxIndex(null);
+          navigate('/contact');
+        }
+      );
+    } else {
+      setLightboxIndex(null);
+      navigate('/contact');
+    }
+  };
 
   return (
     <PageWrapper>
@@ -477,12 +555,21 @@ function PortfolioPage() {
                 />
               </div>
 
-              <div className="p-6 bg-black text-left text-zinc-400 font-sans border-t border-zinc-900 flex justify-between items-center">
+              <div className="p-6 bg-black text-left text-zinc-400 font-sans border-t border-zinc-900 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                   <h4 className="text-sm text-white font-bold uppercase">{filteredImages[lightboxIndex].title}</h4>
                   <span className="text-[9px] text-[#d4af37] uppercase font-bold tracking-wider block mt-0.5">{filteredImages[lightboxIndex].category}</span>
                 </div>
-                <span className="text-xs text-zinc-600 font-bold uppercase">PLATE {lightboxIndex + 1} OF {filteredImages.length}</span>
+                
+                <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                  <span className="text-xs text-zinc-600 font-bold uppercase">PLATE {lightboxIndex + 1} OF {filteredImages.length}</span>
+                  <button
+                    onClick={() => handleInquirePlate(filteredImages[lightboxIndex])}
+                    className="px-4 py-2 bg-[#d4af37] hover:bg-[#b8952c] text-black font-bold text-xs uppercase tracking-wider rounded-sm transition-colors cursor-pointer border-none"
+                  >
+                    Inquire Plate
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -492,8 +579,25 @@ function PortfolioPage() {
   );
 }
 
-// 6. PRICING PAGE (Dropdown child)
+// 6. PRICING PAGE
 function PricingPage() {
+  const { isAuthenticated } = useAuth();
+  const { openAuthModal } = useAuthModal();
+  const navigate = useNavigate();
+
+  const handleSelectTier = (tier) => {
+    if (!isAuthenticated) {
+      openAuthModal(
+        `Sign in or register an editorial client account to reserve the ${tier.tier} photoshoot tier.`,
+        () => {
+          navigate('/contact');
+        }
+      );
+    } else {
+      navigate('/contact');
+    }
+  };
+
   return (
     <PageWrapper>
       <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
@@ -506,7 +610,15 @@ function PricingPage() {
                 <h4 className="text-lg font-serif-heading font-black uppercase text-black">{pr.tier}</h4>
                 <p className="text-xs text-zinc-500 font-sans mt-1.5">{pr.scope}</p>
               </div>
-              <span className="text-2xl md:text-3xl font-serif-heading font-black text-[#d4af37]">{pr.price}</span>
+              <div className="flex items-center gap-4">
+                <span className="text-2xl md:text-3xl font-serif-heading font-black text-[#d4af37]">{pr.price}</span>
+                <button
+                  onClick={() => handleSelectTier(pr)}
+                  className="px-4 py-2 bg-black hover:bg-stone-800 text-white text-xs font-bold uppercase tracking-wider rounded-sm transition-colors cursor-pointer border-none"
+                >
+                  Select
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -515,7 +627,7 @@ function PricingPage() {
   );
 }
 
-// 7. TESTIMONIALS PAGE (Dropdown child)
+// 7. TESTIMONIALS PAGE
 function TestimonialsPage() {
   return (
     <PageWrapper>
@@ -542,11 +654,24 @@ function TestimonialsPage() {
   );
 }
 
-// 8. CONTACT PAGE
+// 8. CONTACT PAGE (Protected Campaign Submission)
 function ContactPage() {
+  const { isAuthenticated, user } = useAuth();
+  const { openAuthModal } = useAuthModal();
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState('idle'); // idle | loading | success
+
+  // Auto-fill user credentials when authenticated
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: prev.name || user.name,
+        email: prev.email || user.email
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -568,6 +693,15 @@ function ContactPage() {
     return errors;
   };
 
+  const executeDispatch = () => {
+    setFormStatus('loading');
+    setTimeout(() => {
+      setFormStatus('success');
+      setFormData({ name: user?.name || '', email: user?.email || '', message: '' });
+      setTimeout(() => setFormStatus('idle'), 3500);
+    }, 1200);
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const errors = validateForm();
@@ -576,102 +710,124 @@ function ContactPage() {
       return;
     }
 
-    setFormStatus('loading');
-    setTimeout(() => {
-      setFormStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setFormStatus('idle'), 3000);
-    }, 1500);
+    if (!isAuthenticated) {
+      openAuthModal(
+        'Please sign in or register an editorial client account to submit your campaign parameters directly to Sasha Grey.',
+        () => {
+          executeDispatch();
+        }
+      );
+      return;
+    }
+
+    executeDispatch();
   };
 
   return (
     <PageWrapper>
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 lg:gap-16">
-        
-        {/* Info detail block */}
-        <div className="col-span-12 md:col-span-5 flex flex-col justify-between">
-          <div>
-            <SectionHeading eyebrow="STUDIO LINK" title="Start a Campaign" />
-            <p className="text-xs md:text-sm text-zinc-500 font-sans leading-relaxed mb-8 max-w-md text-justify font-sans">
-              Contact our studio to coordinate portrait profiles, fashion lookbooks, or editorial catalogs.
-            </p>
+      <section 
+        style={{ paddingTop: 'max(2.5rem, env(safe-area-inset-top))' }}
+        className="w-full max-w-full overflow-x-hidden bg-white pt-10 sm:pt-12 pb-16 px-4 sm:px-6"
+      >
+        {/* Top Safe-Area Padding & Studio Info Header */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto flex flex-col gap-3 mb-6 px-2">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-black text-amber-400 flex items-center justify-center rounded-sm shrink-0">
+              <span className="text-sm">✉</span>
+            </div>
+            <div className="text-left">
+              <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block">
+                EMAIL STUDIO
+              </span>
+              <a href={`mailto:${photographyData.brand.email || 'studio@sashagrey.co'}`} className="text-xs sm:text-sm font-bold text-stone-900 hover:text-amber-600 transition">
+                {photographyData.brand.email || 'studio@sashagrey.co'}
+              </a>
+            </div>
+          </div>
 
-            <div className="flex flex-col gap-6 font-sans">
-              <div className="flex items-center gap-4 font-sans">
-                <div className="w-9 h-9 bg-zinc-950 border border-zinc-900 flex items-center justify-center text-[#d4af37]">
-                  <Mail size={16} />
-                </div>
-                <div className="text-left">
-                  <div className="text-[9px] font-sans tracking-widest text-zinc-400 uppercase font-bold">EMAIL STUDIO</div>
-                  <a href={`mailto:${photographyData.brand.email}`} className="text-xs text-black hover:text-[#d4af37] font-bold transition-colors">
-                    {photographyData.brand.email}
-                  </a>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4 font-sans">
-                <div className="w-9 h-9 bg-zinc-955 border border-zinc-900 flex items-center justify-center text-[#d4af37]">
-                  <MapPin size={16} />
-                </div>
-                <div className="text-left">
-                  <div className="text-[9px] font-sans tracking-widest text-zinc-400 uppercase font-bold">STUDIO LOCAL</div>
-                  <span className="text-xs text-zinc-700 font-bold">
-                    {photographyData.brand.location}
-                  </span>
-                </div>
-              </div>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-stone-100 text-stone-700 border border-stone-200 flex items-center justify-center rounded-sm shrink-0">
+              <span className="text-sm">📍</span>
+            </div>
+            <div className="text-left">
+              <span className="text-[10px] font-mono tracking-widest uppercase text-stone-400 block">
+                STUDIO LOCAL
+              </span>
+              <span className="text-xs sm:text-sm font-bold text-stone-900">
+                {photographyData.brand.location || 'London, UK'}
+              </span>
             </div>
           </div>
         </div>
 
-        {/* Form panel */}
-        <div className="col-span-12 md:col-span-7 bg-white border border-zinc-200 p-5 md:p-8 relative w-full max-w-full box-border">
-          <div className="absolute top-0 left-0 w-full h-[2px] bg-[#d4af37]" />
-          
-          <form onSubmit={handleFormSubmit} className="flex flex-col gap-6 font-sans text-left">
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-400 uppercase font-bold mb-2">FULL NAME</label>
-              <input 
+        {/* Fluid, Centered Contact Form Container */}
+        <div className="w-full max-w-sm sm:max-w-md mx-auto px-4 pb-14 flex flex-col items-center justify-center box-border">
+          <form onSubmit={handleFormSubmit} className="w-full bg-white border border-stone-200 rounded-xl p-5 sm:p-6 shadow-sm flex flex-col gap-4 box-border">
+            {/* Gold Accent Line */}
+            <div className="w-full h-1 bg-amber-500 rounded-full mb-2" />
+
+            {/* Authenticated Client Indicator */}
+            {isAuthenticated && user && (
+              <div className="w-full bg-stone-50 border border-amber-500/30 px-3.5 py-2.5 rounded-lg text-xs flex items-center justify-between">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-stone-500 flex items-center gap-1.5">
+                  <UserCheck size={13} className="text-amber-600" />
+                  AUTHENTICATED AS:
+                </span>
+                <span className="text-stone-900 font-bold text-xs truncate max-w-[140px]">{user.name}</span>
+              </div>
+            )}
+
+            {/* Form Fields */}
+            <div className="w-full text-left">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1.5">
+                FULL NAME
+              </label>
+              <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleInputChange}
                 placeholder="Enter name"
-                className="w-full bg-[#fcfcfc] border border-zinc-200 focus:border-black px-4 py-3 text-sm text-black placeholder-zinc-400 outline-none transition-colors"
+                className="w-full box-border rounded-lg bg-stone-50 border border-stone-200 text-stone-900 px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition"
               />
-              {formErrors.name && <span className="text-[10px] text-rose-500 mt-1.5 font-bold">{formErrors.name}</span>}
+              {formErrors.name && <span className="text-[10px] text-rose-500 mt-1.5 font-bold block">{formErrors.name}</span>}
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-400 uppercase font-bold mb-2">EMAIL ADDRESS</label>
-              <input 
+            <div className="w-full text-left">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1.5">
+                EMAIL ADDRESS
+              </label>
+              <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
                 placeholder="studio@enterprise.com"
-                className="w-full bg-[#fcfcfc] border border-zinc-200 focus:border-black px-4 py-3 text-sm text-black placeholder-zinc-400 outline-none transition-colors"
+                className="w-full box-border rounded-lg bg-stone-50 border border-stone-200 text-stone-900 px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition"
               />
-              {formErrors.email && <span className="text-[10px] text-rose-500 mt-1.5 font-bold">{formErrors.email}</span>}
+              {formErrors.email && <span className="text-[10px] text-rose-500 mt-1.5 font-bold block">{formErrors.email}</span>}
             </div>
 
-            <div className="flex flex-col">
-              <label className="text-[9px] tracking-widest text-zinc-400 uppercase font-bold mb-2">PROJECT PARAMETERS</label>
-              <textarea 
+            <div className="w-full text-left">
+              <label className="text-[10px] font-mono uppercase tracking-widest text-stone-500 block mb-1.5">
+                PROJECT PARAMETERS
+              </label>
+              <textarea
+                rows={4}
                 name="message"
                 value={formData.message}
                 onChange={handleInputChange}
                 placeholder="State your shoot goals or lookup timeline limits"
-                rows={4}
-                className="w-full bg-[#fcfcfc] border border-zinc-200 focus:border-black px-4 py-3 text-sm text-black placeholder-zinc-400 outline-none transition-colors resize-none"
+                className="w-full box-border rounded-lg bg-stone-50 border border-stone-200 text-stone-900 px-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition resize-none"
               />
-              {formErrors.message && <span className="text-[10px] text-rose-500 mt-1.5 font-bold">{formErrors.message}</span>}
+              {formErrors.message && <span className="text-[10px] text-rose-500 mt-1.5 font-bold block">{formErrors.message}</span>}
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={formStatus === 'loading'}
-              className="w-full py-4 bg-black disabled:bg-zinc-200 text-white font-extrabold text-xs tracking-wider uppercase flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all font-sans cursor-pointer border-none"
+              className="w-full py-3.5 bg-black text-white font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-stone-800 disabled:bg-stone-300 transition flex items-center justify-center gap-2 mt-1 cursor-pointer border-none"
             >
               {formStatus === 'loading' ? (
                 <span>Registering Request...</span>
@@ -679,7 +835,8 @@ function ContactPage() {
                 <span className="flex items-center gap-1.5"><CheckCircle2 size={13} /> Message Dispatched!</span>
               ) : (
                 <>
-                  Send Request <Send size={13} />
+                  <span>SEND REQUEST</span>
+                  <span>✈</span>
                 </>
               )}
             </button>
@@ -690,41 +847,93 @@ function ContactPage() {
   );
 }
 
+// 9. DEDICATED SIGN IN PAGE
+function SignInPage() {
+  return (
+    <PageWrapper>
+      <section 
+        style={{ paddingTop: 'max(2rem, env(safe-area-inset-top))' }}
+        className="w-full max-w-full overflow-x-hidden bg-white pt-8 sm:pt-12 pb-16 px-4 sm:px-6 flex items-center justify-center"
+      >
+        <SignIn isStandalonePage={true} />
+      </section>
+    </PageWrapper>
+  );
+}
+
 // ---------------- MAIN ROUTER ----------------
 
 export default function App() {
+  const [authModal, setAuthModal] = useState({
+    isOpen: false,
+    reason: '',
+    onAuthSuccess: null
+  });
+
+  const openAuthModal = (reason = '', onSuccess = null) => {
+    setAuthModal({
+      isOpen: true,
+      reason,
+      onAuthSuccess: onSuccess
+    });
+  };
+
+  const closeAuthModal = () => {
+    setAuthModal({
+      isOpen: false,
+      reason: '',
+      onAuthSuccess: null
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-[#fbfbfb] text-[#0d0d0d] flex flex-col justify-between selection:bg-[#d4af37] selection:text-black">
-      
-      {/* Scroll to Top on route changes */}
-      <ScrollToTopInside />
+    <AuthModalContext.Provider value={{ openAuthModal, closeAuthModal }}>
+      <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-white text-[#0d0d0d] flex flex-col justify-between selection:bg-[#d4af37] selection:text-black">
+        
+        {/* Scroll to Top on route changes */}
+        <ScrollToTopInside />
 
-      {/* NAVBAR */}
-      <NavBar />
+        {/* NAVBAR */}
+        <NavBar />
 
-      {/* ROUTING PATHS */}
-      <main className="flex-grow">
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/index.html" element={<HomePage />} />
-            <Route path="index.html" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/resume" element={<ResumePage />} />
-            <Route path="/services" element={<ServicesPage />} />
-            <Route path="/portfolio" element={<PortfolioPage />} />
-            <Route path="/pricing" element={<PricingPage />} />
-            <Route path="/testimonials" element={<TestimonialsPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-          </Routes>
-        </AnimatePresence>
-      </main>
+        {/* ROUTING PATHS */}
+        <main className="flex-grow w-full max-w-full overflow-x-hidden">
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/index.html" element={<HomePage />} />
+              <Route path="index.html" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/resume" element={<ResumePage />} />
+              <Route path="/services" element={<ServicesPage />} />
+              <Route path="/portfolio" element={<PortfolioPage />} />
+              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/testimonials" element={<TestimonialsPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/signin" element={<SignInPage />} />
+            </Routes>
+          </AnimatePresence>
+        </main>
 
-      {/* FOOTER */}
-      <Footer />
+        {/* FOOTER */}
+        <Footer />
 
-      {/* Floating circular scroll up button */}
-      <ScrollToTopButton />
-    </div>
+        {/* Floating circular scroll up button */}
+        <ScrollToTopButton />
+
+        {/* Global Auth Modal for protected actions */}
+        <SignIn
+          isOpen={authModal.isOpen}
+          onClose={closeAuthModal}
+          authReason={authModal.reason}
+          onAuthSuccess={(authenticatedUser) => {
+            if (authModal.onAuthSuccess) {
+              authModal.onAuthSuccess(authenticatedUser);
+            }
+            closeAuthModal();
+          }}
+        />
+      </div>
+    </AuthModalContext.Provider>
   );
 }

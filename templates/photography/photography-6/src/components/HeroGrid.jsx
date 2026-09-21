@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function App() {
+export default function HeroGrid() {
   const images = [
     {
       src: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
@@ -36,21 +36,8 @@ export default function App() {
   ];
 
   return (
-    <section id="work" style={{
-      width: '100%',
-      backgroundColor: '#0a0a0a',
-      margin: 0,
-      padding: 0
-    }}>
-      {/* Editorial Grid Grid Layout */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        width: '100%',
-        margin: 0,
-        padding: 0,
-        gap: 0
-      }}>
+    <section id="work" className="w-full max-w-full bg-[#0a0a0a] overflow-hidden m-0 p-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full m-0 p-0 gap-0">
         {images.map((img, idx) => (
           <motion.div 
             key={idx}
@@ -58,86 +45,24 @@ export default function App() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: idx * 0.1, cubicBezier: [0.16, 1, 0.3, 1] }}
-            style={{
-              position: 'relative',
-              overflow: 'hidden',
-              aspectRatio: '3/4',
-              cursor: 'pointer'
-            }}
+            className="relative overflow-hidden aspect-[3/4] cursor-pointer w-full group"
           >
-            {/* Hover Wrapper */}
-            <div 
-              style={{
-                width: '100%',
-                height: '100%',
-                transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
-              }}
-              onMouseEnter={(e) => {
-                const imgEl = e.currentTarget.querySelector('img');
-                const overlayEl = e.currentTarget.querySelector('.hover-overlay');
-                if (imgEl) imgEl.style.transform = 'scale(1.06)';
-                if (overlayEl) overlayEl.style.opacity = '1';
-              }}
-              onMouseLeave={(e) => {
-                const imgEl = e.currentTarget.querySelector('img');
-                const overlayEl = e.currentTarget.querySelector('.hover-overlay');
-                if (imgEl) imgEl.style.transform = 'scale(1)';
-                if (overlayEl) overlayEl.style.opacity = '0';
-              }}
-            >
-              {/* Image */}
+            <div className="w-full h-full relative">
               <img 
                 src={img.src} 
                 alt={img.caption} 
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
-                }}
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
 
               {/* Hover Darken Overlay */}
-              <div 
-                className="hover-overlay"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  background: 'linear-gradient(to top, rgba(10, 10, 10, 0.9) 0%, rgba(10, 10, 10, 0.2) 60%, rgba(10, 10, 10, 0) 100%)',
-                  opacity: 0,
-                  transition: 'opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  padding: '30px',
-                  boxSizing: 'border-box'
-                }}
-              >
-                {/* Category label */}
-                <span style={{
-                  color: '#ff4a3b', // Accent Red
-                  fontSize: '0.7rem',
-                  fontWeight: '700',
-                  letterSpacing: '2px',
-                  textTransform: 'uppercase',
-                  fontFamily: "'Inter', sans-serif",
-                  marginBottom: '6px'
-                }}>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/90 via-[#0a0a0a]/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col justify-end p-6 sm:p-8 text-left box-border">
+                <span className="text-[#ff4a3b] text-xs font-bold tracking-[2px] uppercase font-sans mb-1.5">
                   {img.category}
                 </span>
-
-                {/* Caption Title */}
-                <h4 style={{
-                  color: '#ffffff',
-                  fontFamily: "'Playfair Display', serif",
-                  fontSize: '1.25rem',
-                  margin: 0,
-                  lineHeight: '1.4',
-                  fontWeight: '500'
-                }}>
+                <h4 
+                  className="text-white text-lg sm:text-xl font-medium leading-snug m-0"
+                  style={{ fontFamily: "'Playfair Display', serif" }}
+                >
                   {img.caption}
                 </h4>
               </div>

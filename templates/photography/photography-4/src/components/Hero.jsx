@@ -8,7 +8,7 @@ export default function App() {
   const opacityParallax = useTransform(scrollY, [0, 600], [1, 0]);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
+    <section id="home" className="relative h-screen w-full overflow-hidden bg-black flex items-center justify-center">
       
       {/* Background Parallax Layer */}
       <motion.div 

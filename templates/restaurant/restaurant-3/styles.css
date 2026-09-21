@@ -209,19 +209,33 @@ ul, ol {
   top: 0;
   left: 0;
   width: 100%;
-  height: var(--header-height);
-  padding: 0 var(--site-padding);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   z-index: 1000;
-  transition: background-color 0.4s ease, backdrop-filter 0.4s ease, transform 0.4s ease;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.75);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+  transition: background-color 0.4s ease, backdrop-filter 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
 }
 
 .site-nav.is-scrolled {
-  background-color: rgba(247, 243, 234, 0.88);
-  backdrop-filter: blur(12px);
+  background-color: rgba(247, 243, 234, 0.95);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+}
+
+.site-nav-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.5rem;
+  box-sizing: border-box;
 }
 
 .nav-brand {
@@ -230,9 +244,14 @@ ul, ol {
   letter-spacing: 0.2em;
   font-weight: 600;
   text-transform: uppercase;
-  color: var(--color-text);
-  position: relative;
-  z-index: 1001;
+  color: #1c1917;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+
+.nav-brand:hover {
+  opacity: 0.85;
 }
 
 .nav-location {
@@ -240,8 +259,8 @@ ul, ol {
   font-size: 0.75rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--color-ocean);
-  font-weight: 500;
+  color: var(--color-ocean, #0d1e3d);
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -252,7 +271,7 @@ ul, ol {
   display: inline-block;
   width: 6px;
   height: 6px;
-  background-color: var(--color-terracotta);
+  background-color: var(--color-terracotta, #c85a32);
   border-radius: 50%;
   animation: pulse-dot 2s infinite ease-in-out;
 }
@@ -265,46 +284,68 @@ ul, ol {
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 1.5rem;
+  flex-shrink: 0;
 }
 
-.nav-trigger, .nav-reserve-btn {
+.nav-menu-link {
   font-family: var(--font-body);
-  font-size: 0.8rem;
-  letter-spacing: 0.2em;
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   font-weight: 600;
-  padding: 0.5rem 0;
+  color: #1c1917;
+  padding: 0.4rem 0.2rem;
   position: relative;
+  text-decoration: none;
+  transition: color 0.25s ease;
+  display: inline-flex;
+  align-items: center;
 }
 
-.nav-trigger::after {
+.nav-menu-link::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   width: 0%;
-  height: 1px;
-  background-color: var(--color-terracotta);
-  transition: width 0.3s var(--ease-editorial);
+  height: 2px;
+  background-color: var(--color-terracotta, #c85a32);
+  transition: width 0.3s var(--ease-editorial, ease);
 }
 
-.nav-trigger:hover::after {
+.nav-menu-link:hover {
+  color: var(--color-terracotta, #c85a32);
+}
+
+.nav-menu-link:hover::after {
   width: 100%;
 }
 
 .nav-reserve-btn {
-  border: 1px solid var(--color-ocean);
-  padding: 0.6rem 1.4rem;
-  border-radius: 40px;
-  color: var(--color-ocean);
-  transition: all 0.3s var(--ease-editorial);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border-radius: 2px;
+  border: 1px solid #1c1917;
+  color: #1c1917;
+  background-color: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s var(--ease-editorial, ease);
 }
 
 .nav-reserve-btn:hover {
-  background-color: var(--color-ocean);
-  color: var(--color-soft-white);
-  transform: translateY(-2px);
+  background-color: #1c1917;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
 }
 
 /* --------------------------------------------------------------------------
@@ -951,7 +992,7 @@ ul, ol {
 .kitchen-section {
   background-color: var(--color-deep);
   color: var(--color-soft-white);
-  padding: clamp(6rem, 10vw, 12rem) var(--site-padding);
+  padding: clamp(5rem, 8vw, 10rem) var(--site-padding);
   position: relative;
   overflow: hidden;
 }
@@ -965,40 +1006,51 @@ ul, ol {
   align-items: center;
 }
 
+.kitchen-content-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .kitchen-heading {
   font-family: var(--font-display);
-  font-size: clamp(2.8rem, 6vw, 6rem);
-  line-height: 1.02;
+  font-size: clamp(2.4rem, 5vw, 5.5rem);
+  line-height: 1.05;
   text-transform: uppercase;
   color: var(--color-soft-white);
-  margin-bottom: 3.5rem;
+  margin-bottom: 3rem;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .kitchen-facts {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.8rem;
+  width: 100%;
 }
 
 .fact-item {
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
   border-top: 1px solid var(--color-border-light);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
 }
 
 .fact-item h4 {
   font-family: var(--font-body);
-  font-size: 1rem;
-  letter-spacing: 0.25em;
+  font-size: 0.95rem;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--color-sand);
+  margin: 0;
 }
 
 .fact-item p {
   font-size: 0.9rem;
-  color: rgba(255, 253, 248, 0.6);
+  color: rgba(255, 253, 248, 0.7);
+  margin: 0;
 }
 
 .kitchen-visual {
@@ -1010,7 +1062,7 @@ ul, ol {
 
 .kitchen-visual img {
   width: 100%;
-  height: clamp(450px, 60vh, 650px);
+  height: clamp(400px, 55vh, 600px);
   object-fit: cover;
   filter: brightness(0.9);
 }
@@ -1894,11 +1946,102 @@ ul, ol {
 
 @media (max-width: 768px) {
   :root {
-    --header-height: 4.5rem;
+    --header-height: auto;
+  }
+
+  .site-nav {
+    padding: 0;
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+
+  .site-nav-inner {
+    padding: 0.75rem 1rem 0.6rem;
+  }
+
+  .nav-brand {
+    font-size: 1.25rem;
+    letter-spacing: 0.16em;
+    flex-shrink: 0;
+  }
+
+  .nav-location {
+    display: none;
+  }
+
+  .nav-actions {
+    gap: 0.75rem;
+    flex-shrink: 0;
   }
 
   .nav-reserve-btn {
-    display: none;
+    display: inline-flex;
+    padding: 0.4rem 0.85rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+  }
+
+  .nav-menu-link {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    padding: 0.35rem 0.2rem;
+  }
+
+  /* Kitchen Section Centering on Mobile */
+  .kitchen-section {
+    padding: 4.5rem 1.25rem;
+  }
+
+  .kitchen-grid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .kitchen-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .kitchen-heading {
+    font-size: clamp(1.8rem, 6vw, 2.6rem);
+    text-align: center;
+    margin-bottom: 2rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .kitchen-facts {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    gap: 1.25rem;
+  }
+
+  .fact-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.35rem;
+    padding-top: 1rem;
+  }
+
+  .fact-item h4 {
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    text-align: center;
+  }
+
+  .fact-item p {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  .kitchen-visual img {
+    height: 320px;
   }
 
   .intro-heading span.indented {
@@ -1942,17 +2085,54 @@ ul, ol {
 }
 
 @media (max-width: 425px) {
+  .site-nav-inner {
+    padding: 0.65rem 0.85rem 0.5rem;
+  }
+
+  .nav-brand {
+    font-size: 1.15rem;
+    letter-spacing: 0.12em;
+  }
+
+  .nav-actions {
+    gap: 0.5rem;
+  }
+
+  .nav-reserve-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+  }
+
+  .nav-menu-link {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.1rem;
+  }
+
   .editorial-heading-huge {
-    font-size: 3rem;
+    font-size: 2.5rem;
   }
 
   .hero-overlay-panel {
-    width: 92%;
-    padding: 2rem 1.2rem;
+    width: 95%;
+    padding: 1.8rem 1rem;
   }
 
   .hero-title {
-    font-size: 2.2rem;
+    font-size: 2rem;
+  }
+
+  .kitchen-section {
+    padding: 3.5rem 1rem;
+  }
+
+  .kitchen-heading {
+    font-size: clamp(1.6rem, 7.5vw, 2.1rem);
+    line-height: 1.12;
+  }
+
+  .kitchen-facts {
+    max-width: 100%;
   }
 
   .reservation-form {
@@ -1963,3 +2143,354 @@ ul, ol {
     padding: 2rem 1.5rem;
   }
 }
+
+/* Global Mobile Containment Guard */
+.lumiere-app-container {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ==========================================================================
+   LUMIÈRE AUTHENTICATION & PATRON PORTAL STYLES
+   ========================================================================== */
+.lumiere-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(49, 92, 98, 0.08);
+  border: 1px solid rgba(49, 92, 98, 0.25);
+  padding: 0.4rem 0.85rem;
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  color: var(--color-ocean, #315c62);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.lumiere-user-badge:hover {
+  background: rgba(49, 92, 98, 0.15);
+  border-color: var(--color-ocean);
+}
+
+.lumiere-signout-btn {
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-terracotta, #c86b4a);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.4rem 0.2rem;
+  transition: opacity 0.2s ease;
+}
+
+.lumiere-signout-btn:hover {
+  opacity: 0.75;
+}
+
+.lumiere-signin-nav-btn {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-terracotta, #c86b4a);
+  background: transparent;
+  border: 1px solid var(--color-terracotta, #c86b4a);
+  padding: 0.45rem 1rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-editorial, ease);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lumiere-signin-nav-btn:hover {
+  background: var(--color-terracotta, #c86b4a);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(200, 107, 74, 0.25);
+}
+
+/* Dedicated Sign In Page Layout */
+.lumiere-signin-page {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-primary, #F7F3EA);
+  background-image: radial-gradient(rgba(49, 92, 98, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7rem 1.5rem 4rem;
+  box-sizing: border-box;
+}
+
+.lumiere-signin-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border: 1px solid rgba(49, 92, 98, 0.18);
+  border-radius: 4px;
+  box-shadow: 0 15px 40px -10px rgba(23, 43, 46, 0.12);
+  padding: 2.5rem 2rem;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.lumiere-signin-back-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-ocean, #315c62);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: color 0.2s ease;
+}
+
+.lumiere-signin-back-btn:hover {
+  color: var(--color-terracotta, #c86b4a);
+}
+
+.lumiere-signin-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.lumiere-signin-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  letter-spacing: 0.2em;
+  color: var(--color-deep, #172b2e);
+  margin: 0.6rem 0 0.3rem;
+  text-transform: uppercase;
+}
+
+.lumiere-signin-subtitle {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #64748b);
+  margin: 0;
+}
+
+/* Alerts */
+.lumiere-auth-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 2px;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  line-height: 1.4;
+}
+
+.lumiere-auth-alert.reason {
+  background: rgba(49, 92, 98, 0.08);
+  border: 1px solid rgba(49, 92, 98, 0.25);
+  color: var(--color-deep, #172b2e);
+}
+
+.lumiere-auth-alert.error {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.lumiere-auth-alert.success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+}
+
+/* Tabs */
+.lumiere-auth-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(49, 92, 98, 0.15);
+  margin-bottom: 1.75rem;
+}
+
+.lumiere-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.75rem 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-text-muted, #64748b);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-bottom: -1px;
+}
+
+.lumiere-tab-btn.active {
+  color: var(--color-terracotta, #c86b4a);
+  border-bottom-color: var(--color-terracotta, #c86b4a);
+}
+
+/* Forms */
+.lumiere-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.lumiere-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.lumiere-input-group label {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color-text, #263234);
+}
+
+.lumiere-input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(49, 92, 98, 0.22);
+  border-radius: 2px;
+  background: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--color-text, #263234);
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lumiere-input:focus {
+  outline: none;
+  border-color: var(--color-ocean, #315c62);
+  box-shadow: 0 0 0 3px rgba(49, 92, 98, 0.12);
+}
+
+.lumiere-auth-submit-btn {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background-color: var(--color-ocean, #315c62);
+  color: #ffffff;
+  border: 1px solid var(--color-ocean, #315c62);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: all 0.3s var(--ease-editorial, ease);
+}
+
+.lumiere-auth-submit-btn:hover {
+  background-color: var(--color-deep, #172b2e);
+  border-color: var(--color-deep, #172b2e);
+  box-shadow: 0 4px 15px rgba(23, 43, 46, 0.2);
+}
+
+.lumiere-auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Demo Credentials Section */
+.lumiere-demo-accounts {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed rgba(49, 92, 98, 0.2);
+  text-align: center;
+}
+
+.lumiere-demo-title {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-terracotta, #c86b4a);
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.lumiere-demo-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lumiere-demo-btn {
+  background: var(--bg-primary, #F7F3EA);
+  border: 1px solid rgba(49, 92, 98, 0.15);
+  border-radius: 2px;
+  padding: 0.6rem 0.8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lumiere-demo-btn:hover {
+  background: rgba(49, 92, 98, 0.08);
+  border-color: var(--color-ocean, #315c62);
+  transform: translateY(-1px);
+}
+
+.lumiere-demo-name {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-deep, #172b2e);
+}
+
+.lumiere-demo-role {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--color-ocean, #315c62);
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .lumiere-signin-page {
+    padding: 5.5rem 1rem 3rem;
+  }
+
+  .lumiere-signin-card {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .lumiere-signin-title {
+    font-size: 1.75rem;
+  }
+
+  .lumiere-user-badge {
+    font-size: 0.68rem;
+    padding: 0.35rem 0.6rem;
+  }
+}
+

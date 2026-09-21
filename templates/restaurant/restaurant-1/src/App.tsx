@@ -5,6 +5,7 @@ import Header from './components/Header';
 import FullscreenNav from './components/FullscreenNav';
 import ChapterCounter from './components/ChapterCounter';
 import Footer from './components/Footer';
+import { AuthProvider } from './context/AuthContext';
 
 import Home from './pages/Home';
 import About from './pages/About';
@@ -14,13 +15,14 @@ import Events from './pages/Events';
 import Gallery from './pages/Gallery';
 import Blog from './pages/Blog';
 import Contact from './pages/Contact';
+import SignIn from './pages/SignIn';
 
-export default function App() {
+function AppContent() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const location = useLocation();
 
   // Determine if page uses floating header or standard header
-  const isStandardHeader = ['/chefs', '/chefs.html', '/events', '/events.html', '/gallery', '/gallery.html', '/blog', '/blog.html'].includes(location.pathname);
+  const isStandardHeader = ['/chefs', '/chefs.html', '/events', '/events.html', '/gallery', '/gallery.html', '/blog', '/blog.html', '/signin', '/signin.html', '/login', '/register'].includes(location.pathname);
 
   return (
     <div className="app-root">
@@ -47,10 +49,22 @@ export default function App() {
           <Route path="/blog.html" element={<Blog />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/contact.html" element={<Contact />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signin.html" element={<SignIn />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/register" element={<SignIn />} />
         </Routes>
       </main>
 
       <Footer />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

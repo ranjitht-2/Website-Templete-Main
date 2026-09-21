@@ -1,13 +1,33 @@
 import React, { useState } from 'react';
 import { NOIRE_EVENTS } from '../data/noireData';
 import { NoireEvent } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface EventsCalendarSectionProps {
   onOpenReservation: () => void;
+  onRequireAuth?: (reason: string, target: string) => void;
 }
 
-export const EventsCalendarSection: React.FC<EventsCalendarSectionProps> = ({ onOpenReservation }) => {
+export const EventsCalendarSection: React.FC<EventsCalendarSectionProps> = ({
+  onOpenReservation,
+  onRequireAuth
+}) => {
   const [activeEvent, setActiveEvent] = useState<NoireEvent>(NOIRE_EVENTS[0]);
+  const { isAuthenticated } = useAuth();
+
+  const handleEventBooking = (evt: NoireEvent) => {
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_5_pending_event', JSON.stringify({ id: evt.id, title: evt.title, date: evt.date, time: evt.time }));
+      if (onRequireAuth) {
+        onRequireAuth(
+          `Priority booking for session "${evt.title}" (${evt.date}) requires NOIRÉ Member authentication.`,
+          'events'
+        );
+      }
+      return;
+    }
+    onOpenReservation();
+  };
 
   return (
     <section id="events" className="relative w-full bg-[#171512] text-[#F3EBDD] py-24 md:py-36 px-6 md:px-16 overflow-hidden">
@@ -34,7 +54,7 @@ export const EventsCalendarSection: React.FC<EventsCalendarSectionProps> = ({ on
             <div
               key={evt.id}
               onMouseEnter={() => setActiveEvent(evt)}
-              onClick={onOpenReservation}
+              onClick={() => handleEventBooking(evt)}
               className={`group cursor-pointer p-8 bg-[#211D18] border transition-all duration-300 rounded-sm relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-sm ${
                 activeEvent.id === evt.id
                   ? 'border-[#B87552] bg-[#211D18] translate-x-2'

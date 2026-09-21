@@ -377,6 +377,26 @@
   function initReservationForms() {
     const reservationForms = document.querySelectorAll('.reservation-form-interactive');
 
+    // Restore pending reservation data if stored
+    const savedPendingRes = sessionStorage.getItem('restaurant_2_pending_reservation');
+    if (savedPendingRes) {
+      try {
+        const parsed = JSON.parse(savedPendingRes);
+        reservationForms.forEach((form) => {
+          if (parsed.guest_name && form.querySelector('[name="guest_name"]')) form.querySelector('[name="guest_name"]').value = parsed.guest_name;
+          if (parsed.guest_email && form.querySelector('[name="guest_email"]')) form.querySelector('[name="guest_email"]').value = parsed.guest_email;
+          if (parsed.guest_phone && form.querySelector('[name="guest_phone"]')) form.querySelector('[name="guest_phone"]').value = parsed.guest_phone;
+          if (parsed.guests_count && form.querySelector('[name="guests_count"]')) form.querySelector('[name="guests_count"]').value = parsed.guests_count;
+          if (parsed.reservation_date && form.querySelector('[name="reservation_date"]')) form.querySelector('[name="reservation_date"]').value = parsed.reservation_date;
+          if (parsed.reservation_time && form.querySelector('[name="reservation_time"]')) form.querySelector('[name="reservation_time"]').value = parsed.reservation_time;
+          if (parsed.seating_area && form.querySelector('[name="seating_area"]')) form.querySelector('[name="seating_area"]').value = parsed.seating_area;
+          if (parsed.special_requests && form.querySelector('[name="special_requests"]')) form.querySelector('[name="special_requests"]').value = parsed.special_requests;
+        });
+      } catch (err) {
+        console.error('Error parsing pending reservation:', err);
+      }
+    }
+
     reservationForms.forEach((form) => {
       // Set minimum date to today
       const dateInput = form.querySelector('input[type="date"]');
@@ -395,6 +415,26 @@
           return;
         }
 
+        const formData = new FormData(form);
+        const reservationData = {
+          guest_name: formData.get('guest_name') || '',
+          guest_email: formData.get('guest_email') || '',
+          guest_phone: formData.get('guest_phone') || '',
+          guests_count: formData.get('guests_count') || '2 Guests',
+          reservation_date: formData.get('reservation_date') || '',
+          reservation_time: formData.get('reservation_time') || '07:30 PM',
+          seating_area: formData.get('seating_area') || '',
+          special_requests: formData.get('special_requests') || ''
+        };
+
+        // Check authentication state in localStorage
+        const currentUser = localStorage.getItem('ember_olive_restaurant2_current_user');
+        if (!currentUser) {
+          sessionStorage.setItem('restaurant_2_pending_reservation', JSON.stringify(reservationData));
+          window.location.href = 'signin.html?redirect=index.html%23reservation&reason=' + encodeURIComponent('Please sign in to confirm your table reservation');
+          return;
+        }
+
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn ? submitBtn.innerHTML : 'Request Reservation';
 
@@ -403,12 +443,10 @@
           submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Confirming Table...';
         }
 
-        // Collect details
-        const formData = new FormData(form);
-        const name = formData.get('guest_name') || 'Guest';
-        const date = formData.get('reservation_date') || 'Today';
-        const time = formData.get('reservation_time') || '7:30 PM';
-        const guests = formData.get('guests_count') || '2';
+        const name = reservationData.guest_name || 'Guest';
+        const date = reservationData.reservation_date || 'Today';
+        const time = reservationData.reservation_time || '7:30 PM';
+        const guests = reservationData.guests_count || '2';
 
         setTimeout(() => {
           if (submitBtn) {
@@ -430,7 +468,8 @@
             feedbackAlert.classList.add('show', 'alert-success-custom');
           }
 
-          // Reset form fields except date
+          // Clear pending reservation and reset form fields except date
+          sessionStorage.removeItem('restaurant_2_pending_reservation');
           form.reset();
           if (dateInput) {
             dateInput.value = new Date().toISOString().split('T')[0];

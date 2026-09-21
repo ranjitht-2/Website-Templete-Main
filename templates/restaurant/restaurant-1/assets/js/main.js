@@ -33,13 +33,26 @@ window.EmberConfig = {
     initYearAutoUpdate();
   });
 
-  /* 1. Hero Load Entrance */
+  /* 1. Hero Load Entrance & Reserve Scroll Handler */
   function initHeroReveals() {
     const hero = document.getElementById('hero');
-    if (!hero) return;
-    setTimeout(() => {
-      hero.classList.add('loaded');
-    }, 100);
+    if (hero) {
+      setTimeout(() => {
+        hero.classList.add('loaded');
+      }, 100);
+    }
+
+    const heroReserveBtn = document.getElementById('heroReserveBtn');
+    if (heroReserveBtn) {
+      heroReserveBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById('reservation') || document.getElementById('find-table');
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          window.history.pushState(null, '', '#reservation');
+        }
+      });
+    }
   }
 
   /* 1b. Header Scroll Class Handler */
@@ -294,24 +307,61 @@ window.EmberConfig = {
     const alertBox = document.getElementById('reservationSuccessAlert');
     if (!form) return;
 
+    const guestsSelect = document.getElementById('inlineGuests');
+    const daySelect = document.getElementById('inlineDay');
+    const timeSelect = document.getElementById('inlineTime');
+
+    // Restore pending reservation data if stored
+    const savedPending = sessionStorage.getItem('restaurant_1_pending_reservation');
+    if (savedPending) {
+      try {
+        const parsed = JSON.parse(savedPending);
+        if (parsed.guests && guestsSelect) guestsSelect.value = parsed.guests;
+        if (parsed.day && daySelect) daySelect.value = parsed.day;
+        if (parsed.time && timeSelect) timeSelect.value = parsed.time;
+      } catch (err) {
+        console.error('Error restoring pending reservation:', err);
+      }
+    }
+
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+
+      const reservationPayload = {
+        guests: guestsSelect ? guestsSelect.value : '2 GUESTS',
+        day: daySelect ? daySelect.value : 'FRIDAY',
+        time: timeSelect ? timeSelect.value : '08:30 PM'
+      };
+
+      // Check authentication state in localStorage
+      const currentUser = localStorage.getItem('ember_house_restaurant1_current_user');
+      if (!currentUser) {
+        sessionStorage.setItem('restaurant_1_pending_reservation', JSON.stringify(reservationPayload));
+        const currentPath = window.location.pathname.includes('contact') ? 'contact.html#reservation' : 'index.html#reservation';
+        window.location.href = 'signin.html?redirect=' + encodeURIComponent(currentPath) + '&reason=' + encodeURIComponent('Please sign in to complete your table reservation');
+        return;
+      }
+
       const btn = document.getElementById('btnInlineReserve');
       if (btn) {
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>[ CHECKING... ]';
         btn.disabled = true;
       }
 
+      let parsedUser = null;
+      try { parsedUser = JSON.parse(currentUser); } catch (e) {}
+
       setTimeout(() => {
         if (alertBox) {
           alertBox.style.display = 'block';
-          alertBox.innerText = '✓ Table requested! Digital confirmation voucher sent to your email.';
+          alertBox.innerText = `✓ Table requested for ${parsedUser?.name || 'Guest'}! Digital confirmation voucher sent to ${parsedUser?.email || 'your email'}.`;
         }
         if (btn) {
           btn.innerText = '[ REQUEST CONFIRMED ]';
           btn.disabled = false;
         }
-      }, 1200);
+        sessionStorage.removeItem('restaurant_1_pending_reservation');
+      }, 1000);
     });
   }
 

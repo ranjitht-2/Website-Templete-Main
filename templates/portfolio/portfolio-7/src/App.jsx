@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { gradientData, projectFilters, filterMapping } from './data/gradientData';
 import NavBar from './components/NavBar';
+import SignIn from './components/SignIn';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Reusable Scroll to Top floating action
 function ScrollToTopButton() {
@@ -64,9 +66,17 @@ function SectionHeading({ eyebrow, title }) {
   );
 }
 
-export default function App() {
+function PortfolioMain() {
+  const { isAuthenticated, user } = useAuth();
+
   const [selectedFilter, setSelectedFilter] = useState('All');
   const [lightboxProject, setLightboxProject] = useState(null);
+
+  // Authentication Modal states
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authReason, setAuthReason] = useState('');
+  const [pendingAction, setPendingAction] = useState(null);
+
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [formErrors, setFormErrors] = useState({});
   const [formStatus, setFormStatus] = useState('idle'); // idle | loading | success
@@ -95,6 +105,15 @@ export default function App() {
     return errors;
   };
 
+  const executeFormSubmit = () => {
+    setFormStatus('loading');
+    setTimeout(() => {
+      setFormStatus('success');
+      setFormData({ name: '', email: '', message: '' });
+      setTimeout(() => setFormStatus('idle'), 3000);
+    }, 1500);
+  };
+
   const handleFormSubmit = (e) => {
     e.preventDefault();
     const errors = validateForm();
@@ -103,12 +122,21 @@ export default function App() {
       return;
     }
 
-    setFormStatus('loading');
-    setTimeout(() => {
-      setFormStatus('success');
-      setFormData({ name: '', email: '', message: '' });
-      setTimeout(() => setFormStatus('idle'), 3000);
-    }, 1500);
+    if (!isAuthenticated) {
+      setAuthReason('Brand partner authentication required to establish connection & submit design parameters.');
+      setPendingAction(() => () => executeFormSubmit());
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    executeFormSubmit();
+  };
+
+  const handleAuthSuccess = () => {
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
   };
 
   const handleScrollTo = (id) => {
@@ -122,7 +150,7 @@ export default function App() {
     <div className="min-h-screen bg-[#141414] text-white flex flex-col selection:bg-[#ff5722] selection:text-white">
       
       {/* NAVBAR */}
-      <NavBar />
+      <NavBar onOpenAuth={() => { setAuthReason(''); setIsAuthModalOpen(true); }} />
 
       {/* HERO SECTION */}
       <section id="home" className="hero-orange-red-gradient relative min-h-[95vh] flex flex-col justify-between pt-32 pb-16 px-6 md:px-12 overflow-hidden">
@@ -454,6 +482,22 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Dedicated Brand Partner Sign In Modal */}
+      <SignIn
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        authReason={authReason}
+        onAuthSuccess={handleAuthSuccess}
+      />
+
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <PortfolioMain />
+    </AuthProvider>
   );
 }

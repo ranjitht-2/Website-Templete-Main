@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NoireReservationState } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { ShieldCheck } from 'lucide-react';
 
 interface MinimalReservationSectionProps {
   onReservationSubmitted: (res: NoireReservationState) => void;
+  onRequireAuth?: (reason: string, target: string) => void;
 }
 
 export const MinimalReservationSection: React.FC<MinimalReservationSectionProps> = ({
   onReservationSubmitted,
+  onRequireAuth
 }) => {
+  const { user, isAuthenticated } = useAuth();
   const todayStr = new Date().toISOString().split('T')[0];
 
   const [form, setForm] = useState<NoireReservationState>({
@@ -22,9 +27,55 @@ export const MinimalReservationSection: React.FC<MinimalReservationSectionProps>
 
   const [submitted, setSubmitted] = useState(false);
 
+  // Restore saved reservation parameters if present and auto-populate user details
+  useEffect(() => {
+    const saved = sessionStorage.getItem('restaurant_5_pending_reservation');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setForm((prev) => ({
+          ...prev,
+          date: parsed.date || prev.date,
+          time: parsed.time || prev.time,
+          guests: parsed.guests || prev.guests,
+          name: parsed.name || (user ? user.name : prev.name),
+          phone: parsed.phone || prev.phone,
+          email: parsed.email || (user ? user.email : prev.email),
+          specialNote: parsed.specialNote || prev.specialNote,
+        }));
+        if (isAuthenticated && user) {
+          setSubmitted(true);
+          sessionStorage.removeItem('restaurant_5_pending_reservation');
+        }
+      } catch (e) {
+        console.error('Error restoring pending reservation:', e);
+      }
+    } else if (isAuthenticated && user) {
+      setForm((prev) => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+        phone: prev.phone || '+91 98401 23456'
+      }));
+    }
+  }, [isAuthenticated, user]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_5_pending_reservation', JSON.stringify(form));
+      if (onRequireAuth) {
+        onRequireAuth(
+          'Please sign in or apply for a NOIRÉ Black Card membership to confirm your table reservation.',
+          'reservation'
+        );
+      }
+      return;
+    }
+
     setSubmitted(true);
+    sessionStorage.removeItem('restaurant_5_pending_reservation');
     onReservationSubmitted(form);
   };
 
@@ -42,12 +93,15 @@ export const MinimalReservationSection: React.FC<MinimalReservationSectionProps>
 
         {submitted ? (
           <div className="p-8 bg-[#211D18] border border-[#B87552] rounded-sm text-center shadow-md">
-            <span className="font-mono text-xs text-[#B87552] tracking-widest uppercase block mb-2 font-bold">
-              [ RESERVATION CONFIRMED ]
+            <span className="font-mono text-xs text-[#B87552] tracking-widest uppercase block mb-2 font-bold flex items-center justify-center gap-2">
+              <ShieldCheck className="w-4 h-4" /> [ RESERVATION CONFIRMED &amp; LINKED TO PATRON ACCOUNT ]
             </span>
             <h3 className="font-display font-bold text-2xl text-[#F3EBDD] mb-4">
               WE HAVE RESERVED YOUR TABLE AT NOIRÉ
             </h3>
+            <p className="font-mono text-xs text-[#B8AA98] max-w-md mx-auto mb-2 font-bold">
+              PATRON: <span className="text-[#F3EBDD]">{user?.name} ({user?.role})</span>
+            </p>
             <p className="font-mono text-xs text-[#B8AA98] max-w-md mx-auto mb-6 font-bold">
               DATE: {form.date} &nbsp;|&nbsp; TIME: {form.time} &nbsp;|&nbsp; GUESTS: {form.guests}
             </p>
@@ -147,15 +201,20 @@ export const MinimalReservationSection: React.FC<MinimalReservationSectionProps>
             </div>
 
             {/* CTA Button using Copper Accent with Hover Lift and Expansion */}
-            <div className="pt-8 flex justify-start">
+            <div className="pt-8 flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <button
                 type="submit"
                 className="btn-copper group relative overflow-hidden text-sm px-10 py-5 w-64 text-center transition-all duration-500 ease-out hover:w-full"
               >
                 <span className="relative z-10 group-hover:tracking-[0.3em] transition-all duration-300">
-                  RESERVE →
+                  {isAuthenticated ? 'CONFIRM RESERVATION →' : 'SIGN IN & RESERVE →'}
                 </span>
               </button>
+              {!isAuthenticated && (
+                <span className="font-mono text-[11px] text-[#B8AA98]">
+                  * Requires NOIRÉ Member authentication
+                </span>
+              )}
             </div>
           </form>
         )}

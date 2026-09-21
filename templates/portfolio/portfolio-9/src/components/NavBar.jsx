@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X, ChevronDown, User } from 'lucide-react';
 import { photographyData } from '../data/photographyData';
+import { useAuth } from '../context/AuthContext';
 
 export default function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, isAuthenticated } = useAuth();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#0d0d0d] border-b border-zinc-900 py-4 px-6 md:px-12 font-sans">
+    <header 
+      style={{ paddingTop: 'max(1rem, env(safe-area-inset-top))' }}
+      className="sticky top-0 z-40 w-full max-w-full bg-[#0d0d0d] border-b border-zinc-900 py-4 px-6 md:px-12 font-sans"
+    >
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
         {/* Logo */}
@@ -67,8 +72,22 @@ export default function NavBar() {
           })}
         </nav>
 
-        {/* Social Links (Desktop) */}
+        {/* Client Portal & Social Links (Desktop) */}
         <div className="hidden lg:flex items-center gap-4 text-zinc-500">
+          <NavLink
+            to="/signin"
+            className={({ isActive }) =>
+              `px-3 py-1.5 rounded-sm border text-[10px] font-mono uppercase tracking-wider font-bold transition-all flex items-center gap-1.5 ${
+                isActive || isAuthenticated
+                  ? 'bg-zinc-900 text-[#d4af37] border-[#d4af37]/40'
+                  : 'bg-transparent text-zinc-400 border-zinc-800 hover:text-white hover:border-zinc-700'
+              }`
+            }
+          >
+            <User size={12} className={isAuthenticated ? 'text-[#d4af37]' : ''} />
+            <span>{isAuthenticated ? (user?.name?.split(' ')[0] || 'Client') : 'Client Portal'}</span>
+          </NavLink>
+
           {photographyData.socials.map((soc, idx) => (
             <a
               key={idx}
@@ -134,6 +153,15 @@ export default function NavBar() {
               </NavLink>
             );
           })}
+
+          <NavLink
+            to="/signin"
+            onClick={() => setIsOpen(false)}
+            className="w-full text-center py-3 bg-zinc-900 border border-zinc-800 text-[#d4af37] font-bold text-xs uppercase tracking-widest rounded-sm transition-colors flex items-center justify-center gap-2 mt-2 font-mono"
+          >
+            <User size={13} />
+            <span>{isAuthenticated ? `Client Portal (${user?.name?.split(' ')[0] || 'Active'})` : 'Client Sign In / Register'}</span>
+          </NavLink>
         </div>
       )}
     </header>

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './styles/cafe.css';
 import Footer from './components/Footer';
 import ScrollReveal from './components/ScrollReveal';
+import { AuthProvider, useAuth } from './context/AuthContext';
+import SignIn from './components/SignIn';
 
 export const menuData = {
   starters: [
@@ -38,35 +40,98 @@ export const menuData = {
   ]
 };
 
-export default function App() {
+function MainApp() {
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const [currentView, setCurrentView] = useState('home'); // 'home' | 'signin'
+  const [authRedirectTarget, setAuthRedirectTarget] = useState('home');
+  const [authReason, setAuthReason] = useState('');
+
   const [activeCategory, setActiveCategory] = useState('starters');
   const [orderCategory, setOrderCategory] = useState('starters');
   const [cart, setCart] = useState({});
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [orderType, setOrderType] = useState('pickup'); // pickup or delivery
   const [showCheckout, setShowCheckout] = useState(false);
   const [showCateringModal, setShowCateringModal] = useState(false);
 
-  const [booking, setBooking] = useState({ name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'pier-deck', request: '' });
+  const [booking, setBooking] = useState(() => {
+    const saved = sessionStorage.getItem('restaurant_6_pending_booking');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return { name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'pier-deck', request: '' };
+  });
   const [checkoutForm, setCheckoutForm] = useState({ name: '', phone: '', address: '', payment: 'upi' });
   const [cateringForm, setCateringForm] = useState({ name: '', email: '', phone: '', eventType: 'onam', details: '' });
+
+  // Autofill forms on auth change
+  React.useEffect(() => {
+    if (isAuthenticated && user) {
+      setBooking(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+      setCheckoutForm(prev => ({
+        ...prev,
+        name: prev.name || user.name || ''
+      }));
+      setCateringForm(prev => ({
+        ...prev,
+        name: prev.name || user.name || '',
+        email: prev.email || user.email || ''
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   const specialOffers = [
     { title: 'Onam Sadya Grand Feast', offer: 'Unlimited Buffet', desc: 'Indulge in our 24-item traditional Onam Sadya served on pure banana leaves. Available during Onam week. ₹599 pp.' },
     { title: 'Harbour Sunset Happy Hours', offer: 'Free Soda', desc: 'Order any 2 Coastal Main Courses or Seafood Biryanis and get two Spiced Limeades completely free! Valid daily 4 PM - 7 PM.' }
   ];
 
-  // 2. State & Submit Handlers
+  const navigateToView = (view, target = null) => {
+    setCurrentView(view);
+    setIsMobileMenuOpen(false);
+    if (view === 'home' && target && target !== 'home') {
+      setTimeout(() => {
+        const el = document.getElementById(target);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // 2. Protected Booking, Catering & Order Handlers
   const handleBookingSubmit = (e) => {
     e.preventDefault();
-    alert(`Deck Seating Secured! Table reserved for ${booking.name} on ${booking.date} at ${booking.time} for ${booking.guests} guests. Seating: ${booking.preference.toUpperCase()}. Confirmation SMS sent to ${booking.phone}`);
-    setBooking({ name: '', phone: '', email: '', date: '', time: '', guests: '2', preference: 'pier-deck', request: '' });
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_6_pending_booking', JSON.stringify(booking));
+      setAuthRedirectTarget('booking');
+      setAuthReason('Please sign in or create a Konkan Coast Patron account to reserve your Harbour Deck table.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Deck Seating Secured! Table reserved for ${booking.name || user.name} on ${booking.date} at ${booking.time} for ${booking.guests} guests. Seating: ${booking.preference.toUpperCase()}. Booked under Patron Account: ${user.name} (${user.email})`);
+    sessionStorage.removeItem('restaurant_6_pending_booking');
+    setBooking({ name: user ? user.name : '', phone: '', email: user ? user.email : '', date: '', time: '', guests: '2', preference: 'pier-deck', request: '' });
   };
 
   const handleCateringSubmit = (e) => {
     e.preventDefault();
-    alert(`Enquiry Logged! Our Kochi beach catering team will contact you at ${cateringForm.phone} shortly.`);
-    setCateringForm({ name: '', email: '', phone: '', eventType: 'onam', details: '' });
+    if (!isAuthenticated) {
+      sessionStorage.setItem('restaurant_6_pending_catering', JSON.stringify(cateringForm));
+      setShowCateringModal(false);
+      setAuthRedirectTarget('catering');
+      setAuthReason('Please sign in to submit a Beach & Pier Catering inquiry.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Enquiry Logged! Our Kochi beach catering team will contact you at ${cateringForm.phone} shortly. Logged for Patron: ${user.name}`);
+    sessionStorage.removeItem('restaurant_6_pending_catering');
+    setCateringForm({ name: user ? user.name : '', email: user ? user.email : '', phone: '', eventType: 'onam', details: '' });
     setShowCateringModal(false);
   };
 
@@ -96,7 +161,15 @@ export default function App() {
 
   const handleCheckoutSubmit = (e) => {
     e.preventDefault();
-    alert(`Coastal Feast Confirmed! Your order is departures for ${checkoutForm.name}. Total billed: ₹${getCartTotal()}. Payment: ${checkoutForm.payment.toUpperCase()}`);
+    if (!isAuthenticated) {
+      setShowCheckout(false);
+      setIsCartOpen(false);
+      setAuthRedirectTarget('ordering');
+      setAuthReason('Please sign in to complete your fresh coastal seafood order and checkout.');
+      setCurrentView('signin');
+      return;
+    }
+    alert(`Coastal Feast Confirmed! Your order is departures for ${checkoutForm.name}. Total billed: ₹${getCartTotal()}. Payment: ${checkoutForm.payment.toUpperCase()}. Patron: ${user.name} (${user.email})`);
     setCart({});
     setShowCheckout(false);
     setIsCartOpen(false);
@@ -105,29 +178,152 @@ export default function App() {
   return (
     <div className="cafe-container" id="home">
       {/* 1. Header Navigation Bar */}
-      <nav className="casual-navbar" style={{ background: '#115e59', borderBottom: '1px solid rgba(153,246,228,0.2)' }}>
-        <a href="#home" className="cafe-font-fancy" style={{ color: '#99f6e4', textDecoration: 'none', fontSize: '1.6rem' }}>Konkan Coast</a>
-        <ul className="casual-nav-links">
-          <li><a href="#home" className="cafe-nav-link">Home</a></li>
-          <li><a href="#offers" className="cafe-nav-link">Offers</a></li>
-          <li><a href="#menu" className="cafe-nav-link">Menu</a></li>
-          <li><a href="#ordering" className="cafe-nav-link">Order Online</a></li>
-          <li><a href="#booking" className="cafe-nav-link">Book Deck</a></li>
-          <li><a href="#about" className="cafe-nav-link">About</a></li>
-          <li><a href="#catering" className="cafe-nav-link">Catering</a></li>
-          <li><a href="#contact" className="cafe-nav-link">Location</a></li>
-        </ul>
-        <button className="cafe-btn-teal" style={{ padding: '8px 18px', fontSize: '0.85rem', background: '#99f6e4', color: '#115e59' }} onClick={() => setIsCartOpen(true)}>
-          🛒 Cart ({getCartCount()})
-        </button>
+      <nav className="casual-navbar">
+        <div className="casual-navbar-inner flex items-center justify-between w-full max-w-full relative z-50">
+          <a
+            href="#home"
+            onClick={(e) => { e.preventDefault(); navigateToView('home'); }}
+            className="cafe-font-fancy casual-brand text-base sm:text-lg font-serif font-bold whitespace-nowrap shrink-0"
+          >
+            Konkan Coast
+          </a>
+          <ul className="casual-nav-links">
+            <li><a href="#home" onClick={(e) => { e.preventDefault(); navigateToView('home', 'home'); }} className="cafe-nav-link">Home</a></li>
+            <li><a href="#offers" onClick={(e) => { e.preventDefault(); navigateToView('home', 'offers'); }} className="cafe-nav-link">Offers</a></li>
+            <li><a href="#menu" onClick={(e) => { e.preventDefault(); navigateToView('home', 'menu'); }} className="cafe-nav-link">Menu</a></li>
+            <li><a href="#ordering" onClick={(e) => { e.preventDefault(); navigateToView('home', 'ordering'); }} className="cafe-nav-link">Order Online</a></li>
+            <li><a href="#booking" onClick={(e) => { e.preventDefault(); navigateToView('home', 'booking'); }} className="cafe-nav-link">Book Deck</a></li>
+            <li><a href="#about" onClick={(e) => { e.preventDefault(); navigateToView('home', 'about'); }} className="cafe-nav-link">About</a></li>
+            <li><a href="#catering" onClick={(e) => { e.preventDefault(); navigateToView('home', 'catering'); }} className="cafe-nav-link">Catering</a></li>
+            <li><a href="#contact" onClick={(e) => { e.preventDefault(); navigateToView('home', 'contact'); }} className="cafe-nav-link">Location</a></li>
+            <li>
+              <button
+                onClick={() => {
+                  if (isAuthenticated) {
+                    navigateToView('signin');
+                  } else {
+                    setAuthRedirectTarget('home');
+                    setAuthReason('');
+                    navigateToView('signin');
+                  }
+                }}
+                className="cafe-nav-link"
+                style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+              >
+                {isAuthenticated ? `Patron (${user.name.split(' ')[0]})` : 'Sign In'}
+              </button>
+            </li>
+          </ul>
+          <div className="casual-nav-actions flex items-center gap-2 shrink-0">
+            {/* Desktop / Tablet Auth Button - hidden on mobile screens to save space for logo and cart */}
+            {isAuthenticated ? (
+              <div className="casual-auth-btn-desktop hidden sm:inline-flex items-center gap-1.5 shrink-0">
+                <button
+                  onClick={() => navigateToView('signin')}
+                  className="cafe-btn-orange"
+                  style={{ padding: '4px 8px', fontSize: '0.72rem', borderColor: '#99f6e4', color: '#99f6e4', cursor: 'pointer' }}
+                  title="View Patron Profile"
+                >
+                  👤 {user.name.split(' ')[0]}
+                </button>
+                <button
+                  onClick={logout}
+                  className="cafe-cart-btn"
+                  style={{ padding: '4px 6px', fontSize: '0.7rem', background: 'rgba(255,255,255,0.15)', color: '#e2fbf5', cursor: 'pointer' }}
+                  title="Sign Out"
+                >
+                  Exit
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setAuthRedirectTarget('home');
+                  setAuthReason('');
+                  navigateToView('signin');
+                }}
+                className="cafe-cart-btn casual-auth-btn-desktop hidden sm:inline-flex shrink-0"
+                style={{ padding: '5px 10px', fontSize: '0.75rem', background: '#99f6e4', color: '#115e59', cursor: 'pointer' }}
+              >
+                Sign In
+              </button>
+            )}
+
+            <button className="cafe-cart-btn px-2.5 py-1 text-xs rounded-md shrink-0" onClick={() => setIsCartOpen(true)}>
+              🛒 Cart ({getCartCount()})
+            </button>
+
+            <button
+              className="casual-hamburger-btn p-1.5 text-white flex items-center justify-center shrink-0"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle Navigation Menu"
+            >
+              {isMobileMenuOpen ? '✕' : '☰'}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation Dropdown Drawer */}
+        {isMobileMenuOpen && (
+          <div className="casual-mobile-drawer">
+            <ul className="casual-mobile-nav-links">
+              <li><a href="#home" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'home')}>Home</a></li>
+              <li><a href="#offers" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'offers')}>Offers</a></li>
+              <li><a href="#menu" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'menu')}>Menu</a></li>
+              <li><a href="#ordering" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'ordering')}>Order Online</a></li>
+              <li><a href="#booking" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'booking')}>Book Deck</a></li>
+              <li><a href="#about" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'about')}>About</a></li>
+              <li><a href="#catering" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'catering')}>Catering</a></li>
+              <li><a href="#contact" className="casual-mobile-nav-link" onClick={() => navigateToView('home', 'contact')}>Location</a></li>
+              <li>
+                {isAuthenticated ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', background: 'rgba(153, 246, 228, 0.15)', borderRadius: '4px', marginTop: '4px' }}>
+                    <span style={{ color: '#99f6e4', fontSize: '0.88rem', fontWeight: 700 }}>
+                      👤 {user.name}
+                    </span>
+                    <button
+                      onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                      style={{ background: '#115e59', border: '1px solid #99f6e4', color: '#99f6e4', padding: '4px 8px', borderRadius: '4px', fontSize: '0.75rem', cursor: 'pointer' }}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <a
+                    href="#signin"
+                    className="casual-mobile-nav-link"
+                    style={{ background: '#99f6e4', color: '#115e59', fontWeight: 700, textAlign: 'center', marginTop: '4px' }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setAuthRedirectTarget('home');
+                      setAuthReason('');
+                      navigateToView('signin');
+                    }}
+                  >
+                    ⚓ Sign In / Join Deck Patrons
+                  </a>
+                )}
+              </li>
+            </ul>
+          </div>
+        )}
       </nav>
 
-      {/* 1. Home / Hero Section */}
-      <section className="cafe-hero">
-        <div>
-          <ScrollReveal animation="fade-in-down">
-            <span className="cafe-hero-tagline">Fresh Coastal Indian Seafood</span>
-          </ScrollReveal>
+      {/* Main Content View Switcher */}
+      {currentView === 'signin' ? (
+        <SignIn
+          onNavigateBack={navigateToView}
+          redirectTarget={authRedirectTarget}
+          authReason={authReason}
+        />
+      ) : (
+        <>
+          {/* 1. Home / Hero Section */}
+          <section className="cafe-hero">
+            <div>
+              <ScrollReveal animation="fade-in-down">
+                <span className="cafe-hero-tagline">Fresh Coastal Indian Seafood</span>
+              </ScrollReveal>
           <ScrollReveal animation="fade-in-up" delay={150}>
             <h1 className="cafe-font-fancy cafe-hero-title">
               Konkan Coast
@@ -308,58 +504,103 @@ export default function App() {
       </section>
 
       {/* 5. Reservations Section */}
-      <section className="cafe-section-padding" id="booking" style={{ background: 'white' }}>
+      <section className="cafe-section-padding casual-reservation-section w-full max-w-full px-4 overflow-hidden" id="booking" style={{ background: 'white' }}>
         <ScrollReveal animation="fade-in-up">
           <h2 className="cafe-section-title cafe-font-fancy">Book Harbour Deck Seating</h2>
         </ScrollReveal>
 
         <ScrollReveal animation="zoom-in">
-          <div className="cafe-modal-content" style={{ margin: '0 auto', border: '1px solid rgba(17,94,89,0.3)', width: '100%', maxWidth: '600px' }}>
-            <h3 className="cafe-font-fancy" style={{ textAlign: 'center', color: '#115e59', fontSize: '1.5rem', marginBottom: '25px' }}>Table Reservation Pass</h3>
-            <form onSubmit={handleBookingSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#115e59' }}>Full Name</span>
-                  <input type="text" required className="fastfood-form-control" value={booking.name} onChange={(e) => setBooking({...booking, name: e.target.value})} placeholder="Ananya Iyer" />
+          <div className="casual-reservation-card w-full max-w-lg mx-auto p-5 sm:p-8 bg-white rounded-2xl shadow-lg flex flex-col items-center">
+            <h3 className="cafe-font-fancy text-center text-xl sm:text-2xl font-bold mb-6" style={{ color: '#115e59', fontSize: '1.5rem', marginBottom: '24px' }}>Table Reservation Pass</h3>
+            <form onSubmit={handleBookingSubmit} className="w-full">
+              <div className="casual-reservation-grid grid grid-cols-1 md:grid-cols-2 gap-4 w-full mb-6" style={{ marginBottom: '20px' }}>
+                <div className="casual-form-group w-full">
+                  <label className="casual-form-label block text-xs font-semibold text-stone-700 mb-1">Full Name</label>
+                  <input
+                    type="text"
+                    required
+                    className="casual-form-control w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-1"
+                    value={booking.name}
+                    onChange={(e) => setBooking({...booking, name: e.target.value})}
+                    placeholder="Ananya Iyer"
+                  />
                 </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#115e59' }}>Mobile Number</span>
-                  <input type="tel" required className="fastfood-form-control" value={booking.phone} onChange={(e) => setBooking({...booking, phone: e.target.value})} placeholder="+91 93456 78120" />
+                <div className="casual-form-group w-full">
+                  <label className="casual-form-label block text-xs font-semibold text-stone-700 mb-1">Mobile Number</label>
+                  <input
+                    type="tel"
+                    required
+                    className="casual-form-control w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-1"
+                    value={booking.phone}
+                    onChange={(e) => setBooking({...booking, phone: e.target.value})}
+                    placeholder="+91 93456 78120"
+                  />
                 </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#115e59' }}>Email Address</span>
-                  <input type="email" required className="fastfood-form-control" value={booking.email} onChange={(e) => setBooking({...booking, email: e.target.value})} placeholder="ananya@example.com" />
+                <div className="casual-form-group w-full">
+                  <label className="casual-form-label block text-xs font-semibold text-stone-700 mb-1">Email Address</label>
+                  <input
+                    type="email"
+                    required
+                    className="casual-form-control w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-1"
+                    value={booking.email}
+                    onChange={(e) => setBooking({...booking, email: e.target.value})}
+                    placeholder="ananya@example.com"
+                  />
                 </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#115e59' }}>Select Date</span>
-                  <input type="date" required className="fastfood-form-control" value={booking.date} onChange={(e) => setBooking({...booking, date: e.target.value})} />
+                <div className="casual-form-group w-full">
+                  <label className="casual-form-label block text-xs font-semibold text-stone-700 mb-1">Select Date</label>
+                  <input
+                    type="date"
+                    required
+                    className="casual-form-control w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-1"
+                    value={booking.date}
+                    onChange={(e) => setBooking({...booking, date: e.target.value})}
+                  />
                 </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#115e59' }}>Banquet Time</span>
-                  <select required className="fastfood-form-control" value={booking.time} onChange={(e) => setBooking({...booking, time: e.target.value})}>
+                <div className="casual-form-group w-full">
+                  <label className="casual-form-label block text-xs font-semibold text-stone-700 mb-1">Banquet Time</label>
+                  <select
+                    required
+                    className="casual-form-control w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-1"
+                    value={booking.time}
+                    onChange={(e) => setBooking({...booking, time: e.target.value})}
+                  >
                     <option value="">Select Time</option>
                     <option value="12:30 PM">12:30 PM</option>
                     <option value="7:00 PM">7:00 PM</option>
                     <option value="9:00 PM">9:00 PM</option>
                   </select>
                 </div>
-                <div className="fastfood-form-group">
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#115e59' }}>Seating Preference</span>
-                  <select className="fastfood-form-control" value={booking.preference} onChange={(e) => setBooking({...booking, preference: e.target.value})}>
+                <div className="casual-form-group w-full">
+                  <label className="casual-form-label block text-xs font-semibold text-stone-700 mb-1">Seating Preference</label>
+                  <select
+                    className="casual-form-control w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-1"
+                    value={booking.preference}
+                    onChange={(e) => setBooking({...booking, preference: e.target.value})}
+                  >
                     <option value="pier-deck">Pier-Side Harbour Deck</option>
                     <option value="indoor">Indoor Coconut Wood Nook</option>
                   </select>
                 </div>
-                <div className="fastfood-form-group" style={{ gridColumn: 'span 2' }}>
-                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#115e59' }}>Guests</span>
-                  <select className="fastfood-form-control" value={booking.guests} onChange={(e) => setBooking({...booking, guests: e.target.value})}>
+                <div className="casual-form-group casual-form-group-full col-span-1 md:col-span-2 w-full">
+                  <label className="casual-form-label block text-xs font-semibold text-stone-700 mb-1">Guests</label>
+                  <select
+                    className="casual-form-control w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-1"
+                    value={booking.guests}
+                    onChange={(e) => setBooking({...booking, guests: e.target.value})}
+                  >
                     <option value="2">2 Passengers</option>
                     <option value="4">4 Passengers</option>
                     <option value="6">6 Passengers</option>
                   </select>
                 </div>
               </div>
-              <button type="submit" className="cafe-btn-teal" style={{ width: '100%' }}>Book Seating Table</button>
+              <button
+                type="submit"
+                className="casual-reservation-btn w-full py-3 mt-2 bg-emerald-900 text-white font-medium text-sm rounded-md hover:bg-emerald-800 transition duration-200 text-center cursor-pointer"
+              >
+                Book Seating Table
+              </button>
             </form>
           </div>
         </ScrollReveal>
@@ -383,33 +624,43 @@ export default function App() {
             </div>
           </ScrollReveal>
           <ScrollReveal animation="fade-in-right" delay={150}>
-            <img src="https://images.unsplash.com/photo-1559715745-e1b34a256f3f?auto=format&fit=crop&w=800&q=80" alt="Kerala Coastal dining interior" className="casual-about-img" />
+            <img 
+              src="./assets/images/story_portrait.jpg" 
+              alt="Kerala Coastal dining interior" 
+              className="casual-about-img" 
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80";
+              }}
+            />
           </ScrollReveal>
         </div>
       </section>
 
       {/* 7. Culinary Team Section */}
       <section className="cafe-section-padding" style={{ background: 'white' }}>
-        <ScrollReveal animation="fade-in-up">
-          <h2 className="cafe-section-title cafe-font-fancy">The Galley Chefs</h2>
-        </ScrollReveal>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '30px', maxWidth: '1000px', margin: '0 auto' }}>
-          <ScrollReveal animation="zoom-in" delay={100}>
-            <div style={{ textAlign: 'center' }}>
-              <img src="./images/restaurants/samudra-spices/chef-kuriakose.png" alt="Chef Kuriakose Joseph" style={{ width: '100%', height: '340px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(17,94,89,0.2)', marginBottom: '15px' }} />
-              <h3 className="cafe-font-fancy" style={{ fontSize: '1.25rem', color: '#115e59' }}>Chef Kuriakose Joseph</h3>
-              <span style={{ fontSize: '0.8rem', color: '#115e59', fontWeight: 700, textTransform: 'uppercase' }}>Executive Chef & Founder</span>
-            </div>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', boxSizing: 'border-box' }}>
+          <ScrollReveal animation="fade-in-up">
+            <h2 className="cafe-section-title cafe-font-fancy">The Galley Chefs</h2>
           </ScrollReveal>
 
-          <ScrollReveal animation="zoom-in" delay={250}>
-            <div style={{ textAlign: 'center' }}>
-              <img src="./images/restaurants/samudra-spices/chef-elena.png" alt="Chef Elena Nair" style={{ width: '100%', height: '340px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(17,94,89,0.2)', marginBottom: '15px' }} />
-              <h3 className="cafe-font-fancy" style={{ fontSize: '1.25rem', color: '#115e59' }}>Chef Elena Nair</h3>
-              <span style={{ fontSize: '0.8rem', color: '#115e59', fontWeight: 700, textTransform: 'uppercase' }}>Pastry & Drink Sommelier</span>
-            </div>
-          </ScrollReveal>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 320px))', justifyContent: 'center', justifyItems: 'center', gap: '30px', maxWidth: '1000px', margin: '30px auto 0', width: '100%' }}>
+            <ScrollReveal animation="zoom-in" delay={100}>
+              <div style={{ textAlign: 'center', width: '100%', maxWidth: '320px' }}>
+                <img src="./images/restaurants/samudra-spices/chef-kuriakose.png" alt="Chef Kuriakose Joseph" style={{ width: '100%', height: '340px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(17,94,89,0.2)', marginBottom: '15px' }} />
+                <h3 className="cafe-font-fancy" style={{ fontSize: '1.25rem', color: '#115e59' }}>Chef Kuriakose Joseph</h3>
+                <span style={{ fontSize: '0.8rem', color: '#115e59', fontWeight: 700, textTransform: 'uppercase' }}>Executive Chef & Founder</span>
+              </div>
+            </ScrollReveal>
+
+            <ScrollReveal animation="zoom-in" delay={250}>
+              <div style={{ textAlign: 'center', width: '100%', maxWidth: '320px' }}>
+                <img src="./images/restaurants/samudra-spices/chef-elena.png" alt="Chef Elena Nair" style={{ width: '100%', height: '340px', objectFit: 'cover', borderRadius: '8px', border: '1px solid rgba(17,94,89,0.2)', marginBottom: '15px' }} />
+                <h3 className="cafe-font-fancy" style={{ fontSize: '1.25rem', color: '#115e59' }}>Chef Elena Nair</h3>
+                <span style={{ fontSize: '0.8rem', color: '#115e59', fontWeight: 700, textTransform: 'uppercase' }}>Pastry & Drink Sommelier</span>
+              </div>
+            </ScrollReveal>
+          </div>
         </div>
       </section>
 
@@ -471,7 +722,7 @@ export default function App() {
             <img src="https://images.unsplash.com/photo-1536256263959-770b48d82b0a?auto=format&fit=crop&w=500&q=80" alt="Coconut drink" />
           </div>
           <div className="casual-gallery-item-mosaic casual-gallery-wide">
-            <img src="https://images.unsplash.com/photo-1559715745-e1b34a256f3f?auto=format&fit=crop&w=500&q=80" alt="Kochi harbour sunset" />
+            <img src="./assets/images/story_landscape.jpg" alt="Kochi harbour sunset" />
           </div>
         </div>
       </section>
@@ -540,7 +791,9 @@ export default function App() {
             </div>
           </ScrollReveal>
         </div>
-      </section>
+          </section>
+        </>
+      )}
 
       {/* 6. Online Ordering Drawer */}
       <div className={`cafe-cart-drawer ${isCartOpen ? 'open' : ''}`}>
@@ -579,7 +832,21 @@ export default function App() {
             <span>Total Value:</span>
             <span>₹{getCartTotal()}</span>
           </div>
-          <button className="cafe-btn-teal" style={{ width: '100%' }} disabled={getCartCount() === 0} onClick={() => setShowCheckout(true)}>
+          <button
+            className="cafe-btn-teal"
+            style={{ width: '100%' }}
+            disabled={getCartCount() === 0}
+            onClick={() => {
+              if (!isAuthenticated) {
+                setIsCartOpen(false);
+                setAuthRedirectTarget('ordering');
+                setAuthReason('Please sign in or register to complete your order and checkout.');
+                setCurrentView('signin');
+                return;
+              }
+              setShowCheckout(true);
+            }}
+          >
             Proceed to Checkout
           </button>
         </div>
@@ -672,4 +939,13 @@ export default function App() {
     </div>
   );
 }
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
+  );
+}
+
 

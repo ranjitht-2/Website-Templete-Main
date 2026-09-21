@@ -1,147 +1,73 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function App() {
+export default function AboutSection({ onGetInTouch }) {
   return (
-    <section id="about" style={{
-      backgroundColor: '#121212', // Near black background
-      padding: '120px 40px',
-      color: '#ffffff',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      boxSizing: 'border-box',
-      overflow: 'hidden'
-    }}>
-      <div style={{
-        maxWidth: '1200px',
-        width: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '80px',
-        alignItems: 'center'
-      }}>
-        {/* Left Column: Portrait photo */}
+    <section 
+      id="about" 
+      className="w-full max-w-full box-border px-4 sm:px-6 lg:px-12 py-20 lg:py-28 bg-[#121212] text-white flex justify-center items-center overflow-hidden"
+    >
+      <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        
+        {/* Left Column: Portrait photo showcase container */}
         <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 1.0, cubicBezier: [0.16, 1, 0.3, 1] }}
-          style={{
-            position: 'relative',
-            width: '100%',
-            aspectRatio: '4/5',
-            borderRadius: '12px',
-            overflow: 'hidden',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-          }}
+          className="w-full max-w-sm sm:max-w-md mx-auto px-4 flex flex-col items-center justify-center"
         >
-          <img 
-            src="https://images.unsplash.com/photo-1554080353-a576cf803bda?auto=format&fit=crop&w=800&q=80" 
-            alt="Kairo" 
-            style={{
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover'
-            }}
-          />
+          <div className="w-full aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-2xl flex justify-center items-center mx-auto shadow-2xl border border-white/10">
+            <img 
+              src="https://images.unsplash.com/photo-1554080353-a576cf803bda?auto=format&fit=crop&w=800&q=80" 
+              alt="Kairo Portrait" 
+              className="w-full h-full object-cover rounded-2xl block"
+            />
+          </div>
         </motion.div>
 
         {/* Right Column: Bio details */}
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 1.0, delay: 0.2, cubicBezier: [0.16, 1, 0.3, 1] }}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center'
-          }}
+          className="flex flex-col justify-center text-left space-y-6"
         >
           {/* Label */}
-          <span style={{
-            color: '#ff4a3b', // Warm Red Accent
-            fontSize: '0.75rem',
-            fontWeight: '700',
-            letterSpacing: '3px',
-            textTransform: 'uppercase',
-            fontFamily: "'Inter', sans-serif",
-            display: 'block',
-            marginBottom: '20px'
-          }}>
+          <span className="text-[#ff4a3b] text-xs font-bold tracking-[3px] uppercase block font-sans">
             Available for assignments worldwide
           </span>
 
           {/* Heading */}
-          <h2 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: 'calc(2rem + 1vw)',
-            fontWeight: '400',
-            lineHeight: '1.25',
-            margin: '0 0 28px 0',
-            letterSpacing: '-0.5px'
-          }}>
+          <h2 
+            className="text-3xl sm:text-4xl lg:text-5xl font-normal text-white leading-tight tracking-tight"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
             Hello, I am Kairo.<br/>
             A Fashion & Lifestyle Photographer based in London, UK.
           </h2>
 
           {/* Bio text */}
-          <p style={{
-            fontSize: '0.95rem',
-            lineHeight: '1.8',
-            opacity: 0.7,
-            fontFamily: "'Inter', sans-serif",
-            margin: '0 0 24px 0',
-            fontWeight: '300'
-          }}>
+          <p className="text-sm sm:text-base leading-relaxed text-stone-300 font-sans font-light">
             My work is defined by a deep appreciation for geometric compositions, high-contrast natural light, and the raw, quiet chemistry between subject and lens. By combining high-fashion editorial aesthetics with contemporary lifestyle storytelling, I aim to create cinematic captures that linger in the mind.
           </p>
 
-          <p style={{
-            fontSize: '0.95rem',
-            lineHeight: '1.8',
-            opacity: 0.7,
-            fontFamily: "'Inter', sans-serif",
-            margin: '0 0 40px 0',
-            fontWeight: '300'
-          }}>
-            Over the past decade, I have collaborated with leading publications and boutique couture labels across Milan, Paris, New York, and Tokyo. When not on assignment, you can find me exploring street geometry or lecturing on visual narratives.
+          <p className="text-sm sm:text-base leading-relaxed text-stone-400 font-sans font-light">
+            Over the past decade, I have collaborated with leading publications and boutique couture labels across Milan, Paris, New York, and Tokyo.
           </p>
 
           {/* Signature/CTA */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
-            <a 
-              href="#contact" 
-              style={{
-                background: '#ff4a3b',
-                color: '#ffffff',
-                textDecoration: 'none',
-                padding: '16px 36px',
-                borderRadius: '99px',
-                fontSize: '0.85rem',
-                fontWeight: '600',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                boxShadow: '0 10px 20px rgba(255, 74, 59, 0.15)',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                display: 'inline-block',
-                boxSizing: 'border-box'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 15px 25px rgba(255, 74, 59, 0.25)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 10px 20px rgba(255, 74, 59, 0.15)';
-              }}
+          <div className="pt-2 flex items-center gap-6">
+            <button 
+              onClick={onGetInTouch}
+              className="inline-block bg-[#ff4a3b] hover:bg-[#e03a2c] text-white text-xs uppercase font-semibold tracking-wider px-8 py-3.5 rounded-full shadow-lg transition-all border-none cursor-pointer"
             >
               Get in Touch
-            </a>
+            </button>
           </div>
         </motion.div>
+
       </div>
     </section>
   );

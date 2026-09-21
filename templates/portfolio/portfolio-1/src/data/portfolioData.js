@@ -31,7 +31,7 @@ export const portfolioData = {
   about: {
     architectName: "Alistair Thorne",
     portrait: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
-    statement: "Architecture is the silent language of gravity, light, and geometry. We believe in crafting spaces that do not merely stand, but converse with their surroundings. By stripping away the superfluous, we expose the structural truth of materials, creating timeless monuments that bridge human intention and nature's landscape.",
+    statement: "Architecture is the silent language of gravity, light, and geometry. We believe in crafting spaces that do not merely stand, but converse with their surroundings. By stripping away the superfluous, we expose the structural truth of materials, creating timeless monuments that bridge human experience and the built environment.",
     infoTable: [
       {
         id: "edu",

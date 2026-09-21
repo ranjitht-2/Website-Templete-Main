@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export const Contact: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuth();
   const [contactSuccess, setContactSuccess] = useState(false);
   const [contactLoading, setContactLoading] = useState(false);
 
@@ -11,6 +15,12 @@ export const Contact: React.FC = () => {
       form.reportValidity();
       return;
     }
+
+    if (!isAuthenticated) {
+      navigate('/signin?redirect=/contact&reason=Please+sign+in+to+send+an+inquiry+to+the+concierge');
+      return;
+    }
+
     setContactLoading(true);
     setTimeout(() => {
       setContactLoading(false);
@@ -36,16 +46,16 @@ export const Contact: React.FC = () => {
       {/* Contact Details & Direct Form Section */}
       <section className="section-spacing bg-surface">
         <div className="container-xl">
-          
+
           <div className="row g-5 mb-5 pb-5 border-bottom border-bone">
-            
+
             {/* Left: Quick Cards */}
             <div className="col-lg-5">
               <div className="d-flex flex-column gap-4">
-                
+
                 <div className="contact-info-card">
                   <h3 className="font-heading fs-3 text-primary-dark mb-2">Hospitality Concierge</h3>
-                  
+
                   <div className="contact-info-item">
                     <div className="contact-info-icon"><i className="bi bi-geo-alt-fill"></i></div>
                     <div>
@@ -69,7 +79,7 @@ export const Contact: React.FC = () => {
                     <div className="contact-info-icon"><i className="bi bi-envelope-fill"></i></div>
                     <div>
                       <h5 className="contact-info-title">Email Correspondence</h5>
-                      <p className="contact-info-desc">
+                      <p className="contact-info-desc" style={{ wordBreak: 'break-all', overflowWrap: 'anywhere' }}>
                         Table Bookings: hello@emberandolive.example<br />
                         Private Gatherings: events@emberandolive.example
                       </p>
@@ -95,7 +105,7 @@ export const Contact: React.FC = () => {
               <div className="p-4 p-lg-5 bg-surface-subtle rounded-4 border border-dark-subtle shadow-sm">
                 <h3 className="font-heading fs-3 text-primary mb-2">Send an Inquiry</h3>
                 <p className="text-muted-custom mb-4">Have a special question, dietary question, or media inquiry? We respond within 24 hours.</p>
-                
+
                 <form className="contact-form-interactive form-light" onSubmit={handleContactSubmit}>
                   {contactSuccess && (
                     <div className="form-feedback-alert show alert-success-custom mb-4">
@@ -165,8 +175,8 @@ export const Contact: React.FC = () => {
             </div>
             <div className="col-lg-8">
               <div className="map-placeholder-box" style={{ minHeight: 420 }}>
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.9943360447385!2d80.2520!3d13.0368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAyJzEyLjUiTiA4MMKwMTUnMDcuMiJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin" 
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.9943360447385!2d80.2520!3d13.0368!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTPCsDAyJzEyLjUiTiA4MMKwMTUnMDcuMiJF!5e0!3m2!1sen!2sin!4v1620000000000!5m2!1sen!2sin"
                   title="Ember and Olive Map Location"
                   loading="lazy">
                 </iframe>
@@ -205,7 +215,7 @@ export const Contact: React.FC = () => {
             </div>
 
             <div className="accordion accordion-custom" id="faqAccordion">
-              
+
               <div className="accordion-item">
                 <h2 className="accordion-header" id="faqHeading1">
                   <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1">

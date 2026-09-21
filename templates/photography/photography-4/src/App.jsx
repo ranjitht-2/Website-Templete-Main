@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -9,27 +10,28 @@ import FeaturedStories from './components/FeaturedStories';
 import Services from './components/Services';
 import Testimonials from './components/Testimonials';
 import Footer from './components/Footer';
+import SignIn from './components/SignIn';
 import { siteConfig } from './data/config';
 import './index.css';
 
-export default function App() {
+function MainApp() {
   const { subpage } = useParams();
   const [loading, setLoading] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHoveringInteractive, setIsHoveringInteractive] = useState(false);
 
+  // Auth Overlay State
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authReason, setAuthReason] = useState('');
+  const [redirectTarget, setRedirectTarget] = useState('home');
+
   // Preloader delay
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2200);
+    }, 1800);
     return () => clearTimeout(timer);
   }, []);
-
-  // Scroll to top on subpage changes
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [subpage]);
 
   // Desktop custom cursor coords
   useEffect(() => {
@@ -53,45 +55,38 @@ export default function App() {
     };
   }, []);
 
-  // Subpage filtering dispatcher
-  const renderContent = () => {
-    switch (subpage) {
-      case 'portfolio':
-        return (
-          <>
-            <div className="pt-24 bg-black">
-              <Gallery />
-            </div>
-            <Footer />
-          </>
-        );
-      case 'about':
-        return (
-          <>
-            <div className="pt-24 bg-black">
-              <About />
-            </div>
-            <Footer />
-          </>
-        );
-      case 'contact':
-        return (
-          <div className="pt-24 bg-black">
-            <Footer />
-          </div>
-        );
-      default: // Home / Main landing
-        return (
-          <>
-            <Hero />
-            <About />
-            <Gallery />
-            <FeaturedStories />
-            <Services />
-            <Testimonials />
-            <Footer />
-          </>
-        );
+  const handleOpenSignIn = (reason, target = 'home') => {
+    setAuthReason(reason || '');
+    setRedirectTarget(target || 'home');
+    setIsAuthOpen(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavClick = (sectionId) => {
+    setIsAuthOpen(false);
+    if (sectionId) {
+      setTimeout(() => {
+        const element = document.getElementById(sectionId.replace('#', ''));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else if (sectionId === 'home') {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 50);
+    }
+  };
+
+  const handleNavigateBack = (target) => {
+    setIsAuthOpen(false);
+    if (target && target !== 'home') {
+      setTimeout(() => {
+        const element = document.getElementById(target.replace('#', ''));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 50);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -100,7 +95,7 @@ export default function App() {
       
       {/* 1. Cinematic Custom Cursor */}
       <AnimatePresence>
-        {!loading && (
+        {!loading && !isAuthOpen && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ 
@@ -134,7 +129,6 @@ export default function App() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="flex flex-col items-center space-y-4"
             >
-              {/* Monogram logo spinner */}
               <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center relative">
                 <span className="text-sm uppercase tracking-widest text-[#c5a880]">{siteConfig.monogram}</span>
                 <motion.div
@@ -152,21 +146,39 @@ export default function App() {
       </AnimatePresence>
 
       {/* 3. Sticky Navbar */}
-      <Navbar />
+      <Navbar onOpenSignIn={handleOpenSignIn} onNavClick={handleNavClick} />
 
-      {/* 4. Page Subpages with transition */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={subpage || "home"}
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -15 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
-        >
-          {renderContent()}
-        </motion.div>
-      </AnimatePresence>
+      {/* 4. Main Page Content or Authentication Overlay */}
+      {isAuthOpen ? (
+        <div className="w-full min-h-screen bg-black relative z-30 pt-20">
+          <SignIn
+            onNavigateBack={handleNavigateBack}
+            redirectTarget={redirectTarget}
+            authReason={authReason}
+          />
+        </div>
+      ) : (
+        <main>
+          <Hero />
+          <About />
+          <Gallery />
+          <FeaturedStories />
+          <Services />
+          <Testimonials />
+        </main>
+      )}
+
+      {/* 5. Footer with Protected Inquiries */}
+      <Footer onOpenSignIn={handleOpenSignIn} />
 
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

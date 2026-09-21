@@ -1,6 +1,7 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import { useTemplateEffects } from './hooks/useTemplateEffects';
+import { AuthProvider } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Footer } from './components/Footer';
 import { ScrollProgress } from './components/ScrollProgress';
@@ -13,6 +14,7 @@ import { Events } from './pages/Events';
 import { Gallery } from './pages/Gallery';
 import { Contact } from './pages/Contact';
 import { Legal } from './pages/Legal';
+import { SignIn } from './pages/SignIn';
 
 const MainLayout: React.FC = () => {
   useTemplateEffects();
@@ -40,6 +42,10 @@ const MainLayout: React.FC = () => {
           <Route path="/legal.html" element={<Legal />} />
           <Route path="/license" element={<Legal />} />
           <Route path="/license.html" element={<Legal />} />
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signin.html" element={<SignIn />} />
+          <Route path="/login" element={<SignIn />} />
+          <Route path="/register" element={<SignIn />} />
         </Routes>
       </main>
       <Footer />
@@ -51,7 +57,9 @@ const MainLayout: React.FC = () => {
 export default function App() {
   return (
     <HashRouter>
-      <MainLayout />
+      <AuthProvider>
+        <MainLayout />
+      </AuthProvider>
     </HashRouter>
   );
 }
