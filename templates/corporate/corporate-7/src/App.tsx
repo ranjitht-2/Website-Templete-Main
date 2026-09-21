@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // Layouts
 import { MainLayout } from './components/layout/MainLayout';
@@ -78,7 +78,7 @@ export default function App() {
           <Route path="/resources" element={<ResourcesPage />} />
           
           {/* Contact & Search */}
-          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/contact" element={<Navigate to="/signin" replace />} />
           <Route path="/search" element={<SearchPage />} />
           
           {/* Legal / Policy */}
@@ -93,6 +93,7 @@ export default function App() {
         {/* Authentication Flow */}
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/signin" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         </Route>

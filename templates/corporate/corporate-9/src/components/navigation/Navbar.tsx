@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Logo } from '../common/Logo';
-import { ArrowRight, Menu, X } from 'lucide-react';
+import { ArrowRight, Menu, X, Lock } from 'lucide-react';
 
 interface NavbarProps {
   onGetStarted?: () => void;
@@ -60,24 +61,31 @@ export const Navbar: React.FC<NavbarProps> = ({ onGetStarted }) => {
 
         {/* RIGHT CTA BUTTON */}
         <div className="hidden md:flex items-center gap-4">
-          <button
-            onClick={onGetStarted}
+          <Link
+            to="/signin"
+            className="text-xs sm:text-sm font-medium text-[#191919]/70 hover:text-[#191919] transition-colors flex items-center gap-1.5"
+          >
+            <Lock className="w-3.5 h-3.5" />
+            <span>Client Login</span>
+          </Link>
+          <Link
+            to="/signin"
             className="inline-flex items-center gap-2 bg-[#191919] hover:bg-black text-white text-xs sm:text-sm font-medium px-5 py-2.5 rounded-full transition-all duration-200 cursor-pointer shadow-xs hover:shadow hover:scale-[1.02] active:scale-[0.98]"
           >
             <span>Get Started</span>
             <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          </Link>
         </div>
 
         {/* MOBILE MENU TRIGGER */}
         <div className="md:hidden flex items-center gap-2">
-          <button
-            onClick={onGetStarted}
+          <Link
+            to="/signin"
             className="bg-[#191919] text-white text-xs font-medium px-3.5 py-2 rounded-full flex items-center gap-1.5"
           >
             <span>Start</span>
             <ArrowRight className="w-3 h-3" />
-          </button>
+          </Link>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2 text-gray-700 hover:text-black rounded-lg"
@@ -102,18 +110,27 @@ export const Navbar: React.FC<NavbarProps> = ({ onGetStarted }) => {
                 {link.label}
               </a>
             ))}
+            <Link
+              to="/signin"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-base font-medium text-[#191919] py-1 border-b border-gray-50 flex items-center justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-[#191919]/60" />
+                <span>Client Portal</span>
+              </span>
+              <span className="text-xs font-mono text-[#191919]/50">Sign In →</span>
+            </Link>
           </div>
           <div className="pt-2">
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                if (onGetStarted) onGetStarted();
-              }}
+            <Link
+              to="/signin"
+              onClick={() => setMobileMenuOpen(false)}
               className="w-full flex items-center justify-center gap-2 bg-[#191919] text-white py-3 rounded-full text-sm font-medium"
             >
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
           </div>
         </div>
       )}

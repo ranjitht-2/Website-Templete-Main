@@ -5,13 +5,17 @@ import { Link } from 'react-router-dom';
 
 export default function Login() {
   const [ssoActive, setSsoActive] = useState(false);
-  const [email, setEmail] = useState('executive@northstar-tech.com');
-  const [accountId, setAccountId] = useState('AUR-9042-ENT');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('');
+  const [accountId, setAccountId] = useState('');
+  const [password, setPassword] = useState('');
   const [loggedIn, setLoggedIn] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email && !accountId) return;
+    const enteredName = email ? email.split('@')[0] : accountId;
+    const formattedName = enteredName.charAt(0).toUpperCase() + enteredName.slice(1);
+    localStorage.setItem('corporate_user', JSON.stringify({ email, accountId, name: formattedName }));
     setLoggedIn(true);
   };
 
@@ -41,7 +45,7 @@ export default function Login() {
               </div>
               <h3 className="font-serif text-2xl font-bold text-[#0E1412]">Session Authenticated</h3>
               <p className="text-xs text-[#62756D]">
-                Welcome back, <strong className="text-[#0E1412]">Rachel Morgan</strong> (Northstar Technologies). Connecting to real-time travel ERP feeds...
+                Welcome back, <strong className="text-[#0E1412]">{email || accountId || 'Executive Member'}</strong>. Connecting to real-time mobility dashboard...
               </p>
               <div className="pt-2">
                 <Link
@@ -80,7 +84,7 @@ export default function Login() {
                   </label>
                   <input
                     type="text"
-                    required
+                    placeholder="e.g. AUR-9042-ENT"
                     value={accountId}
                     onChange={(e) => setAccountId(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-[#D8C3A8] bg-[#FBF9F5] text-xs text-[#0E1412] focus:outline-none focus:ring-2 focus:ring-[#0F382E]"
@@ -94,6 +98,7 @@ export default function Login() {
                   <input
                     type="email"
                     required
+                    placeholder="executive@yourcompany.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-[#D8C3A8] bg-[#FBF9F5] text-xs text-[#0E1412] focus:outline-none focus:ring-2 focus:ring-[#0F382E]"
@@ -112,6 +117,7 @@ export default function Login() {
                   <input
                     type="password"
                     required
+                    placeholder="••••••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-[#D8C3A8] bg-[#FBF9F5] text-xs text-[#0E1412] focus:outline-none focus:ring-2 focus:ring-[#0F382E]"

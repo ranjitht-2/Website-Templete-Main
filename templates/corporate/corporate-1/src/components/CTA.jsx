@@ -8,7 +8,7 @@ export default function CTA({
   title = "Have a challenge worth solving?",
   description = "Let's turn your next ambitious idea into something real. Partner with our senior architects and strategy consultants to engineer your competitive future.",
   primaryButtonText = "Start a Conversation",
-  primaryButtonLink = "/contact",
+  primaryButtonLink = "/signin",
   secondaryButtonText = "Explore Case Studies",
   secondaryButtonLink = "/work"
 }) {

@@ -32,11 +32,15 @@ export const LoginPage: React.FC = () => {
     }
   });
 
+  const [loggedEmail, setLoggedEmail] = useState('');
+
   const onSubmit = async (data: LoginFormData) => {
     try {
       setAuthError('');
+      setLoggedEmail(data.email);
+      localStorage.setItem('corporate_user', JSON.stringify({ email: data.email, name: data.email.split('@')[0] }));
       // Simulate enterprise SSO / auth endpoint
-      await new Promise((r) => setTimeout(r, 900));
+      await new Promise((r) => setTimeout(r, 800));
       setAuthSuccess(true);
       setTimeout(() => {
         navigate('/');
@@ -61,7 +65,7 @@ export const LoginPage: React.FC = () => {
             <CheckCircle2 className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-bold text-slate-900">Authenticated Successfully</h3>
-          <p className="text-xs text-slate-600">Redirecting to your workspace...</p>
+          <p className="text-xs text-slate-600">Welcome, <strong>{loggedEmail}</strong>. Redirecting to your workspace...</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

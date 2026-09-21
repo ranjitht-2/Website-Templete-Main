@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ConsultationModal from './components/layout/ConsultationModal';
@@ -22,14 +22,17 @@ import Careers from './pages/Careers/Careers';
 import Contact from './pages/Contact/Contact';
 import Login from './pages/Login/Login';
 
-export default function App() {
-  const [isConsultationOpen, setIsConsultationOpen] = useState(false);
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
-  const openConsultation = () => setIsConsultationOpen(true);
-  const closeConsultation = () => setIsConsultationOpen(false);
+function AppContent() {
+  const navigate = useNavigate();
+
+  const openConsultation = () => {
+    navigate('/signin');
+  };
 
   return (
-    <Router basename={window.location.pathname.endsWith('/index.html') ? window.location.pathname.slice(0, -11) : (window.location.pathname.endsWith('/') ? window.location.pathname.slice(0, -1) : window.location.pathname)}>
+    <>
       <ScrollToTop />
       <div className="min-h-screen flex flex-col bg-[#FBF9F5] text-[#0E1412] font-sans antialiased selection:bg-[#0F382E] selection:text-[#DFBA58]">
         {/* Global Navigation Bar */}
@@ -60,17 +63,23 @@ export default function App() {
             <Route path="/insights/:slug" element={<ArticleDetail />} />
             
             <Route path="/careers" element={<Careers />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<Navigate to="/signin" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signin" element={<Login />} />
           </Routes>
         </main>
 
         {/* Global Footer */}
         <Footer onOpenConsultation={openConsultation} />
-
-        {/* Interactive Consultation / Lead Modal */}
-        <ConsultationModal isOpen={isConsultationOpen} onClose={closeConsultation} />
       </div>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <Router basename={window.location.pathname.endsWith('/index.html') ? window.location.pathname.slice(0, -11) : (window.location.pathname.endsWith('/') ? window.location.pathname.slice(0, -1) : window.location.pathname)}>
+      <AppContent />
     </Router>
   );
 }

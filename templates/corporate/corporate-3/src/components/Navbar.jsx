@@ -169,7 +169,7 @@ export default function Navbar() {
         {/* Bottom: LET'S TALK ↗ */}
         <div>
           <Link
-            to="/contact"
+            to="/signin"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -302,7 +302,7 @@ export default function Navbar() {
 
           <div style={{ paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
             <Link
-              to="/contact"
+              to="/signin"
               onClick={() => setMobileMenuOpen(false)}
               className="btn btn-primary"
               style={{ width: '100%', padding: '16px 0', fontSize: '13px' }}

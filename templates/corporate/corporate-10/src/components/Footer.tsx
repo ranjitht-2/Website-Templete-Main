@@ -259,10 +259,10 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab, openBookingModal }
               </li>
               <li>
                 <button
-                  onClick={() => setActiveTab('contact')}
+                  onClick={() => setActiveTab('portal')}
                   className="hover:text-[#C5A021] transition-colors"
                 >
-                  Global Offices & Desk
+                  Global Offices & Desk (Sign In)
                 </button>
               </li>
               <li>

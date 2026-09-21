@@ -4,12 +4,15 @@ import { Link } from 'react-router-dom';
 
 export const ClientPortalPage: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [clientId, setClientId] = useState('');
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState(false);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Demonstration login — allows demo code or instant enter
+    if (!clientId && !passcode) return;
+    const name = clientId.includes('@') ? clientId.split('@')[0] : (clientId || 'Institutional Partner');
+    localStorage.setItem('corporate_user', JSON.stringify({ clientId, name }));
     setIsAuthenticated(true);
   };
 
@@ -33,19 +36,22 @@ export const ClientPortalPage: React.FC = () => {
                 Institutional Client Portal
               </h1>
               <p className="text-xs text-[#191919]/60 leading-relaxed font-light">
-                Enter your institutional credentials or access the demonstration portfolio view.
+                Enter your corporate credentials or security token to access your portfolio.
               </p>
             </div>
 
             <form onSubmit={handleLogin} className="p-8 bg-[#F4F3F3] rounded-2xl border border-[#E5E5E5] space-y-4">
               <div className="space-y-1.5">
                 <label className="text-[10px] uppercase tracking-wider text-[#191919]/60 font-mono block">
-                  INSTITUTIONAL CLIENT ID
+                  INSTITUTIONAL CLIENT ID / EMAIL
                 </label>
                 <input
                   type="text"
-                  defaultValue="NB-8921-INST"
-                  className="w-full px-4 py-2.5 bg-white border border-[#E5E5E5] rounded-lg text-xs font-mono text-[#191919]"
+                  required
+                  value={clientId}
+                  onChange={(e) => setClientId(e.target.value)}
+                  placeholder="e.g. NB-8921-INST or executive@client.com"
+                  className="w-full px-4 py-2.5 bg-white border border-[#E5E5E5] rounded-lg text-xs font-mono text-[#191919] focus:outline-none focus:border-[#191919]"
                 />
               </div>
 
@@ -55,10 +61,11 @@ export const ClientPortalPage: React.FC = () => {
                 </label>
                 <input
                   type="password"
+                  required
                   value={passcode}
                   onChange={(e) => setPasscode(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full px-4 py-2.5 bg-white border border-[#E5E5E5] rounded-lg text-xs font-mono text-[#191919]"
+                  className="w-full px-4 py-2.5 bg-white border border-[#E5E5E5] rounded-lg text-xs font-mono text-[#191919] focus:outline-none focus:border-[#191919]"
                 />
               </div>
 
@@ -66,15 +73,9 @@ export const ClientPortalPage: React.FC = () => {
                 type="submit"
                 className="w-full py-3 bg-[#191919] text-white rounded-lg text-xs font-medium hover:bg-[#191919]/90 transition-colors flex items-center justify-center gap-2 cursor-pointer mt-4"
               >
-                <span>Enter Demonstration Portal</span>
+                <span>Sign In to Institutional Portal</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
-
-              <div className="text-center pt-2">
-                <span className="text-[10px] font-mono text-[#191919]/50 block">
-                  * Fictional demonstration portal — clicking enter displays live model telemetry.
-                </span>
-              </div>
             </form>
           </div>
         ) : (
@@ -86,7 +87,7 @@ export const ClientPortalPage: React.FC = () => {
                   Global Endowment Multi-Asset SMA
                 </h1>
                 <div className="text-xs font-mono text-[#191919]/60 mt-1">
-                  Account #NB-8921-INST • Custodian: BNY Mellon Institutional
+                  Account #{clientId || 'NB-8921-INST'} • Custodian: BNY Mellon Institutional
                 </div>
               </div>
 

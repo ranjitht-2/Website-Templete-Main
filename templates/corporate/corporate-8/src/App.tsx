@@ -1,9 +1,8 @@
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import { Navbar } from "./components/layout/Navbar";
 import { Footer } from "./components/layout/Footer";
-import { ProjectScopingModal } from "./components/common/ProjectScopingModal";
 
 // Pages
 import { HomePage } from "./pages/HomePage";
@@ -21,20 +20,17 @@ import { JobDetailPage } from "./pages/JobDetailPage";
 import { ContactPage } from "./pages/ContactPage";
 import { PrivacyPage } from "./pages/PrivacyPage";
 import { TermsPage } from "./pages/TermsPage";
+import { SignInPage } from "./pages/SignInPage";
 
-export const App: React.FC = () => {
-  const [isScopingModalOpen, setIsScopingModalOpen] = useState(false);
+const AppContent: React.FC = () => {
+  const navigate = useNavigate();
 
   const handleOpenScoping = () => {
-    setIsScopingModalOpen(true);
-  };
-
-  const handleCloseScoping = () => {
-    setIsScopingModalOpen(false);
+    navigate('/signin');
   };
 
   return (
-    <BrowserRouter basename={window.location.pathname.endsWith('/index.html') ? window.location.pathname.slice(0, -11) : (window.location.pathname.endsWith('/') ? window.location.pathname.slice(0, -1) : window.location.pathname)}>
+    <>
       <ScrollToTop />
       <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-[#121316] selection:bg-[#CCF34A] selection:text-[#0A2E23]">
         {/* Global Sticky Navbar */}
@@ -76,7 +72,10 @@ export const App: React.FC = () => {
             <Route path="/careers/:slug" element={<JobDetailPage />} />
 
             {/* Contact */}
-            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/contact" element={<Navigate to="/signin" replace />} />
+
+            {/* Sign In */}
+            <Route path="/signin" element={<SignInPage />} />
 
             {/* Legal */}
             <Route path="/privacy" element={<PrivacyPage />} />
@@ -90,13 +89,15 @@ export const App: React.FC = () => {
 
         {/* Global Editorial Footer */}
         <Footer />
-
-        {/* Global Project Scoping Modal */}
-        <ProjectScopingModal
-          isOpen={isScopingModalOpen}
-          onClose={handleCloseScoping}
-        />
       </div>
+    </>
+  );
+};
+
+export const App: React.FC = () => {
+  return (
+    <BrowserRouter basename={window.location.pathname.endsWith('/index.html') ? window.location.pathname.slice(0, -11) : (window.location.pathname.endsWith('/') ? window.location.pathname.slice(0, -1) : window.location.pathname)}>
+      <AppContent />
     </BrowserRouter>
   );
 };

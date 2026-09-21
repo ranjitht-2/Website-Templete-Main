@@ -39,7 +39,7 @@ export default function Hero() {
               <span>Explore Solutions</span>
               <ArrowUpRight size={18} className="btn-arrow" />
             </Link>
-            <Link to="/contact" className="btn btn-secondary btn-lg hero-cta-secondary">
+            <Link to="/signin" className="btn btn-secondary btn-lg hero-cta-secondary">
               <span>Start a Conversation</span>
             </Link>
           </div>

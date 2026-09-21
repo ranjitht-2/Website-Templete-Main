@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -17,6 +17,7 @@ import Careers from './pages/Careers';
 import Blog from './pages/Blog';
 import BlogDetails from './pages/BlogDetails';
 import Contact from './pages/Contact';
+import SignIn from './pages/SignIn';
 
 // Scroll to top helper on route navigation
 function ScrollToTop() {
@@ -53,7 +54,8 @@ export default function App() {
             <Route path="/careers" element={<Careers />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogDetails />} />
-            <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<Navigate to="/signin" replace />} />
+            <Route path="/signin" element={<SignIn />} />
             <Route path="*" element={<Home />} />
           </Routes>
           <Footer />

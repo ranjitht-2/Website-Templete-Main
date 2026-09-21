@@ -135,7 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   key={item.id}
                   id={`nav-link-${item.id}`}
-                  onClick={() => setActiveTab(item.id)}
+                  onClick={() => setActiveTab(item.id === 'contact' ? 'portal' : item.id)}
                   className={`px-3 py-2 text-sm font-medium transition-all relative ${
                     isActive
                       ? 'text-[#0A1C36] font-bold'
@@ -323,7 +323,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             ) : (
               <button
                 id="client-login-btn"
-                onClick={openLoginModal}
+                onClick={() => {
+                  if (openLoginModal) openLoginModal();
+                  else setActiveTab('portal');
+                }}
                 className="flex items-center gap-2 px-4 py-2.5 text-xs font-semibold text-slate-800 hover:text-black bg-white hover:bg-slate-50 border border-slate-300 rounded-lg transition-all"
               >
                 <User className="w-4 h-4 text-slate-600" />
@@ -334,7 +337,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Talk to an Advisor Button (Dark navy solid with right arrow) */}
             <button
               id="talk-to-advisor-btn"
-              onClick={openBookingModal}
+              onClick={() => setActiveTab('portal')}
               className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-[#0A1C36] hover:bg-[#122A4E] active:bg-[#071426] rounded-lg transition-all shadow-sm group"
             >
               <span>Talk to an Advisor</span>
@@ -363,7 +366,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 key={item.id}
                 onClick={() => {
-                  setActiveTab(item.id);
+                  setActiveTab(item.id === 'contact' ? 'portal' : item.id);
                   setMobileMenuOpen(false);
                 }}
                 className={`text-left px-3 py-2 rounded-lg text-xs font-medium ${
@@ -421,7 +424,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="grid grid-cols-2 gap-2 pt-2">
             <button
               onClick={() => {
-                openLoginModal();
+                setActiveTab('portal');
                 setMobileMenuOpen(false);
               }}
               className="w-full py-2.5 text-xs font-semibold text-slate-800 bg-slate-100 rounded-xl text-center"
@@ -430,7 +433,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
             <button
               onClick={() => {
-                openBookingModal();
+                setActiveTab('portal');
                 setMobileMenuOpen(false);
               }}
               className="w-full py-2.5 text-xs font-bold text-slate-950 bg-amber-400 rounded-xl text-center"

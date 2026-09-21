@@ -54,7 +54,7 @@ export default function HomePage() {
               </p>
 
               <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                <Link to="/contact" className="btn-copper-primary">
+                <Link to="/signin" className="btn-copper-primary">
                   <span>Start a Conversation</span>
                   <ArrowRight size={14} />
                 </Link>

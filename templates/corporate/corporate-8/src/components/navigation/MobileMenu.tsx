@@ -86,18 +86,23 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, onOpenS
             </div>
 
             {/* Quick Action Button */}
-            <div className="mt-8 pt-6 border-t border-[#24282F]">
-              <button
-                type="button"
-                onClick={() => {
-                  onClose();
-                  onOpenScoping();
-                }}
+            <div className="mt-8 pt-6 border-t border-[#24282F] space-y-3">
+              <Link
+                to="/signin"
+                onClick={onClose}
+                className="w-full py-3 bg-[#24282F] hover:bg-[#2F343E] text-[#FAF8F5] font-mono-tech text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 rounded-xs transition-colors"
+              >
+                <span>Executive Sign In</span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#CCF34A]" />
+              </Link>
+              <Link
+                to="/signin"
+                onClick={onClose}
                 className="w-full py-4 bg-[#CCF34A] text-[#0A2E23] font-mono-tech text-xs uppercase tracking-widest font-bold flex items-center justify-center gap-2 rounded-xs shadow-md"
               >
                 <span>Initiate Project Scoping</span>
                 <ArrowRight className="w-4 h-4" />
-              </button>
+              </Link>
             </div>
           </div>
 

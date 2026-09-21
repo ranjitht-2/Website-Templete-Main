@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Users, MessageSquare, ShieldCheck, ArrowUpRight } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -33,13 +34,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onGetStarted, onLearnM
 
           {/* CTA Button Group */}
           <div className="flex flex-wrap items-center gap-5 pt-2">
-            <button
-              onClick={onGetStarted}
+            <Link
+              to="/signin"
               className="inline-flex items-center gap-2 bg-[#191919] hover:bg-black text-white px-7 py-3.5 rounded-full text-sm font-medium transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Get Started</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
+            </Link>
 
             <button
               onClick={onLearnMore}

@@ -76,7 +76,7 @@ export default function Navbar() {
 
         {/* Right CTA */}
         <div className="navbar-actions">
-          <Link to="/contact" className="nav-cta-btn">
+          <Link to="/signin" className="nav-cta-btn">
             <span>Let's Talk</span>
             <ArrowUpRight size={15} className="cta-arrow" />
           </Link>
@@ -139,13 +139,13 @@ export default function Navbar() {
             <NavLink to="/blog" className={({ isActive }) => `mobile-nav-link ${isActive ? 'mobile-active' : ''}`}>
               Insights & Editorial
             </NavLink>
-            <NavLink to="/contact" className={({ isActive }) => `mobile-nav-link ${isActive ? 'mobile-active' : ''}`}>
+            <NavLink to="/signin" className={({ isActive }) => `mobile-nav-link ${isActive ? 'mobile-active' : ''}`}>
               Contact
             </NavLink>
           </div>
 
           <div className="mobile-menu-footer">
-            <Link to="/contact" className="btn btn-primary btn-lg" style={{ width: '100%' }}>
+            <Link to="/signin" className="btn btn-primary btn-lg" style={{ width: '100%' }}>
               <span>Let's Talk</span>
               <ArrowUpRight size={17} />
             </Link>

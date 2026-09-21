@@ -61,7 +61,10 @@ export default function Navbar() {
           </nav>
 
           {/* Right Action */}
-          <div className="navbar-cta">
+          <div className="navbar-cta" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+            <Link to="/signin" className="nav-link link-editorial" style={{ fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+              Sign In
+            </Link>
             <Link to="/contact" className="btn-editorial-outline">
               <span>Contact</span>
               <ArrowUpRight size={14} />
@@ -119,7 +122,7 @@ export default function Navbar() {
 
         <div className="mobile-drawer-footer">
           <Link
-            to="/contact"
+            to="/signin"
             className="btn-editorial-primary"
             onClick={() => setMobileMenuOpen(false)}
             style={{ width: '100%', justifyContent: 'space-between' }}

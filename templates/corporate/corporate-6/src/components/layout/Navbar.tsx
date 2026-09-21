@@ -200,14 +200,14 @@ export default function Navbar({ onOpenConsultation }: NavbarProps) {
                 <span>Client Login</span>
               </Link>
 
-              <button
+              <Link
+                to="/signin"
                 id="nav-talk-to-expert-btn"
-                onClick={onOpenConsultation}
                 className="whitespace-nowrap inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#0D4433] text-white text-[11px] font-bold uppercase tracking-[0.16em] hover:bg-[#083024] active:scale-[0.98] transition-all shadow-xs hover:shadow-md cursor-pointer border border-[#0D4433] flex-shrink-0"
               >
                 <span>Talk to an Expert</span>
                 <ArrowRight className="w-3.5 h-3.5 flex-shrink-0" />
-              </button>
+              </Link>
             </div>
 
             {/* Mobile Menu Toggle Button */}
@@ -306,17 +306,15 @@ export default function Navbar({ onOpenConsultation }: NavbarProps) {
             </div>
 
             <div className="pt-6 border-t border-[#1A1A1A]/10 space-y-3 pb-8">
-              <button
+              <Link
+                to="/signin"
                 id="mobile-talk-to-expert-btn"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenConsultation();
-                }}
+                onClick={() => setMobileMenuOpen(false)}
                 className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-[#0D4433] text-white text-xs font-bold uppercase tracking-[0.2em] shadow-md active:scale-98"
               >
                 <PhoneCall className="w-4 h-4" />
                 <span>Talk to an Expert</span>
-              </button>
+              </Link>
 
               <Link
                 to="/login"

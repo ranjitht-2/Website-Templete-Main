@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { X, ArrowUpRight, CheckCircle2, ShieldCheck } from "lucide-react";
 
-export const WarmConsultationModal = ({ isOpen, onClose }) => {
+export const WarmConsultationModal = ({ isOpen, onClose, currentUser }) => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    company: "",
+    fullName: currentUser?.name || "",
+    email: currentUser?.email || "",
+    company: currentUser?.company || "",
     service: "AI & Intelligence",
     budget: "$100k - $250k",
     message: ""
@@ -15,13 +15,21 @@ export const WarmConsultationModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      if (currentUser) {
+        setFormData((prev) => ({
+          ...prev,
+          fullName: currentUser.name || prev.fullName,
+          email: currentUser.email || prev.email,
+          company: currentUser.company || prev.company
+        }));
+      }
     } else {
       document.body.style.overflow = "auto";
     }
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [isOpen]);
+  }, [isOpen, currentUser]);
 
   if (!isOpen) return null;
 
@@ -101,6 +109,32 @@ export const WarmConsultationModal = ({ isOpen, onClose }) => {
             <p style={{ color: "var(--text-espresso-muted)", fontSize: "0.95rem", marginBottom: "1.75rem" }}>
               Direct access to our senior engineering partners. NDA protected by default.
             </p>
+
+            {currentUser && (
+              <div
+                style={{
+                  backgroundColor: "var(--bg-sand-dark)",
+                  border: "1px solid var(--border-espresso-medium)",
+                  borderRadius: "14px",
+                  padding: "0.75rem 1rem",
+                  marginBottom: "1.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "0.5rem"
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <CheckCircle2 size={18} style={{ color: "var(--bg-terracotta)" }} />
+                  <span style={{ fontSize: "0.85rem", fontWeight: "600", color: "var(--text-espresso)" }}>
+                    Verified Partner: {currentUser.name} ({currentUser.company})
+                  </span>
+                </div>
+                <span style={{ fontSize: "0.75rem", fontFamily: "var(--font-mono)", color: "var(--text-espresso-muted)" }}>
+                  AUTHENTICATED
+                </span>
+              </div>
+            )}
 
             <form onSubmit={handleSubmit}>
               <div className="editorial-form-row" style={{ marginBottom: "1rem" }}>

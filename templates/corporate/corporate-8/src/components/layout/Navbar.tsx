@@ -75,15 +75,21 @@ export const Navbar: React.FC = () => {
 
           {/* Right Action CTA */}
           <div className="flex items-center gap-3">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsScopingModalOpen(true)}
-              withDiagonalArrow
-              className="hidden sm:inline-flex"
+            <Link
+              to="/signin"
+              className="text-xs font-mono-tech uppercase tracking-wider text-[#5E636E] hover:text-[#0A2E23] transition-colors py-1.5 px-2 hidden sm:inline-block"
             >
-              Let's Talk
-            </Button>
+              Sign In
+            </Link>
+            <Link to="/signin" className="hidden sm:inline-flex">
+              <Button
+                variant="primary"
+                size="sm"
+                withDiagonalArrow
+              >
+                Let's Talk
+              </Button>
+            </Link>
 
             {/* Mobile Hamburger Toggle */}
             <button

@@ -29,7 +29,7 @@ import { triggerDownload } from './utils/formatters';
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('home');
   const [currency, setCurrency] = useState<Currency>('USD');
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<AppNotification[]>(NOTIFICATIONS);
   const [selectedCompareIds, setSelectedCompareIds] = useState<string[]>([]);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState<boolean>(false);
@@ -40,9 +40,8 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeTab]);
 
-  const openBookingModal = (advisorId?: string) => {
-    if (advisorId) setBookingAdvisorId(advisorId);
-    setIsBookingModalOpen(true);
+  const openBookingModal = (_advisorId?: string) => {
+    setActiveTab('portal');
   };
 
   return (
@@ -59,6 +58,7 @@ export default function App() {
         isLoggedIn={isLoggedIn}
         setIsLoggedIn={setIsLoggedIn}
         openBookingModal={() => openBookingModal()}
+        openLoginModal={() => setActiveTab('portal')}
         notifications={notifications}
         setNotifications={setNotifications}
       />
@@ -173,9 +173,13 @@ export default function App() {
         )}
 
         {activeTab === 'contact' && (
-          <ContactView
+          <ClientPortalView
             setActiveTab={setActiveTab}
+            currency={currency}
+            isLoggedIn={isLoggedIn}
+            setIsLoggedIn={setIsLoggedIn}
             openBookingModal={() => openBookingModal()}
+            notifications={notifications}
           />
         )}
 

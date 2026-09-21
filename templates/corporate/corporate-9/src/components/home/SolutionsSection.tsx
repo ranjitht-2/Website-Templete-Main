@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Users, Briefcase, Building, Landmark, Check, ArrowRight, Sparkles, TrendingUp, ShieldCheck, PieChart } from 'lucide-react';
 
 interface SolutionsSectionProps {
@@ -200,13 +201,13 @@ export const SolutionsSection: React.FC<SolutionsSectionProps> = ({ onGetStarted
             </div>
           </div>
 
-          <button
-            onClick={onGetStarted}
+          <Link
+            to="/signin"
             className="w-full py-3.5 bg-[#191919] hover:bg-black text-white text-center text-xs sm:text-sm font-medium rounded-full transition-all cursor-pointer shadow-xs flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99]"
           >
             <span>Get Started with {current.title}</span>
             <ArrowRight className="w-4 h-4" />
-          </button>
+          </Link>
         </div>
       </div>
     </section>

@@ -10,6 +10,7 @@ import IndustriesPage from './pages/IndustriesPage';
 import WorkPage from './pages/WorkPage';
 import InsightsPage from './pages/InsightsPage';
 import ContactPage from './pages/ContactPage';
+import SignInPage from './pages/SignInPage';
 
 export default function App() {
   return (
@@ -23,7 +24,8 @@ export default function App() {
         <Route path="/industries" element={<IndustriesPage />} />
         <Route path="/work" element={<WorkPage />} />
         <Route path="/insights" element={<InsightsPage />} />
-        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/contact" element={<Navigate to="/signin" replace />} />
+        <Route path="/signin" element={<SignInPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <Footer />

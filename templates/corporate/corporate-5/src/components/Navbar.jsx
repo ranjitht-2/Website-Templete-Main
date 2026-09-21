@@ -65,10 +65,15 @@ export default function Navbar() {
                       Insights
                     </NavLink>
                   </li>
+                  <li>
+                    <NavLink to="/signin" className={({ isActive }) => `asym-nav-link ${isActive ? 'active' : ''}`}>
+                      Sign In
+                    </NavLink>
+                  </li>
                 </ul>
               </nav>
 
-              <Link to="/contact" className="btn-copper-primary asym-nav-cta" style={{ padding: '10px 22px', fontSize: '11px' }}>
+              <Link to="/signin" className="btn-copper-primary asym-nav-cta" style={{ padding: '10px 22px', fontSize: '11px' }}>
                 <span>Contact Us</span>
                 <ArrowRight size={13} />
               </Link>
@@ -135,15 +140,20 @@ export default function Navbar() {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/contact" onClick={() => setMobileOpen(false)} style={{ color: 'var(--c-copper)' }}>
-              07 // Contact
+            <NavLink to="/signin" onClick={() => setMobileOpen(false)} style={{ color: 'var(--c-copper)' }}>
+              07 // Contact &amp; Sign In
+            </NavLink>
+          </li>
+          <li>
+            <NavLink to="/signin" onClick={() => setMobileOpen(false)} style={{ color: 'var(--c-copper)' }}>
+              08 // Client Sign In
             </NavLink>
           </li>
         </ul>
 
         <div style={{ borderTop: '1px solid var(--border-dark)', paddingTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '12px', color: 'var(--c-stone)', fontFamily: 'var(--font-mono)' }}>© 2026 {BRAND.name}</span>
-          <Link to="/contact" className="btn-copper-primary" style={{ padding: '12px 20px', fontSize: '11px' }}>
+          <Link to="/signin" className="btn-copper-primary" style={{ padding: '12px 20px', fontSize: '11px' }}>
             <span>Initiate Transmission →</span>
           </Link>
         </div>

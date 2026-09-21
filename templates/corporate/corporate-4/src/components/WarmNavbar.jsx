@@ -1,40 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X, User, LogOut, CheckCircle2, ShieldCheck } from "lucide-react";
 
-export const WarmNavbar = ({ onOpenProjectModal }) => {
+export const WarmNavbar = ({ onOpenProjectModal, currentUser, onLogout }) => {
+  const [scrolled, setScrolled] = useState(false);
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Lock body scroll when mobile drawer is open
   useEffect(() => {
     if (mobileDrawerOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "auto";
     }
-    return () => {
-      document.body.style.overflow = "auto";
-    };
   }, [mobileDrawerOpen]);
 
   const handleLinkClick = () => {
-    document.body.style.overflow = "auto";
     setMobileDrawerOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
     <>
-      <header className="editorial-navbar">
+      <header className={`warm-editorial-header ${scrolled ? "scrolled" : ""}`}>
         <div className="editorial-nav-container">
-          {/* Left: Typographic Logo */}
-          <Link
-            to="/"
-            className="editorial-nav-logo"
-            onClick={handleLinkClick}
-          >
-            <span>KINESIS</span>
-            <span style={{ fontSize: "0.65rem", fontFamily: "var(--font-mono)", letterSpacing: "0.15em", marginLeft: "6px", color: "var(--bg-terracotta)" }}>GLOBAL</span>
-            <span className="dot">.</span>
+          {/* Left: Brand Identity in Heavy Editorial Serif */}
+          <Link to="/" className="warm-header-brand" aria-label="KINESIS GLOBAL Home">
+            <span className="brand-primary">KINESIS</span>
+            <span className="brand-descriptor">GLOBAL</span>
+            <span className="brand-dot">.</span>
           </Link>
 
           {/* Center: Navigation Links */}
@@ -62,8 +67,86 @@ export const WarmNavbar = ({ onOpenProjectModal }) => {
             </li>
           </ul>
 
-          {/* Right: Distinctive Pill-Shaped CTA & Mobile Toggle */}
-          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          {/* Right: Auth Badge / Sign In + Start a Project CTA & Mobile Toggle */}
+          <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+            
+            {/* Authenticated User Status or Sign In Link */}
+            {currentUser ? (
+              <div 
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  backgroundColor: "rgba(30, 22, 17, 0.06)",
+                  padding: "4px 10px 4px 6px",
+                  borderRadius: "99px",
+                  border: "1px solid var(--border-espresso-thin)"
+                }}
+                title={`Signed in as ${currentUser.name} (${currentUser.company})`}
+              >
+                <div
+                  style={{
+                    width: "28px",
+                    height: "28px",
+                    borderRadius: "50%",
+                    backgroundColor: "var(--bg-espresso)",
+                    color: "var(--accent-chartreuse)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.75rem",
+                    fontWeight: "700",
+                    fontFamily: "var(--font-mono)"
+                  }}
+                >
+                  {currentUser.avatarInitials || "DS"}
+                </div>
+                <span style={{ fontSize: "0.8rem", fontWeight: "600", color: "var(--text-espresso)" }}>
+                  {currentUser.name.split(" ")[0]}
+                </span>
+                <button
+                  onClick={onLogout}
+                  title="Sign Out"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "var(--text-espresso-muted)",
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "2px",
+                    marginLeft: "2px"
+                  }}
+                  aria-label="Sign Out"
+                >
+                  <LogOut size={14} />
+                </button>
+              </div>
+            ) : (
+              <NavLink
+                to="/signin"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.4rem",
+                  fontSize: "0.78rem",
+                  fontWeight: "700",
+                  fontFamily: "var(--font-mono)",
+                  color: "var(--text-espresso)",
+                  textDecoration: "none",
+                  padding: "0.55rem 0.95rem",
+                  borderRadius: "99px",
+                  letterSpacing: "0.08em",
+                  border: "1px solid var(--border-espresso-thin)",
+                  backgroundColor: "rgba(255,255,255,0.4)"
+                }}
+              >
+                <User size={13} />
+                <span>SIGN IN</span>
+              </NavLink>
+            )}
+
+            {/* Start a Project Primary Action */}
             <button className="pill-btn pill-btn-dark header-cta-pill" onClick={onOpenProjectModal}>
               <span>START A PROJECT</span>
               <ArrowUpRight size={16} />
@@ -108,7 +191,83 @@ export const WarmNavbar = ({ onOpenProjectModal }) => {
           </button>
         </div>
 
-        <ul className="mobile-drawer-links">
+        {/* Mobile User Profile if Authenticated */}
+        {currentUser ? (
+          <div
+            style={{
+              marginTop: "1.25rem",
+              padding: "1rem",
+              borderRadius: "16px",
+              backgroundColor: "rgba(255,255,255,0.06)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "50%",
+                  backgroundColor: "var(--accent-chartreuse)",
+                  color: "var(--bg-espresso)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontWeight: "700",
+                  fontFamily: "var(--font-mono)"
+                }}
+              >
+                {currentUser.avatarInitials || "DS"}
+              </div>
+              <div>
+                <div style={{ color: "#fff", fontSize: "0.9rem", fontWeight: "600" }}>{currentUser.name}</div>
+                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.75rem" }}>{currentUser.company}</div>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                onLogout();
+                setMobileDrawerOpen(false);
+              }}
+              style={{
+                background: "none",
+                border: "none",
+                color: "var(--accent-coral)",
+                fontSize: "0.75rem",
+                fontWeight: "700",
+                cursor: "pointer",
+                fontFamily: "var(--font-mono)"
+              }}
+            >
+              SIGN OUT
+            </button>
+          </div>
+        ) : (
+          <div style={{ marginTop: "1rem" }}>
+            <NavLink
+              to="/signin"
+              onClick={handleLinkClick}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                color: "var(--accent-chartreuse)",
+                textDecoration: "none",
+                fontSize: "0.85rem",
+                fontWeight: "700",
+                fontFamily: "var(--font-mono)",
+                padding: "0.6rem 0"
+              }}
+            >
+              <User size={15} />
+              <span>SIGN IN / PARTNER ACCESS →</span>
+            </NavLink>
+          </div>
+        )}
+
+        <ul className="mobile-drawer-links" style={{ marginTop: "1rem" }}>
           <li>
             <NavLink to="/" onClick={handleLinkClick}>
               Overview

@@ -18,6 +18,7 @@ import Careers from './pages/Careers';
 import Blog from './pages/Blog';
 import BlogDetails from './pages/BlogDetails';
 import Contact from './pages/Contact';
+import SignIn from './pages/SignIn';
 import NotFound from './pages/NotFound';
 
 export default function App() {
@@ -54,8 +55,9 @@ export default function App() {
           <Route path="/insights" element={<Navigate to="/blog" replace />} />
           <Route path="/insights/:slug" element={<BlogDetails />} />
           
-          {/* Contact */}
-          <Route path="/contact" element={<Contact />} />
+          {/* Contact -> Redirect to SignIn */}
+          <Route path="/contact" element={<Navigate to="/signin" replace />} />
+          <Route path="/signin" element={<SignIn />} />
           
           {/* 404 Fallback */}
           <Route path="*" element={<NotFound />} />

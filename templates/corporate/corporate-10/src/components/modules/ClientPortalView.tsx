@@ -102,6 +102,29 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
     triggerDownload(`Apex_Tax_Statement_${client.accountNumber}_2026.txt`, reportText);
   };
 
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+
+  const handleCustomLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) return;
+    const namePart = loginEmail.split('@')[0];
+    const formattedName = namePart
+      .split('.')
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ') || 'Private Wealth Client';
+    setClient((prev) => ({
+      ...prev,
+      name: formattedName,
+      email: loginEmail,
+      accountNumber: 'HR-' + Math.floor(1000 + Math.random() * 9000) + '-SEC',
+    }));
+    try {
+      localStorage.setItem('corporate_user', JSON.stringify({ email: loginEmail, name: formattedName }));
+    } catch (err) {}
+    setIsLoggedIn(true);
+  };
+
   if (!isLoggedIn) {
     return (
       <div className="max-w-md mx-auto py-16 px-4">
@@ -118,29 +141,43 @@ export const ClientPortalView: React.FC<ClientPortalViewProps> = ({
             </p>
           </div>
 
-          <div className="space-y-3 pt-2">
-            <button
-              onClick={() => {
-                switchClientPersona('alex');
-                setIsLoggedIn(true);
-              }}
-              className="w-full py-3 px-4 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-500 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2"
-            >
-              <User className="w-4 h-4" />
-              <span>Demo Login: Alexander Wright (Ultra HNI)</span>
-            </button>
+          <form onSubmit={handleCustomLogin} className="space-y-4 pt-2 text-left">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Corporate or Personal Email
+              </label>
+              <input
+                type="email"
+                required
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                placeholder="investor@familyoffice.com"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-amber-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
+                Security Passcode
+              </label>
+              <input
+                type="password"
+                required
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:border-amber-500"
+              />
+            </div>
 
             <button
-              onClick={() => {
-                switchClientPersona('elena');
-                setIsLoggedIn(true);
-              }}
-              className="w-full py-3 px-4 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors flex items-center justify-center gap-2"
+              type="submit"
+              className="w-full py-3 px-4 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-500 rounded-xl shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer mt-2"
             >
-              <User className="w-4 h-4" />
-              <span>Demo Login: Elena Rostova (Growth Investor)</span>
+              <Lock className="w-4 h-4" />
+              <span>Sign In to Client Portal</span>
             </button>
-          </div>
+          </form>
 
           <div className="pt-4 border-t border-slate-100 text-[11px] text-slate-400">
             Protected by 256-bit SSL encryption &amp; biometric multi-factor authentication.
