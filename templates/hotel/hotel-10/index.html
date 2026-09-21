@@ -574,6 +574,7 @@
               <option value="GBP">GBP (£)</option>
             </select>
           </div>
+          <button onclick="openHotelAuthModal()" class="hotel-auth-ignore" style="background: transparent; border: 1px solid #06b6d4; color: #06b6d4; padding: 10px 18px; font-size: 0.85rem; font-weight: 600; border-radius: 8px; cursor: pointer; margin-right: 8px;">Sign In</button>
           <button class="btn btn-goldPulse" onclick="openBookingDrawer()">Reserve a Suite</button>
         </div>
 
@@ -1343,7 +1344,229 @@
 
   </div>
 
-  <!-- JavaScript Modules -->
-  <script type="module" src="script.js"></script>
+<!-- Bespoke Sign-In / Login Modal for Hotel 10: Aetheria Haven Resorts -->
+<script>
+(function() {
+  const templateConfig = {
+    name: "Aetheria Haven Resorts",
+    subtitle: "Weightless Luxury & Celestial Solitude",
+    badge: "CELESTIAL AETHERIA PASS",
+    primaryColor: "#06b6d4",
+    cardBg: "#100d2b",
+    textColor: "#e0e7ff",
+    accentGlow: "rgba(99, 102, 241, 0.5)",
+    fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+    btnStyle: "background: linear-gradient(135deg, #6366f1, #06b6d4); color: #ffffff; font-weight: 700; border-radius: 12px; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); border: none;"
+  };
+
+  function createAuthModal() {
+    if (document.getElementById('hotelAuthModal')) return;
+
+    const modalHTML = `
+      <div id="hotelAuthModal" class="hotel-auth-overlay" style="display:none;">
+        <div class="hotel-auth-backdrop"></div>
+        <div class="hotel-auth-card aetheria-theme">
+          <button type="button" class="hotel-auth-close hotel-auth-ignore" id="closeHotelAuth">&times;</button>
+          
+          <div class="hotel-auth-header">
+            <div style="font-size: 24px; color: ${templateConfig.primaryColor}; margin-bottom: 4px;">🌌</div>
+            <div class="hotel-auth-badge">${templateConfig.badge}</div>
+            <h2 class="hotel-auth-title">${templateConfig.name}</h2>
+            <p class="hotel-auth-subtitle">${templateConfig.subtitle}</p>
+          </div>
+
+          <div class="hotel-auth-tabs">
+            <button type="button" class="hotel-auth-tab active hotel-auth-ignore" id="tabSignIn">Celestial Login</button>
+            <button type="button" class="hotel-auth-tab hotel-auth-ignore" id="tabSignUp">Request Pass</button>
+          </div>
+
+          <!-- Sign In Form -->
+          <form id="formSignIn" class="hotel-auth-form">
+            <div class="hotel-auth-group">
+              <label>Celestial ID / Email</label>
+              <input type="email" placeholder="voyager@aetheria.com" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-group">
+              <label>Passcode</label>
+              <input type="password" placeholder="••••••••" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-row">
+              <label class="hotel-auth-checkbox">
+                <input type="checkbox" checked> Remember Session
+              </label>
+              <a href="#" class="hotel-auth-link hotel-auth-ignore">Reset Key</a>
+            </div>
+            <button type="submit" class="hotel-auth-btn hotel-auth-ignore" style="${templateConfig.btnStyle}">Authenticate Celestial Pass</button>
+          </form>
+
+          <!-- Sign Up Form -->
+          <form id="formSignUp" class="hotel-auth-form" style="display:none;">
+            <div class="hotel-auth-group">
+              <label>Full Name</label>
+              <input type="text" placeholder="Orion Vance" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-group">
+              <label>Email Address</label>
+              <input type="email" placeholder="orion@aetheria.com" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-group">
+              <label>Passcode</label>
+              <input type="password" placeholder="••••••••" required class="hotel-auth-input">
+            </div>
+            <button type="submit" class="hotel-auth-btn hotel-auth-ignore" style="${templateConfig.btnStyle}">Activate Celestial Pass</button>
+          </form>
+
+          <div class="hotel-auth-divider"><span>AUTHENTICATE VIA</span></div>
+
+          <div class="hotel-auth-social">
+            <button type="button" class="hotel-social-btn hotel-auth-ignore">Google Key</button>
+            <button type="button" class="hotel-social-btn hotel-auth-ignore">Apple Key</button>
+          </div>
+
+          <div id="hotelAuthToast" class="hotel-auth-toast" style="display:none;"></div>
+        </div>
+      </div>
+    `;
+
+    const styleHTML = `
+      <style>
+        .hotel-auth-overlay {
+          position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+          z-index: 999999; display: flex; align-items: center; justify-content: center;
+          padding: 20px; box-sizing: border-box;
+        }
+        .hotel-auth-backdrop {
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(6, 4, 18, 0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
+        .hotel-auth-card.aetheria-theme {
+          position: relative; width: 100%; max-width: 440px;
+          background: ${templateConfig.cardBg}; border: 1px solid rgba(99, 102, 241, 0.4);
+          border-radius: 20px; padding: 36px 32px; box-sizing: border-box;
+          color: ${templateConfig.textColor}; font-family: ${templateConfig.fontFamily};
+          box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8), 0 0 35px ${templateConfig.accentGlow};
+          animation: hotelAuthPop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes hotelAuthPop {
+          from { opacity: 0; transform: scale(0.92) translateY(12px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .hotel-auth-close {
+          position: absolute; top: 16px; right: 18px; background: none; border: none;
+          color: ${templateConfig.textColor}; font-size: 28px; cursor: pointer; opacity: 0.7; transition: 0.2s;
+        }
+        .hotel-auth-close:hover { opacity: 1; color: ${templateConfig.primaryColor}; }
+        .hotel-auth-header { text-align: center; margin-bottom: 24px; }
+        .hotel-auth-badge {
+          display: inline-block; font-size: 10px; letter-spacing: 2px; font-weight: 700;
+          color: ${templateConfig.primaryColor}; text-transform: uppercase; margin-bottom: 6px;
+        }
+        .hotel-auth-title { margin: 0; font-size: 26px; font-weight: 700; color: #ffffff; }
+        .hotel-auth-subtitle { margin: 4px 0 0; font-size: 13px; color: rgba(224, 231, 255, 0.7); }
+        .hotel-auth-tabs { display: flex; border-bottom: 1px solid rgba(99, 102, 241, 0.25); margin-bottom: 24px; }
+        .hotel-auth-tab {
+          flex: 1; padding: 10px; background: none; border: none; color: rgba(224, 231, 255, 0.6);
+          font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s;
+        }
+        .hotel-auth-tab.active { color: ${templateConfig.primaryColor}; border-bottom-color: ${templateConfig.primaryColor}; }
+        .hotel-auth-group { margin-bottom: 16px; text-align: left; }
+        .hotel-auth-group label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; color: ${templateConfig.primaryColor}; }
+        .hotel-auth-input {
+          width: 100%; padding: 12px 14px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(99, 102, 241, 0.3);
+          border-radius: 8px; color: #ffffff; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s;
+        }
+        .hotel-auth-input:focus { border-color: ${templateConfig.primaryColor}; box-shadow: 0 0 12px ${templateConfig.accentGlow}; }
+        .hotel-auth-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 20px; color: rgba(224, 231, 255, 0.7); }
+        .hotel-auth-checkbox { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .hotel-auth-link { color: ${templateConfig.primaryColor}; text-decoration: none; font-weight: 600; }
+        .hotel-auth-btn {
+          width: 100%; padding: 14px; font-size: 15px; cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s; margin-top: 6px;
+        }
+        .hotel-auth-btn:hover { transform: translateY(-1px); }
+        .hotel-auth-divider { text-align: center; margin: 20px 0 16px; border-bottom: 1px solid rgba(99, 102, 241, 0.2); line-height: 0.1em; }
+        .hotel-auth-divider span { background: ${templateConfig.cardBg}; padding: 0 10px; font-size: 10px; color: rgba(224, 231, 255, 0.5); letter-spacing: 1px; }
+        .hotel-auth-social { display: flex; gap: 12px; }
+        .hotel-social-btn {
+          flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+          padding: 10px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(99, 102, 241, 0.3);
+          border-radius: 8px; color: #ffffff; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        .hotel-social-btn:hover { background: rgba(99, 102, 241, 0.15); border-color: ${templateConfig.primaryColor}; }
+        .hotel-auth-toast {
+          margin-top: 16px; padding: 12px; border-radius: 8px; background: linear-gradient(135deg, #6366f1, #06b6d4);
+          color: #ffffff; text-align: center; font-size: 13px; font-weight: 600;
+        }
+      </style>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', styleHTML + modalHTML);
+
+    const modal = document.getElementById('hotelAuthModal');
+    const closeBtn = document.getElementById('closeHotelAuth');
+    const backdrop = modal.querySelector('.hotel-auth-backdrop');
+    const tabSignIn = document.getElementById('tabSignIn');
+    const tabSignUp = document.getElementById('tabSignUp');
+    const formSignIn = document.getElementById('formSignIn');
+    const formSignUp = document.getElementById('formSignUp');
+    const toast = document.getElementById('hotelAuthToast');
+
+    function closeModal() {
+      modal.style.display = 'none';
+      if (toast) toast.style.display = 'none';
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+
+    tabSignIn.addEventListener('click', () => {
+      tabSignIn.classList.add('active');
+      tabSignUp.classList.remove('active');
+      formSignIn.style.display = 'block';
+      formSignUp.style.display = 'none';
+    });
+
+    tabSignUp.addEventListener('click', () => {
+      tabSignUp.classList.add('active');
+      tabSignIn.classList.remove('active');
+      formSignUp.style.display = 'block';
+      formSignIn.style.display = 'none';
+    });
+
+    formSignIn.addEventListener('submit', (e) => {
+      e.preventDefault();
+      toast.textContent = `Welcome back to ${templateConfig.name}! Authenticating...`;
+      toast.style.display = 'block';
+      setTimeout(() => { closeModal(); }, 1600);
+    });
+
+    formSignUp.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = formSignUp.querySelector('input[type="text"]').value;
+      toast.textContent = `Welcome to ${templateConfig.name}, ${name}! Pass activated.`;
+      toast.style.display = 'block';
+      setTimeout(() => { closeModal(); }, 1600);
+    });
+  }
+
+  function openHotelAuthModal() {
+    createAuthModal();
+    const modal = document.getElementById('hotelAuthModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('button, .btn, a.btn, a.button, [role="button"], .drawerNextBtn');
+    if (!btn) return;
+    if (btn.closest('#hotelAuthModal') || btn.classList.contains('hotel-auth-ignore') || btn.closest('#technosprint-preview-header')) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    openHotelAuthModal();
+  }, true);
+
+  window.openHotelAuthModal = openHotelAuthModal;
+})();
+</script>
 </body>
 </html>

@@ -257,6 +257,7 @@
     <title>Aurelia Haven — Luxury Resort & Sanctuary</title>
   </head>
   <body>
+    <div id="root"></div>
   <!-- TechnoSprint Responsive Template Preview Wrapper Script -->
   <script>
     (function() {
@@ -538,7 +539,229 @@
       }
     })();
   </script>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!-- Bespoke Sign-In / Login Modal for Hotel 7: Aurelia Haven -->
+<script>
+(function() {
+  const templateConfig = {
+    name: "Aurelia Haven",
+    subtitle: "Serene Luxury Sanctuary & Spa",
+    badge: "AURELIA HAVEN PRIVILEGE",
+    primaryColor: "#f43f5e",
+    cardBg: "rgba(253, 242, 248, 0.96)",
+    textColor: "#2a1636",
+    accentGlow: "rgba(244, 63, 94, 0.3)",
+    fontFamily: "'Plus Jakarta Sans', -apple-system, sans-serif",
+    btnStyle: "background: linear-gradient(135deg, #f43f5e, #c084fc); color: #ffffff; font-weight: 600; border-radius: 12px; border: none;"
+  };
+
+  function createAuthModal() {
+    if (document.getElementById('hotelAuthModal')) return;
+
+    const modalHTML = `
+      <div id="hotelAuthModal" class="hotel-auth-overlay" style="display:none;">
+        <div class="hotel-auth-backdrop"></div>
+        <div class="hotel-auth-card aureliahaven-theme">
+          <button type="button" class="hotel-auth-close hotel-auth-ignore" id="closeHotelAuth">&times;</button>
+          
+          <div class="hotel-auth-header">
+            <div style="font-size: 24px; color: ${templateConfig.primaryColor}; margin-bottom: 4px;">✨</div>
+            <div class="hotel-auth-badge">${templateConfig.badge}</div>
+            <h2 class="hotel-auth-title">${templateConfig.name}</h2>
+            <p class="hotel-auth-subtitle">${templateConfig.subtitle}</p>
+          </div>
+
+          <div class="hotel-auth-tabs">
+            <button type="button" class="hotel-auth-tab active hotel-auth-ignore" id="tabSignIn">Sign In</button>
+            <button type="button" class="hotel-auth-tab hotel-auth-ignore" id="tabSignUp">Join Privilege</button>
+          </div>
+
+          <!-- Sign In Form -->
+          <form id="formSignIn" class="hotel-auth-form">
+            <div class="hotel-auth-group">
+              <label>Privilege ID or Email</label>
+              <input type="email" placeholder="sanctuary@aureliahaven.com" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-group">
+              <label>Password</label>
+              <input type="password" placeholder="••••••••" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-row">
+              <label class="hotel-auth-checkbox">
+                <input type="checkbox" checked> Remember Me
+              </label>
+              <a href="#" class="hotel-auth-link hotel-auth-ignore">Forgot Password?</a>
+            </div>
+            <button type="submit" class="hotel-auth-btn hotel-auth-ignore" style="${templateConfig.btnStyle}">Sign In to Aurelia Haven</button>
+          </form>
+
+          <!-- Sign Up Form -->
+          <form id="formSignUp" class="hotel-auth-form" style="display:none;">
+            <div class="hotel-auth-group">
+              <label>Full Name</label>
+              <input type="text" placeholder="Camilla Rose" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-group">
+              <label>Email Address</label>
+              <input type="email" placeholder="camilla@aureliahaven.com" required class="hotel-auth-input">
+            </div>
+            <div class="hotel-auth-group">
+              <label>Password</label>
+              <input type="password" placeholder="••••••••" required class="hotel-auth-input">
+            </div>
+            <button type="submit" class="hotel-auth-btn hotel-auth-ignore" style="${templateConfig.btnStyle}">Join Privilege Club</button>
+          </form>
+
+          <div class="hotel-auth-divider"><span>OR CONTINUE WITH</span></div>
+
+          <div class="hotel-auth-social">
+            <button type="button" class="hotel-social-btn hotel-auth-ignore">Google</button>
+            <button type="button" class="hotel-social-btn hotel-auth-ignore">Apple ID</button>
+          </div>
+
+          <div id="hotelAuthToast" class="hotel-auth-toast" style="display:none;"></div>
+        </div>
+      </div>
+    `;
+
+    const styleHTML = `
+      <style>
+        .hotel-auth-overlay {
+          position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+          z-index: 999999; display: flex; align-items: center; justify-content: center;
+          padding: 20px; box-sizing: border-box;
+        }
+        .hotel-auth-backdrop {
+          position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(24, 12, 30, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+        }
+        .hotel-auth-card.aureliahaven-theme {
+          position: relative; width: 100%; max-width: 440px;
+          background: ${templateConfig.cardBg}; border: 1px solid rgba(244, 63, 94, 0.3);
+          border-radius: 20px; padding: 36px 32px; box-sizing: border-box;
+          color: ${templateConfig.textColor}; font-family: ${templateConfig.fontFamily};
+          box-shadow: 0 25px 50px -12px rgba(244, 63, 94, 0.25), 0 0 30px ${templateConfig.accentGlow};
+          animation: hotelAuthPop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes hotelAuthPop {
+          from { opacity: 0; transform: scale(0.92) translateY(12px); }
+          to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .hotel-auth-close {
+          position: absolute; top: 16px; right: 18px; background: none; border: none;
+          color: ${templateConfig.textColor}; font-size: 28px; cursor: pointer; opacity: 0.6; transition: 0.2s;
+        }
+        .hotel-auth-close:hover { opacity: 1; color: ${templateConfig.primaryColor}; }
+        .hotel-auth-header { text-align: center; margin-bottom: 24px; }
+        .hotel-auth-badge {
+          display: inline-block; font-size: 10px; letter-spacing: 2px; font-weight: 700;
+          color: ${templateConfig.primaryColor}; text-transform: uppercase; margin-bottom: 6px;
+        }
+        .hotel-auth-title { margin: 0; font-size: 26px; font-weight: 700; color: ${templateConfig.textColor}; }
+        .hotel-auth-subtitle { margin: 4px 0 0; font-size: 13px; color: #704d6e; font-style: italic; }
+        .hotel-auth-tabs { display: flex; border-bottom: 1px solid rgba(244, 63, 94, 0.2); margin-bottom: 24px; }
+        .hotel-auth-tab {
+          flex: 1; padding: 10px; background: none; border: none; color: #8a6488;
+          font-size: 14px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.2s;
+        }
+        .hotel-auth-tab.active { color: ${templateConfig.primaryColor}; border-bottom-color: ${templateConfig.primaryColor}; }
+        .hotel-auth-group { margin-bottom: 16px; text-align: left; }
+        .hotel-auth-group label { display: block; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 6px; color: ${templateConfig.textColor}; }
+        .hotel-auth-input {
+          width: 100%; padding: 12px 14px; background: #ffffff; border: 1px solid rgba(244, 63, 94, 0.2);
+          border-radius: 8px; color: ${templateConfig.textColor}; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s;
+        }
+        .hotel-auth-input:focus { border-color: ${templateConfig.primaryColor}; box-shadow: 0 0 10px ${templateConfig.accentGlow}; }
+        .hotel-auth-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 20px; color: #704d6e; }
+        .hotel-auth-checkbox { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .hotel-auth-link { color: ${templateConfig.primaryColor}; text-decoration: none; font-weight: 600; }
+        .hotel-auth-btn {
+          width: 100%; padding: 14px; font-size: 15px; cursor: pointer;
+          transition: transform 0.2s, box-shadow 0.2s; margin-top: 6px;
+        }
+        .hotel-auth-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px ${templateConfig.accentGlow}; }
+        .hotel-auth-divider { text-align: center; margin: 20px 0 16px; border-bottom: 1px solid rgba(244, 63, 94, 0.15); line-height: 0.1em; }
+        .hotel-auth-divider span { background: ${templateConfig.cardBg}; padding: 0 10px; font-size: 10px; color: #8a6488; letter-spacing: 1px; }
+        .hotel-auth-social { display: flex; gap: 12px; }
+        .hotel-social-btn {
+          flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+          padding: 10px; background: #ffffff; border: 1px solid rgba(244, 63, 94, 0.2);
+          border-radius: 8px; color: ${templateConfig.textColor}; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .hotel-social-btn:hover { background: #fdf2f8; border-color: ${templateConfig.primaryColor}; }
+        .hotel-auth-toast {
+          margin-top: 16px; padding: 12px; border-radius: 8px; background: ${templateConfig.primaryColor};
+          color: #ffffff; text-align: center; font-size: 13px; font-weight: 600;
+        }
+      </style>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', styleHTML + modalHTML);
+
+    const modal = document.getElementById('hotelAuthModal');
+    const closeBtn = document.getElementById('closeHotelAuth');
+    const backdrop = modal.querySelector('.hotel-auth-backdrop');
+    const tabSignIn = document.getElementById('tabSignIn');
+    const tabSignUp = document.getElementById('tabSignUp');
+    const formSignIn = document.getElementById('formSignIn');
+    const formSignUp = document.getElementById('formSignUp');
+    const toast = document.getElementById('hotelAuthToast');
+
+    function closeModal() {
+      modal.style.display = 'none';
+      if (toast) toast.style.display = 'none';
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+
+    tabSignIn.addEventListener('click', () => {
+      tabSignIn.classList.add('active');
+      tabSignUp.classList.remove('active');
+      formSignIn.style.display = 'block';
+      formSignUp.style.display = 'none';
+    });
+
+    tabSignUp.addEventListener('click', () => {
+      tabSignUp.classList.add('active');
+      tabSignIn.classList.remove('active');
+      formSignUp.style.display = 'block';
+      formSignIn.style.display = 'none';
+    });
+
+    formSignIn.addEventListener('submit', (e) => {
+      e.preventDefault();
+      toast.textContent = `Welcome back to ${templateConfig.name}! Authenticating...`;
+      toast.style.display = 'block';
+      setTimeout(() => { closeModal(); }, 1600);
+    });
+
+    formSignUp.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = formSignUp.querySelector('input[type="text"]').value;
+      toast.textContent = `Welcome to ${templateConfig.name}, ${name}! Privilege activated.`;
+      toast.style.display = 'block';
+      setTimeout(() => { closeModal(); }, 1600);
+    });
+  }
+
+  function openHotelAuthModal() {
+    createAuthModal();
+    const modal = document.getElementById('hotelAuthModal');
+    if (modal) modal.style.display = 'flex';
+  }
+
+  document.addEventListener('click', function(e) {
+    const btn = e.target.closest('button, .btn, a.btn, a.button, [role="button"]');
+    if (!btn) return;
+    if (btn.closest('#hotelAuthModal') || btn.classList.contains('hotel-auth-ignore') || btn.closest('#technosprint-preview-header')) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    openHotelAuthModal();
+  }, true);
+
+  window.openHotelAuthModal = openHotelAuthModal;
+})();
+</script>
+</body>
 </html>

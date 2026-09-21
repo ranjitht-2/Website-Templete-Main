@@ -125,27 +125,30 @@ export default function Navbar({ onBookClick, onLoginClick }) {
         </nav>
 
         {/* CTA Actions */}
-        <div style={{ display: 'none', alignItems: 'center', gap: '1.2rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
           <button 
-            onClick={onLoginClick}
+            onClick={(e) => {
+              if (window.openHotelAuthModal) { window.openHotelAuthModal(); }
+              if (onLoginClick) { onLoginClick(e); }
+            }}
+            className="hotel-auth-ignore"
             style={{
-              background: 'none',
-              border: 'none',
+              background: 'transparent',
+              border: '1px solid var(--color-brass)',
+              borderRadius: '2px',
+              padding: '0.5rem 1rem',
               fontFamily: 'var(--font-serif-sc)',
               fontSize: '0.75rem',
               color: textColor,
-              opacity: 0.85,
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               gap: '0.4rem',
               transition: 'var(--transition-smooth)'
             }}
-            onMouseEnter={(e) => e.target.style.opacity = '1'}
-            onMouseLeave={(e) => e.target.style.opacity = '0.85'}
           >
             <User size={14} style={{ color: 'var(--color-brass)' }} />
-            LOGIN
+            SIGN IN
           </button>
           
           <button 

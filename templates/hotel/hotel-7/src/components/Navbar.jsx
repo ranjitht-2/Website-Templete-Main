@@ -122,7 +122,27 @@ export default function Navbar() {
         </div>
 
         {/* Action Button & Menu Toggler */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <button
+            onClick={() => window.openHotelAuthModal && window.openHotelAuthModal()}
+            className="hotel-auth-ignore"
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.8rem',
+              fontWeight: '600',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              backgroundColor: 'transparent',
+              color: '#c5a880',
+              padding: '10px 22px',
+              borderRadius: '0px',
+              border: '1px solid #c5a880',
+              cursor: 'pointer',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            Sign In
+          </button>
           <Link
             to="/booking"
             className="hidden sm:flex"
